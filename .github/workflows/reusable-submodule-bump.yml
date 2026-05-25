@@ -1,0 +1,109 @@
+name: Reusable Submodule Bump
+
+# Bumps every submodule (or a filtered subset) in the calling repo to its
+# tracked branch HEAD, then opens a PR with the result. Built for the
+# umbrella's weekly cadence but reusable from any repo that has
+# submodules + the same scripts/ layout.
+#
+# Caller pattern (scheduled):
+#
+#   on:
+#     schedule:
+#       - cron: '0 14 * * 1'   # Monday 14:00 UTC
+#     workflow_dispatch:
+#
+#   jobs:
+#     bump:
+#       uses: FlexNetOS/.github/.github/workflows/reusable-submodule-bump.yml@v1
+#       with:
+#         group: core
+#       permissions:
+#         contents: write
+#         pull-requests: write
+
+on:
+  workflow_call:
+    inputs:
+      group:
+        description: 'MANIFEST group to bump (default: all)'
+        required: false
+        type: string
+        default: ''
+      manifest:
+        description: 'Path to manifest file relative to repo root'
+        required: false
+        type: string
+        default: 'repos/MANIFEST.yaml'
+      runner:
+        description: 'runs-on label set'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
+      pr-title:
+        description: 'Title for the bump PR'
+        required: false
+        type: string
+        default: 'chore(submodules): weekly bump'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq \
+            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
+
+      - name: Run submodule-bump.sh
+        id: bump
+        env:
+          MANIFEST: ${{ inputs.manifest }}
+        run: |
+          chmod +x scripts/submodule-bump.sh
+          if [[ -n "${{ inputs.group }}" ]]; then
+            scripts/submodule-bump.sh --group "${{ inputs.group }}" || true
+          else
+            scripts/submodule-bump.sh || true
+          fi
+
+      - name: Check for changes
+        id: check
+        run: |
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git status --short
+          fi
+
+      - name: Open PR with bump
+        if: steps.check.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: ${{ inputs.pr-title }}
+          title: ${{ inputs.pr-title }}
+          body: |
+            Automated weekly submodule bump produced by
+            [`reusable-submodule-bump.yml`](.github/workflows/reusable-submodule-bump.yml).
+
+            Group filter: `${{ inputs.group || '(all)' }}`
+
+            Review the submodule SHA changes and merge once CI passes.
+          branch: chore/submodule-bump-${{ inputs.group || 'all' }}
+          delete-branch: true
+          labels: |
+            dependencies
+            submodules

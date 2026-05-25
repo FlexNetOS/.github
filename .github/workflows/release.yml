@@ -1,0 +1,26 @@
+name: release
+
+# Umbrella self-release. Calls reusable-release.yml on every push to main.
+# release-please reads the Conventional Commit log, opens (or updates) a
+# release PR, and on merge of that PR tags + creates the GitHub release.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    uses: ./.github/workflows/reusable-release.yml
+    with:
+      package-name: dot-github
+      release-type: release-please
+      release-branch: main
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    secrets: inherit

@@ -1,0 +1,32 @@
+# =============================================================================
+# systemd template unit for Path B (ephemeral runner spawner).
+# Instance parameter %i = user under which to run.
+#
+# Install:
+#   sudo cp runner/systemd/runner-spawn@.service /etc/systemd/system/
+#   sudo cp runner/systemd/runner-spawn@.timer   /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now runner-spawn@drdave.timer
+# =============================================================================
+
+[Unit]
+Description=Ephemeral GitHub Actions runner spawner (%i)
+After=network.target
+
+[Service]
+Type=oneshot
+User=%i
+WorkingDirectory=/home/%i/_work/repos/my-github
+Environment=RUNNER_HOME=/home/%i/_work/repos/actions-runner
+Environment=REPO_ROOT=/home/%i/_work/repos/my-github
+Environment=MANIFEST=/home/%i/_work/repos/my-github/repos/MANIFEST.yaml
+
+# direnv-style: load secrets, then run the spawner
+ExecStart=/bin/bash -lc '/home/%i/_work/repos/my-github/runner/ephemeral-spawn.sh'
+
+# A spawn can take 5-30 minutes (one job's duration). Don't kill mid-job.
+TimeoutStartSec=2h
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true

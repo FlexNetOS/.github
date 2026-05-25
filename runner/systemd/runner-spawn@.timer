@@ -1,0 +1,16 @@
+# Companion timer for runner-spawn@.service (Path B ephemeral spawner).
+# Fires every 30s — the spawn script is a no-op if nothing is queued.
+
+[Unit]
+Description=Trigger ephemeral GitHub Actions runner spawn (%i)
+After=network.target
+
+[Timer]
+OnBootSec=1min
+OnUnitInactiveSec=30s
+Unit=runner-spawn@%i.service
+AccuracySec=5s
+Persistent=false
+
+[Install]
+WantedBy=timers.target

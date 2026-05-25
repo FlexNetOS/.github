@@ -1,0 +1,37 @@
+# =============================================================================
+# Template systemd unit for the long-running self-hosted GitHub Actions runner.
+# Used by Path A (org-scoped runner).
+#
+# DO NOT install this directly — `./svc.sh install <user>` (from the runner
+# install dir) generates the real unit file with the correct paths and user.
+# This template documents what that unit looks like so we can audit it.
+#
+# After `svc.sh install`, the unit lives at:
+#   /etc/systemd/system/actions.runner.<scope>.<runner-name>.service
+# =============================================================================
+
+[Unit]
+Description=GitHub Actions Runner (FlexNetOS, local-gh-rnr-lnx)
+After=network.target
+
+[Service]
+ExecStart=/home/drdave/_work/repos/actions-runner/runsvc.sh
+User=drdave
+WorkingDirectory=/home/drdave/_work/repos/actions-runner
+KillMode=process
+KillSignal=SIGTERM
+TimeoutStopSec=5min
+
+# Restart policy
+Restart=always
+RestartSec=15
+
+# Hardening (safe defaults — adjust if a job needs more capability)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/home/drdave/_work/repos/actions-runner
+
+[Install]
+WantedBy=multi-user.target

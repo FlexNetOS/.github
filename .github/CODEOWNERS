@@ -1,0 +1,14 @@
+# CODEOWNERS — review routing for FlexNetOS/.github
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# The last matching pattern wins.
+# Today everything is owned by @FlexNetOS. Add finer-grained ownership
+# (e.g. @sec-team for SECURITY.md, @docs-team for docs/) as the project grows.
+
+* @FlexNetOS
+
+# Security-sensitive surfaces require explicit re-confirmation by the owner.
+SECURITY.md                       @FlexNetOS
+.github/workflows/reusable-security.yml  @FlexNetOS
+secrets/                          @FlexNetOS
+runner/                           @FlexNetOS

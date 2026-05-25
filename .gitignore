@@ -1,9 +1,16 @@
-# Local workspace artifacts (oh-my-claudecode + agent harnesses)
+# =============================================================================
+# FlexNetOS/.github  —  .gitignore
+# =============================================================================
+# Submodules under repos/ each carry their own .gitignore. The patterns
+# below are defense-in-depth: things that should never be tracked here
+# even if something escapes a submodule boundary.
+
+# --- Local workspace artifacts (oh-my-claudecode + agent harnesses) ---
 .omc/
 .omp/
 .attic/
 
-# Editor / OS
+# --- Editor / OS ---
 .vscode/
 .idea/
 .DS_Store
@@ -11,7 +18,57 @@ Thumbs.db
 *.swp
 *~
 
-# Local lint/cache directories
+# --- Local lint / cache directories ---
 .cache/
 node_modules/
 .markdownlint-cli2.cache/
+
+# --- Language / tooling generated artifacts (defense in depth) ---
+# Rust
+target/
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+*.egg-info/
+# Node / JS frameworks
+.next/
+.nuxt/
+out/
+.turbo/
+.parcel-cache/
+# Go
+vendor/
+# Tauri
+src-tauri/target/
+
+# --- Secrets safety (defense in depth) ---
+# secrets/store/ holds pass GPG blobs and IS tracked; cleartext escapes are not.
+.env
+.env.*
+!.env*.tmpl
+!.env*.example
+*.pem
+*.key
+!secrets/.gpg-id*
+secrets/decrypted/
+secrets/scratch/
+
+# --- Wiki: Obsidian local state, ingest scratch ---
+wiki/.obsidian/
+wiki/raw/.scratch/
+
+# --- Self-hosted runner state — config/scripts are tracked, runtime state is not ---
+runner/_diag/
+runner/_work/
+runner/.runner
+runner/.credentials*
+
+# --- ai-top reference materials live in the sibling workspace, never here ---
+ai-top/

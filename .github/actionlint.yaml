@@ -1,0 +1,7 @@
+# actionlint config — registers our self-hosted runner labels so the
+# linter doesn't flag them as unknown.
+# https://github.com/rhysd/actionlint/blob/main/docs/config.md
+
+self-hosted-runner:
+  labels:
+    - local        # tag for the FlexNetOS self-hosted runner group

@@ -1,0 +1,233 @@
+# =============================================================================
+# FlexNetOS submodule manifest — single source of truth
+# =============================================================================
+# Schema:
+#   - path:          mount point relative to repo root
+#     url:           clone URL (origin)
+#     upstream:      (optional) upstream URL for forks
+#     branch:        branch to track
+#     toolchain:     list of language/tool tags
+#     groups:        list of group tags for bulk operations
+#     partial_clone: (optional) git --filter spec for very large repos
+#     notes:         (optional) freeform commentary
+#
+# Generation: `scripts/submodule-add-all.sh` reads this file and runs
+# `git submodule add` for any entry not yet present in `.gitmodules`.
+# Do NOT hand-edit `.gitmodules` — regenerate from here.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# OWNED — FlexNetOS-original repositories
+# -----------------------------------------------------------------------------
+- path: repos/owned/ruvector
+  url: https://github.com/FlexNetOS/ruvector
+  branch: main
+  toolchain: [node, cargo]
+  groups: [core, owned, daily]
+  notes: |
+    Vector DB + GNN layer. 8.8 GB on disk currently — partial clone if
+    on-runner constraints become an issue.
+
+- path: repos/owned/ruOS
+  url: https://github.com/FlexNetOS/ruOS
+  branch: develop
+  toolchain: [make, shell, cargo]
+  groups: [core, owned, distro]
+  notes: Cross-compile + .deb packaging pipeline for ruvultra Linux.
+
+- path: repos/owned/understand-anything
+  url: https://github.com/FlexNetOS/understand-anything
+  branch: main
+  toolchain: [node]
+  groups: [owned, agents]
+
+- path: repos/owned/ubuntu-lifeos
+  url: https://github.com/FlexNetOS/ubuntu-lifeos
+  branch: main
+  toolchain: [shell]
+  groups: [owned, distro]
+
+- path: repos/owned/llama.cpp
+  url: https://github.com/FlexNetOS/llama.cpp
+  upstream: https://github.com/ggerganov/llama.cpp
+  branch: develop
+  toolchain: [cargo, python, make]
+  groups: [owned, llm, fork-tracking]
+  notes: |
+    Forked from ggerganov/llama.cpp. Despite the `owned/` placement, it
+    behaves like `forked/` — carries our patches and tracks upstream.
+    Kept in owned/ because the FlexNetOS fork has diverged enough that
+    upstream parity is no longer the primary goal.
+
+# -----------------------------------------------------------------------------
+# FORKED — FlexNetOS forks tracking a third-party upstream
+# -----------------------------------------------------------------------------
+- path: repos/forked/aionui
+  url: https://github.com/FlexNetOS/AionUi-auto
+  upstream: https://github.com/iOfficeAI/AionUi
+  branch: main
+  toolchain: [node]
+  groups: [forked, ui]
+
+- path: repos/forked/n8n
+  url: https://github.com/FlexNetOS/n8n
+  upstream: https://github.com/n8n-io/n8n
+  branch: master
+  toolchain: [node]
+  groups: [forked, automation]
+
+- path: repos/forked/nanochat
+  url: https://github.com/FlexNetOS/nanochat
+  branch: main
+  toolchain: [python]
+  groups: [forked, llm]
+  notes: No upstream — fork is the home repo.
+
+- path: repos/forked/rtk
+  url: https://github.com/FlexNetOS/rtk
+  upstream: https://github.com/rtk-ai/rtk
+  branch: main
+  toolchain: [rust]
+  groups: [forked, tools]
+
+- path: repos/forked/weftos
+  url: https://github.com/FlexNetOS/weftos
+  branch: main
+  toolchain: [shell, node]
+  groups: [forked, distro]
+  notes: |
+    Currently the only repo with a self-hosted runner registered
+    (`_work/repos/actions-runner/`). See `runner/README.md`.
+
+# --- The four below need a `gh repo fork` before they can be submoduled.
+#     They live as plain clones in _work/repos/ today with local diffs that
+#     would be lost on `git pull`. See Phase 0 D6 in the plan.
+
+- path: repos/forked/archon
+  url: https://github.com/FlexNetOS/Archon          # NEW — fork required
+  upstream: https://github.com/coleam00/Archon
+  branch: dev
+  toolchain: [node, bun, docker]
+  groups: [forked, agents]
+  notes: |
+    PENDING FORK. Local checkout at /home/drdave/_work/repos/Archon is
+    1 file dirty. Run `gh repo fork coleam00/Archon --org FlexNetOS`,
+    then push local changes before adding as submodule.
+
+- path: repos/forked/everything-claude-code
+  url: https://github.com/FlexNetOS/everything-claude-code   # NEW — fork required
+  upstream: https://github.com/affaan-m/everything-claude-code
+  branch: main
+  toolchain: [node, python]
+  groups: [forked, agents]
+  notes: |
+    PENDING FORK. Local checkout has 32 dirty files — substantial drift.
+    Must capture local diffs as commits before submoduling.
+
+- path: repos/forked/oh-my-claudecode
+  url: https://github.com/FlexNetOS/oh-my-claudecode  # NEW — fork required
+  upstream: https://github.com/yeachan-heo/oh-my-claudecode
+  branch: main
+  toolchain: [node]
+  groups: [forked, agents]
+  notes: PENDING FORK. 3 dirty files locally.
+
+- path: repos/forked/oh-my-pi
+  url: https://github.com/FlexNetOS/oh-my-pi         # NEW — fork required
+  upstream: https://github.com/can1357/oh-my-pi
+  branch: main
+  toolchain: [node, cargo, bun]
+  groups: [forked, agents]
+  notes: PENDING FORK. 2 dirty files locally.
+
+# -----------------------------------------------------------------------------
+# EXTERNAL — clean upstream clones, read-only intent
+# -----------------------------------------------------------------------------
+- path: repos/external/chroma
+  url: https://github.com/chroma-core/chroma
+  branch: main
+  toolchain: [cargo, python, docker]
+  groups: [external, vector-db]
+
+- path: repos/external/cpython
+  url: https://github.com/python/cpython
+  branch: main
+  toolchain: [c, python, make]
+  groups: [external, runtime]
+  partial_clone: "blob:none"
+  notes: 967 MB — partial clone keeps clone time + disk reasonable.
+
+- path: repos/external/firecrawl
+  url: https://github.com/mendableai/firecrawl
+  branch: main
+  toolchain: [node, docker]
+  groups: [external, scrape]
+
+- path: repos/external/llm_wiki
+  url: https://github.com/nashsu/llm_wiki
+  branch: main
+  toolchain: [node]
+  groups: [external, reference]
+  notes: |
+    Reference implementation of Karpathy's LLM-Wiki pattern. We use the
+    pattern (see ../wiki/) but not the app.
+
+- path: repos/external/mempalace
+  url: https://github.com/mempalace/mempalace
+  branch: main
+  toolchain: [python, docker]
+  groups: [external, memory]
+
+- path: repos/external/gitnexus
+  url: https://github.com/abhigyanpatwari/GitNexus
+  branch: main
+  toolchain: [node]
+  groups: [external, code-intel]
+
+- path: repos/external/agency-agents
+  url: https://github.com/msitarzewski/agency-agents
+  branch: main
+  toolchain: [markdown]
+  groups: [external, agents, reference]
+
+- path: repos/external/andrej-karpathy-skills
+  url: https://github.com/forrestchang/andrej-karpathy-skills
+  branch: main
+  toolchain: [markdown]
+  groups: [external, agents, reference]
+
+- path: repos/external/autoresearch-2.0
+  url: https://github.com/soveshmohapatra/autoresearch-2.0
+  branch: main
+  toolchain: [python]
+  groups: [external, agents, research]
+
+- path: repos/external/autoresearch-agents
+  url: https://github.com/hwchase17/autoresearch-agents
+  branch: master
+  toolchain: [python]
+  groups: [external, agents, research]
+
+- path: repos/external/piclaw
+  url: https://github.com/rcarmo/piclaw
+  branch: main
+  toolchain: [node, bun, make, docker]
+  groups: [external, tools]
+
+- path: repos/external/second-brain-starter
+  url: https://github.com/coleam00/second-brain-starter
+  branch: main
+  toolchain: [markdown]
+  groups: [external, reference]
+
+# -----------------------------------------------------------------------------
+# NOT SUBMODULED (intentionally) — documentation for future-me
+# -----------------------------------------------------------------------------
+# - ai-top/                          4.8 GB of NVIDIA driver/install reference PDFs and videos.
+#                                    Not a repo. Lives in sibling workspace, gitignored here.
+# - actions-runner/                  Self-hosted GH Actions runner install — see ../runner/.
+# - .attic/                          Local-only archive folder. Never committed.
+# - .omc/, .omp/                     Agent harness state. Always gitignored.
+# - .venv-hf/                        Python venv for huggingface_hub. Local-only.
+# - personal-config/                 PENDING: push to FlexNetOS/personal-config (private),
+#                                    then add as `repos/owned/personal-config`.
