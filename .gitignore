@@ -1,0 +1,17 @@
+# Local workspace artifacts (oh-my-claudecode + agent harnesses)
+.omc/
+.omp/
+.attic/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Local lint/cache directories
+.cache/
+node_modules/
+.markdownlint-cli2.cache/
