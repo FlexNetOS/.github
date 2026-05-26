@@ -1,12 +1,11 @@
 name: Reusable Build
 
 # Language-agnostic build dispatcher. Callers select the language flavor
-# via the `language` input; this workflow routes to the appropriate
-# build command and uploads build artifacts when requested.
+# via the `language` input; this workflow installs the matching
+# toolchain and runs the matching build command. Build artifacts are
+# uploaded when `artifact-name` is non-empty.
 #
-# This body is a SCAFFOLD pending follow-on implementation work — it
-# ships the `workflow_call` shape, documented inputs, and a
-# least-privilege `permissions:` block per the README.
+# Mixed mode behavior matches reusable-lint.yml.
 
 on:
   workflow_call:
@@ -31,7 +30,7 @@ on:
         type: string
         default: 'dist/**'
       profile:
-        description: 'Build profile: debug or release'
+        description: 'Build profile: debug or release (Rust only; ignored for others)'
         required: false
         type: string
         default: 'release'
@@ -51,18 +50,78 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build (scaffold)
+      - name: Set up Bun
+        if: inputs.language == 'bun' || inputs.language == 'mixed'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Set up Node
+        if: inputs.language == 'node' || inputs.language == 'mixed'
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: ${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != '' && 'npm' || '' }}
+
+      - name: Set up uv (Python)
+        if: inputs.language == 'python' || inputs.language == 'mixed'
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Rust
+        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        uses: Swatinem/rust-cache@v2
+
+      # --- per-language build ---
+      - name: Build (bun)
+        if: (inputs.language == 'bun' || inputs.language == 'mixed') && (hashFiles(format('{0}/bun.lock', inputs.working-directory)) != '' || hashFiles(format('{0}/bun.lockb', inputs.working-directory)) != '')
+        shell: bash
         run: |
-          echo "::warning::reusable-build.yml is a scaffold."
-          echo "language: ${{ inputs.language }}"
-          echo "profile: ${{ inputs.profile }}"
-          echo "artifact-name: ${{ inputs.artifact-name }}"
-          echo "artifact-path: ${{ inputs.artifact-path }}"
-          echo ""
-          echo "Body to be filled in by follow-on work; will route to:"
-          echo "  bun    -> bun run build"
-          echo "  node   -> npm run build"
-          echo "  python -> uv build  (or python -m build)"
-          echo "  rust   -> cargo build --profile=${{ inputs.profile }}"
-          echo "  mixed  -> all of the above for present languages"
-          echo "  none   -> no-op success"
+          bun install --frozen-lockfile
+          if jq -e '.scripts.build' package.json >/dev/null 2>&1; then
+            bun run build
+          else
+            echo "no 'build' script defined in package.json — skipping bun build"
+          fi
+
+      - name: Build (node)
+        if: (inputs.language == 'node' || inputs.language == 'mixed') && hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != ''
+        shell: bash
+        run: |
+          npm ci
+          if jq -e '.scripts.build' package.json >/dev/null 2>&1; then
+            npm run build
+          else
+            echo "no 'build' script defined in package.json — skipping node build"
+          fi
+
+      - name: Build (python)
+        if: (inputs.language == 'python' || inputs.language == 'mixed') && hashFiles(format('{0}/pyproject.toml', inputs.working-directory)) != ''
+        shell: bash
+        run: |
+          uv build
+
+      - name: Build (rust)
+        if: (inputs.language == 'rust' || inputs.language == 'mixed') && hashFiles(format('{0}/Cargo.toml', inputs.working-directory)) != ''
+        shell: bash
+        run: |
+          if [[ "${{ inputs.profile }}" == "debug" ]]; then
+            cargo build --all-features
+          else
+            cargo build --release --all-features
+          fi
+
+      # --- artifact upload ---
+      - name: Upload build artifact
+        if: inputs.artifact-name != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.working-directory }}/${{ inputs.artifact-path }}
+          if-no-files-found: error
+          retention-days: 30

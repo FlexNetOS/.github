@@ -1,13 +1,14 @@
 name: Reusable Lint
 
 # Language-agnostic lint dispatcher. Callers select the language flavor
-# via the `language` input; this workflow routes to the appropriate
-# linter.
+# via the `language` input; this workflow installs the matching
+# toolchain and runs the matching linter(s). Markdown lint always runs
+# (unless language=none).
 #
-# This body is a SCAFFOLD pending follow-on implementation work — it
-# ships the `workflow_call` shape, documented inputs, and a
-# least-privilege `permissions:` block per the README. See README.md
-# "How to use the reusable workflows" for the calling pattern.
+# Mixed mode: every detected toolchain runs. Detection is by lockfile —
+# bun.lock(b), package-lock.json, pyproject.toml/requirements*.txt,
+# Cargo.toml. If a caller wants only one language even when others are
+# present, pin `language:` explicitly instead of using `mixed`.
 
 on:
   workflow_call:
@@ -17,17 +18,17 @@ on:
         required: true
         type: string
       paths:
-        description: 'Glob of paths to lint (default: repository root)'
+        description: 'Path glob for python lint (default: working-directory)'
         required: false
         type: string
-        default: ''
+        default: '.'
       working-directory:
         description: 'Working directory for the lint command'
         required: false
         type: string
         default: '.'
       fail-on-warning:
-        description: 'Fail the job if the linter emits warnings'
+        description: 'Fail the job if the linter emits warnings (Rust: enables `-D warnings`)'
         required: false
         type: boolean
         default: false
@@ -47,17 +48,99 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Lint (scaffold)
+      # --- toolchain setup, conditional per language ---
+      - name: Set up Bun
+        if: inputs.language == 'bun' || inputs.language == 'mixed'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Set up Node
+        if: inputs.language == 'node' || inputs.language == 'mixed'
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: ${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != '' && 'npm' || '' }}
+
+      - name: Set up uv (Python)
+        if: inputs.language == 'python' || inputs.language == 'mixed'
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Rust
+        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Rust cache
+        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        uses: Swatinem/rust-cache@v2
+
+      # --- markdown lint (always, unless language=none) ---
+      - name: Markdown lint
+        if: inputs.language != 'none'
+        shell: bash
         run: |
-          echo "::warning::reusable-lint.yml is a scaffold."
-          echo "language: ${{ inputs.language }}"
-          echo "paths: ${{ inputs.paths }}"
-          echo "fail-on-warning: ${{ inputs.fail-on-warning }}"
-          echo ""
-          echo "Body to be filled in by follow-on work; will route to:"
-          echo "  bun    -> bun run lint"
-          echo "  node   -> npm run lint"
-          echo "  python -> ruff check + black --check"
-          echo "  rust   -> cargo fmt --check && cargo clippy --all-targets -- -D warnings"
-          echo "  mixed  -> all of the above for present languages"
-          echo "  none   -> no-op success"
+          bunx --bun markdownlint-cli2 "**/*.md" \
+            "!**/node_modules/**" \
+            "!**/target/**" \
+            "!**/.venv/**" \
+            "!**/dist/**" \
+            "!**/build/**" \
+            "!.omc/**" \
+            "!_work/**"
+
+      # --- workflow lint (always when workflows present) ---
+      - name: Workflow lint (actionlint)
+        if: inputs.language != 'none' && hashFiles(format('{0}/.github/workflows/*.yml', inputs.working-directory)) != ''
+        shell: bash
+        run: |
+          bash <(curl --silent --location \
+            https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) \
+            >/dev/null
+          ./actionlint -color
+
+      # --- per-language lint ---
+      - name: Lint (bun)
+        if: (inputs.language == 'bun' || inputs.language == 'mixed') && (hashFiles(format('{0}/bun.lock', inputs.working-directory)) != '' || hashFiles(format('{0}/bun.lockb', inputs.working-directory)) != '')
+        shell: bash
+        run: |
+          bun install --frozen-lockfile
+          if jq -e '.scripts.lint' package.json >/dev/null 2>&1; then
+            bun run lint
+          else
+            echo "no 'lint' script defined in package.json — skipping bun lint step"
+          fi
+
+      - name: Lint (node)
+        if: (inputs.language == 'node' || inputs.language == 'mixed') && hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != ''
+        shell: bash
+        run: |
+          npm ci
+          if jq -e '.scripts.lint' package.json >/dev/null 2>&1; then
+            npm run lint
+          else
+            echo "no 'lint' script defined in package.json — skipping node lint step"
+          fi
+
+      - name: Lint (python)
+        if: (inputs.language == 'python' || inputs.language == 'mixed') && (hashFiles(format('{0}/pyproject.toml', inputs.working-directory)) != '' || hashFiles(format('{0}/setup.py', inputs.working-directory)) != '' || hashFiles(format('{0}/requirements.txt', inputs.working-directory)) != '')
+        shell: bash
+        run: |
+          uv tool install ruff
+          uv tool install black
+          ruff check ${{ inputs.paths }}
+          black --check ${{ inputs.paths }}
+
+      - name: Lint (rust)
+        if: (inputs.language == 'rust' || inputs.language == 'mixed') && hashFiles(format('{0}/Cargo.toml', inputs.working-directory)) != ''
+        shell: bash
+        run: |
+          cargo fmt --all --check
+          if [[ "${{ inputs.fail-on-warning }}" == "true" ]]; then
+            cargo clippy --all-targets --all-features -- -D warnings
+          else
+            cargo clippy --all-targets --all-features
+          fi
