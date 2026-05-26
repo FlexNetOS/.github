@@ -1,0 +1,305 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1779669511387,
+  "projectRoot": "/home/drdave/_work/repos/my-github",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {},
+  "hotPaths": [
+    {
+      "path": "wiki/index.md",
+      "accessCount": 2,
+      "lastAccessed": 1779673466951,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 2,
+      "lastAccessed": 1779828850961,
+      "type": "file"
+    },
+    {
+      "path": "USER.TODO.md",
+      "accessCount": 2,
+      "lastAccessed": 1779828852517,
+      "type": "file"
+    },
+    {
+      "path": "wiki/purpose.md",
+      "accessCount": 2,
+      "lastAccessed": 1779828853024,
+      "type": "file"
+    },
+    {
+      "path": "repos/MANIFEST.yaml",
+      "accessCount": 2,
+      "lastAccessed": 1779828853278,
+      "type": "file"
+    },
+    {
+      "path": "SECURITY.md",
+      "accessCount": 1,
+      "lastAccessed": 1779669902409,
+      "type": "file"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "accessCount": 1,
+      "lastAccessed": 1779669902936,
+      "type": "file"
+    },
+    {
+      "path": "CODE_OF_CONDUCT.md",
+      "accessCount": 1,
+      "lastAccessed": 1779669903819,
+      "type": "file"
+    },
+    {
+      "path": "SUPPORT.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672501343,
+      "type": "file"
+    },
+    {
+      "path": "FUNDING.yml",
+      "accessCount": 1,
+      "lastAccessed": 1779672501899,
+      "type": "file"
+    },
+    {
+      "path": "docs/fork-workflow.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672503551,
+      "type": "file"
+    },
+    {
+      "path": "repos/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672609973,
+      "type": "file"
+    },
+    {
+      "path": "scripts/submodule-add-all.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779672670899,
+      "type": "file"
+    },
+    {
+      "path": "scripts/submodule-bump.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779672687806,
+      "type": "file"
+    },
+    {
+      "path": "scripts/submodule-sync-upstream.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779672704969,
+      "type": "file"
+    },
+    {
+      "path": "wiki/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672737351,
+      "type": "file"
+    },
+    {
+      "path": "wiki/AGENTS.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672764141,
+      "type": "file"
+    },
+    {
+      "path": "wiki/schema.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672815411,
+      "type": "file"
+    },
+    {
+      "path": "wiki/log.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672855953,
+      "type": "file"
+    },
+    {
+      "path": "wiki/raw/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672869810,
+      "type": "file"
+    },
+    {
+      "path": "secrets/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672917263,
+      "type": "file"
+    },
+    {
+      "path": "secrets/.gpg-id",
+      "accessCount": 1,
+      "lastAccessed": 1779672922582,
+      "type": "file"
+    },
+    {
+      "path": "secrets/.gpg-id.runner",
+      "accessCount": 1,
+      "lastAccessed": 1779672925779,
+      "type": "file"
+    },
+    {
+      "path": "secrets/envs/dev.env.tmpl",
+      "accessCount": 1,
+      "lastAccessed": 1779672934149,
+      "type": "file"
+    },
+    {
+      "path": "secrets/envs/ci.env.tmpl",
+      "accessCount": 1,
+      "lastAccessed": 1779672938937,
+      "type": "file"
+    },
+    {
+      "path": "secrets/envs/prod.env.tmpl",
+      "accessCount": 1,
+      "lastAccessed": 1779672943757,
+      "type": "file"
+    },
+    {
+      "path": "secrets/recovery/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779672958644,
+      "type": "file"
+    },
+    {
+      "path": ".envrc",
+      "accessCount": 1,
+      "lastAccessed": 1779672970379,
+      "type": "file"
+    },
+    {
+      "path": "scripts/secrets-inject.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779672978790,
+      "type": "file"
+    },
+    {
+      "path": "scripts/secrets-rotate.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779672985575,
+      "type": "file"
+    },
+    {
+      "path": "scripts/secrets-mirror-to-bws.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779673001205,
+      "type": "file"
+    },
+    {
+      "path": "runner/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779673037758,
+      "type": "file"
+    },
+    {
+      "path": "runner/install.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779673053027,
+      "type": "file"
+    },
+    {
+      "path": "runner/register.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779673074011,
+      "type": "file"
+    },
+    {
+      "path": "runner/ephemeral-spawn.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779673089346,
+      "type": "file"
+    },
+    {
+      "path": "runner/systemd/actions.runner.flexnetos.service.tmpl",
+      "accessCount": 1,
+      "lastAccessed": 1779673096323,
+      "type": "file"
+    },
+    {
+      "path": "runner/systemd/runner-spawn@.service",
+      "accessCount": 1,
+      "lastAccessed": 1779673102673,
+      "type": "file"
+    },
+    {
+      "path": "runner/systemd/runner-spawn@.timer",
+      "accessCount": 1,
+      "lastAccessed": 1779673105898,
+      "type": "file"
+    },
+    {
+      "path": "runner/policies/runner-group.md",
+      "accessCount": 1,
+      "lastAccessed": 1779673121527,
+      "type": "file"
+    },
+    {
+      "path": "runner/policies/pr-from-fork.md",
+      "accessCount": 1,
+      "lastAccessed": 1779673140276,
+      "type": "file"
+    },
+    {
+      "path": "tools/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779673175609,
+      "type": "file"
+    },
+    {
+      "path": "Makefile",
+      "accessCount": 1,
+      "lastAccessed": 1779673266818,
+      "type": "file"
+    },
+    {
+      "path": "scripts/bootstrap.sh",
+      "accessCount": 1,
+      "lastAccessed": 1779673291754,
+      "type": "file"
+    },
+    {
+      "path": "docs/automation.md",
+      "accessCount": 1,
+      "lastAccessed": 1779673350937,
+      "type": "file"
+    },
+    {
+      "path": "profile/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779828852020,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

@@ -6,9 +6,14 @@
 # even if something escapes a submodule boundary.
 
 # --- Local workspace artifacts (oh-my-claudecode + agent harnesses) ---
-.omc/
+# .omc/ and .claude/ are intentionally tracked: they hold critical orchestration
+# state and hooks config for this repo. .omp/ and .attic/ remain ignored.
 .omp/
 .attic/
+# ruflo / claude-flow runtime SQLite database — transient, regenerated on demand.
+ruvector.db
+ruvector.db-shm
+ruvector.db-wal
 
 # --- Editor / OS ---
 .vscode/
