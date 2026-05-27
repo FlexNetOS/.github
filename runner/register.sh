@@ -26,7 +26,7 @@ usage() {
 Usage: runner/register.sh --org | --repo <name> [options]
 
 Modes:
-  --org              Register at FlexNetOS organization scope (D5 path A)
+  --org              Register at FlexNetOS organization scope (after TODO 3)
   --repo <name>      Register against FlexNetOS/<name>
   --ephemeral        Auto-deregister after one job (combine with --repo)
 

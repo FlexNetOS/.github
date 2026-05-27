@@ -17,12 +17,11 @@ left where GitHub Actions puts them.
 ## Where we're going
 
 Multi-repo shared runner. Two paths — the choice is gated on
-[D5 in the plan](../  ../.claude/plans/help-me-create-a-lucky-flurry.md):
+[TODO 3 in USER.TODO.md](../USER.TODO.md):
 
 ### Path A (recommended) — Org-scoped runner
 
-Convert `FlexNetOS` from a GitHub *user* account to a GitHub
-*Organization* (free, ~5 min, preserves URLs). Then:
+Register the runner at the `FlexNetOS` organization scope (after TODO 3 is complete). Then:
 
 ```bash
 # Run from /home/drdave/_work/repos/actions-runner/

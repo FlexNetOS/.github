@@ -54,28 +54,61 @@ GitHub UI: **Settings → Branches → Branch protection rules → Add rule**
 
 ---
 
-## 3. D5 — Convert `FlexNetOS` user account → GitHub Organization
+## 3. Convert `FlexNetOS` user account → GitHub Organization
 
 **Why:** This is the only natively-supported way to have one self-hosted
 runner serve many repos, use org-level secrets/variables, and use runner
-groups with allowlists. Free. ~5 minutes. Preserves all repo URLs and
-stars. Detailed pros/cons in this conversation (the message that
-accompanied this file).
+groups with allowlists. Free. Preserves all repo URLs and stars.
 
-GitHub UI (logged in as `FlexNetOS`):
+**Important:** GitHub deprecated the direct "Transform account into
+organization" option on January 12, 2026. The new process requires
+renaming your personal account first, then creating an organization with
+the original username, and finally moving repositories.
 
-1. **Settings → Account → Transform this account** → *Convert into an
-   organization*.
-2. Pick a **new personal account** to take ownership (creates one if you
-   don't have a personal account already linked).
+### Step 1 — Rename the personal account
+
+1. Go to https://github.com/settings/admin (while logged in as `FlexNetOS`)
+2. Under **Change username**, pick a new name (e.g., `drdave-flexnetos`)
+3. Confirm the rename. This frees up `FlexNetOS` as an organization name.
+
+> **Note:** Your existing `gh` CLI auth and repo URLs will follow the
+> rename. The `.github` repo temporarily lives at the new username until
+> you move it in Step 3.
+
+### Step 2 — Create the `FlexNetOS` organization
+
+1. Go to https://github.com/account/organizations/new?plan=free
+2. Organization name: `FlexNetOS`
 3. Choose the **Free** plan.
-4. Confirm transformation. GitHub does the swap atomically; repo URLs do
-   not change.
+4. Complete setup.
+
+### Step 3 — Move repositories to the organization
+
+1. Go to https://github.com/settings/organizations
+2. Under **Move to an organization**, click **Move work to an organization**
+3. Select all repositories you want to transfer (at minimum, include `.github`)
+4. Target organization: `FlexNetOS`
+5. Confirm the move.
+
+### Step 4 — Update local tooling
+
+```bash
+# Re-authenticate gh CLI if token is stale after the rename
+gh auth status
+# If needed:
+# gh auth login
+
+# Update the origin remote if it still points at the old username
+cd /home/drdave/_work/repos/my-github
+git remote set-url origin https://github.com/FlexNetOS/.github.git
+git remote -v  # verify
+```
 
 **Verify after:**
 
 - `gh api orgs/FlexNetOS` returns `200 OK` (not `404`)
 - Repository URLs `https://github.com/FlexNetOS/<repo>` still resolve
+- You can see the `FlexNetOS` org in the GitHub UI with your repos inside it
 
 ---
 
