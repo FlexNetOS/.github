@@ -1,0 +1,79 @@
+# =============================================================================
+# FlexNetOS repo-local toolchain manifest
+# =============================================================================
+# Goal: every tool used by local verification and CI should eventually be either
+# a submodule under tools/, a committed repo asset, or a generated binary built
+# from an included source submodule.
+# =============================================================================
+
+- name: python
+  path: repos/external/cpython
+  url: https://github.com/python/cpython
+  branch: main
+  kind: source-submodule
+  status: planned
+  purpose: Run repo-local standard-library verification scripts without relying on a system Python.
+  latest_stable_policy: Track latest stable CPython release branch once materialized.
+
+- name: actionlint
+  path: tools/actionlint
+  url: https://github.com/rhysd/actionlint
+  branch: main
+  kind: source-submodule
+  status: planned
+  purpose: Lint GitHub Actions workflows from repo-local source/binary instead of curl-installing.
+  latest_stable_policy: Track latest stable release; update source when GitHub runner runtime changes.
+
+- name: markdownlint-cli2
+  path: tools/markdownlint-cli2
+  url: https://github.com/DavidAnson/markdownlint-cli2
+  branch: main
+  kind: source-submodule
+  status: planned
+  purpose: Full Markdown lint parity when the repo-local Python checker is not enough.
+  latest_stable_policy: Track latest stable Node runtime support; fork/update if pinned to a legacy Node.
+
+- name: gitleaks
+  path: tools/gitleaks
+  url: https://github.com/gitleaks/gitleaks
+  branch: main
+  kind: source-submodule
+  status: planned
+  purpose: Secret scanning without paid GitHub Action wrapper or runtime release download.
+  latest_stable_policy: Track latest stable release source/binary with checksum.
+
+- name: trivy
+  path: tools/trivy
+  url: https://github.com/aquasecurity/trivy
+  branch: main
+  kind: source-submodule
+  status: planned
+  purpose: Filesystem and IaC scanning from repo-local source/binary instead of remote action.
+  latest_stable_policy: Track latest stable release source/binary with checksum.
+
+- name: node
+  path: tools/node
+  url: https://github.com/nodejs/node
+  branch: main
+  kind: source-submodule
+  status: planned
+  purpose: Latest stable Node runtime for tools that truly need Node.
+  latest_stable_policy: No legacy Node pinning; update dependent tools to current stable.
+
+- name: bun
+  path: tools/bun
+  url: https://github.com/oven-sh/bun
+  branch: main
+  kind: source-submodule
+  status: planned
+  purpose: Bun runtime/package manager for caller repos that use Bun.
+  latest_stable_policy: Track latest stable release source/binary with checksum.
+
+- name: uv
+  path: tools/uv
+  url: https://github.com/astral-sh/uv
+  branch: main
+  kind: source-submodule
+  status: planned
+  purpose: Python package/tool runner for caller repos while CPython hermetic path is built.
+  latest_stable_policy: Track latest stable release source/binary with checksum.

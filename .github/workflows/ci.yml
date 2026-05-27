@@ -22,45 +22,14 @@ jobs:
     secrets: inherit
 
   manifest-validate:
-    name: Validate repos/MANIFEST.yaml
+    name: Validate manifests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq \
-            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-      - name: Manifest is valid YAML
-        run: yq '.' repos/MANIFEST.yaml > /dev/null
-      - name: Every entry has required fields
-        run: |
-          count=$(yq '. | length' repos/MANIFEST.yaml)
-          for i in $(seq 0 $((count - 1))); do
-            for f in path url branch; do
-              v=$(yq ".[$i].$f" repos/MANIFEST.yaml)
-              if [[ "$v" == "null" || -z "$v" ]]; then
-                echo "::error::manifest entry $i missing required field: $f"
-                exit 1
-              fi
-            done
-          done
-          echo "OK: $count entries validated"
-      - name: Paths are unique
-        run: |
-          dupes=$(yq '.[].path' repos/MANIFEST.yaml | sort | uniq -d)
-          if [[ -n "$dupes" ]]; then
-            echo "::error::duplicate paths in manifest:"
-            echo "$dupes"
-            exit 1
-          fi
-      - name: URLs use https://github.com/
-        run: |
-          bad=$(yq '.[].url' repos/MANIFEST.yaml | grep -v '^https://github.com/' || true)
-          if [[ -n "$bad" ]]; then
-            echo "::warning::non-github URLs found (not an error, just an FYI):"
-            echo "$bad"
-          fi
+      - name: Validate repo manifest
+        run: python3 scripts/verify-manifest.py repos/MANIFEST.yaml
+      - name: Validate tool manifest
+        run: python3 scripts/verify-manifest.py tools/MANIFEST.yaml
 
   actionlint:
     name: actionlint .github/workflows
@@ -77,16 +46,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 'lts/*'
-      - run: |
-          npx -y markdownlint-cli2 \
-            "**/*.md" \
-            "!.omc/**" \
-            "!repos/**" \
-            "!wiki/raw/**" \
-            "!node_modules/**"
+      - run: python3 scripts/verify-markdown.py .
+
+  hermetic-audit:
+    name: Hermetic dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: python3 scripts/hermetic-audit.py .
 
   security:
     needs: lint

@@ -9,6 +9,7 @@ Per-project docs live in each project's own `docs/`, not here.
 | [`directory-layout.md`](directory-layout.md) | Where forks, read-only clones, and first-party projects live on disk. The `repos/{owned,forked,external}/` convention and how it maps to [`../repos/MANIFEST.yaml`](../repos/MANIFEST.yaml). |
 | [`self-hosted-runner.md`](self-hosted-runner.md) | Self-hosted runner safety, untrusted-PR risk, label discipline, and the ephemeral-runner migration path. Required reading before touching anything in [`../runner/`](../runner/). |
 | [`automation.md`](automation.md) | The scheduled workflows (submodule bump, secrets rotate, wiki lint) and how their outputs flow back to the maintainer. |
+| [`hermetic-toolchain.md`](hermetic-toolchain.md) | The fresh-OS/zip-extract toolchain doctrine, current Phase 1 conversion, and remaining non-hermetic dependency debt. |
 | [`org-setup.md`](org-setup.md) | One-time playbook for the user→organization conversion: org rulesets, Discussions, runner groups, org secrets, CODEOWNERS audit, private vulnerability reporting. Runs after the maintainer flips `FlexNetOS` from user account to org. |
 
 ## When to add a doc here
