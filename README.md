@@ -130,6 +130,10 @@ questions across FlexNetOS repos. Link to them from any repo's README:
 - **[Self-hosted runner safety](docs/self-hosted-runner.md)** — current
   inventory, untrusted-PR risk, label discipline, and the ephemeral-runner
   migration path.
+- **[Submodule vision](docs/submodule-vision.md)** — ASCII diagrams for the
+  umbrella/submodule graph, nested repo plugins, and storage model.
+- **[Linked submodule workflows](docs/linked-submodule-workflows.md)** — how
+  parent workflows can dispatch child and nested submodule automation.
 
 ## Local development for this repo
 

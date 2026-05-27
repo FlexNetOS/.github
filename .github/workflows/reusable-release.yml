@@ -1,13 +1,12 @@
 name: Reusable Release
 
-# Release dispatcher backed by release-please (or semantic-release). On
-# merge to the release branch, computes the next semver bump from
-# Conventional Commit history, opens or updates a release PR, and on
-# merge of that PR cuts a tag + GitHub Release.
+# Release dispatcher backed by release-please (default) or
+# semantic-release. On push to the release branch, computes the next
+# semver bump from Conventional Commit history, opens or updates a
+# release PR, and on merge of that PR cuts a tag + GitHub Release.
 #
-# This body is a SCAFFOLD pending follow-on implementation work — it
-# ships the `workflow_call` shape, documented inputs, and a
-# least-privilege `permissions:` block per the README.
+# Default release-type is `release-please` — Google's release-please-action@v4.
+# Switch to `semantic-release` if a downstream repo needs that toolchain.
 
 on:
   workflow_call:
@@ -18,48 +17,102 @@ on:
         type: string
         default: 'release-please'
       release-branch:
-        description: 'Branch that triggers releases'
+        description: 'Branch that triggers releases (release-please uses this as target-branch)'
         required: false
         type: string
         default: 'main'
       package-name:
-        description: 'Name of the package being released (used for tag prefix)'
+        description: 'Name of the package being released (release-please tag prefix)'
         required: true
         type: string
-      changelog-types:
-        description: 'JSON array of Conventional Commit types that appear in the changelog'
+      release-please-config:
+        description: 'Path to a release-please-config.json (empty = inferred)'
         required: false
         type: string
-        default: '["feat","fix","perf","docs","build","ci","refactor","revert"]'
+        default: ''
+      release-please-manifest:
+        description: 'Path to a .release-please-manifest.json (empty = inferred)'
+        required: false
+        type: string
+        default: ''
+      semantic-release-extra-plugins:
+        description: 'Space-separated npm package names passed to semantic-release as extra plugins'
+        required: false
+        type: string
+        default: ''
     secrets:
       release-token:
-        description: 'Token with permission to push tags, releases, and the release PR (default: GITHUB_TOKEN)'
+        description: 'PAT or GitHub App token with permission to push tags, releases, and the release PR (default: GITHUB_TOKEN). Required if your branch protection blocks GITHUB_TOKEN from opening PRs.'
         required: false
+    outputs:
+      release-created:
+        description: 'true when a release was tagged this run'
+        value: ${{ jobs.release.outputs.release-created }}
+      tag-name:
+        description: 'The tag this run cut, e.g. v1.2.3 (empty if no release)'
+        value: ${{ jobs.release.outputs.tag-name }}
 
 permissions:
-  contents: write          # needed to push tags and create releases
-  pull-requests: write     # needed to open/update the release PR
-  issues: write            # needed to close issues from release notes
+  contents: write          # push tags + create releases
+  pull-requests: write     # open/update the release PR
+  issues: write            # close issues from release notes
 
 jobs:
   release:
     name: Release (${{ inputs.release-type }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      release-created: ${{ steps.rp.outputs.release_created || steps.sr.outputs.new_release_published || 'false' }}
+      tag-name: ${{ steps.rp.outputs.tag_name || format('v{0}', steps.sr.outputs.new_release_version) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0   # release tooling needs full history for changelog
 
-      - name: Release (scaffold)
+      - name: release-please
+        id: rp
+        if: inputs.release-type == 'release-please'
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.release-token || github.token }}
+          target-branch: ${{ inputs.release-branch }}
+          release-type: simple
+          package-name: ${{ inputs.package-name }}
+          config-file: ${{ inputs.release-please-config }}
+          manifest-file: ${{ inputs.release-please-manifest }}
+
+      - name: Move moving major tag
+        if: inputs.release-type == 'release-please' && steps.rp.outputs.release_created == 'true'
+        shell: bash
+        env:
+          NEW_TAG: ${{ steps.rp.outputs.tag_name }}
+          GH_TOKEN: ${{ secrets.release-token || github.token }}
         run: |
-          echo "::warning::reusable-release.yml is a scaffold."
-          echo "release-type: ${{ inputs.release-type }}"
-          echo "release-branch: ${{ inputs.release-branch }}"
-          echo "package-name: ${{ inputs.package-name }}"
-          echo "changelog-types: ${{ inputs.changelog-types }}"
-          echo ""
-          echo "Body to be filled in by follow-on work; will route to:"
-          echo "  release-please    -> googleapis/release-please-action@v4"
-          echo "  semantic-release  -> cycjimmy/semantic-release-action@v4"
+          # Extract major from vX.Y.Z and force-update vX to the new sha
+          major=$(echo "${NEW_TAG#v}" | cut -d. -f1)
+          if [[ -z "$major" ]]; then
+            echo "could not parse major from '$NEW_TAG'; skipping moving-tag update"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -f "v$major" "$NEW_TAG"
+          git push -f origin "v$major"
+          echo "moved tag v$major -> $NEW_TAG"
+
+      - name: Set up Node (semantic-release)
+        if: inputs.release-type == 'semantic-release'
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - name: semantic-release
+        id: sr
+        if: inputs.release-type == 'semantic-release'
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          extra_plugins: ${{ inputs.semantic-release-extra-plugins }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.release-token || github.token }}

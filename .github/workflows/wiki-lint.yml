@@ -17,7 +17,7 @@ jobs:
   structural-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: index.md exists and is non-empty
         run: |
@@ -51,7 +51,7 @@ jobs:
 
       - name: Open issue if broken links found
         if: steps.broken.outputs.broken != '0'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             await github.rest.issues.create({

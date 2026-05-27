@@ -25,7 +25,7 @@ jobs:
     name: Validate repos/MANIFEST.yaml
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install yq
         run: |
           sudo wget -qO /usr/local/bin/yq \
@@ -66,7 +66,7 @@ jobs:
     name: actionlint .github/workflows
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: raven-actions/actionlint@v2
         with:
           files: '.github/workflows/*.yml'
@@ -76,8 +76,8 @@ jobs:
     name: markdownlint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
       - run: |

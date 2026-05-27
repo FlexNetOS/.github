@@ -129,6 +129,6 @@ Next steps:
   2. If secrets/.gpg-id is still a placeholder, follow secrets/README.md
      to set up your GPG key and re-init the pass store.
   3. To use the self-hosted runner, run \`make runner.register MODE=org\`
-     (after FlexNetOS becomes an Organization — see Phase 0 D5 in the plan).
+     (after FlexNetOS becomes an Organization — see TODO 3 in USER.TODO.md).
   4. Run \`make verify\` to lint everything.
 EOF

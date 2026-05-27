@@ -1,12 +1,12 @@
 name: Reusable Test
 
 # Language-agnostic test dispatcher. Callers select the language flavor
-# via the `language` input; this workflow routes to the appropriate
-# test runner.
+# via the `language` input; this workflow installs the matching
+# toolchain and runs the matching test runner. Coverage upload is opt-in
+# via the `coverage` input.
 #
-# This body is a SCAFFOLD pending follow-on implementation work — it
-# ships the `workflow_call` shape, documented inputs, and a
-# least-privilege `permissions:` block per the README.
+# Mixed mode behaves the same as reusable-lint.yml: detected toolchains
+# run; pinning `language:` explicitly skips detection.
 
 on:
   workflow_call:
@@ -30,6 +30,11 @@ on:
         required: false
         type: number
         default: 0
+      extra-args:
+        description: 'Extra arguments appended to the test command'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -44,19 +49,89 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Test (scaffold)
+      - name: Set up Bun
+        if: inputs.language == 'bun' || inputs.language == 'mixed'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Set up Node
+        if: inputs.language == 'node' || inputs.language == 'mixed'
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: ${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != '' && 'npm' || '' }}
+
+      - name: Set up uv (Python)
+        if: inputs.language == 'python' || inputs.language == 'mixed'
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Rust
+        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        uses: Swatinem/rust-cache@v2
+
+      # --- per-language test ---
+      - name: Test (bun)
+        if: (inputs.language == 'bun' || inputs.language == 'mixed') && (hashFiles(format('{0}/bun.lock', inputs.working-directory)) != '' || hashFiles(format('{0}/bun.lockb', inputs.working-directory)) != '')
+        shell: bash
         run: |
-          echo "::warning::reusable-test.yml is a scaffold."
-          echo "language: ${{ inputs.language }}"
-          echo "coverage: ${{ inputs.coverage }}"
-          echo "coverage-threshold: ${{ inputs.coverage-threshold }}"
-          echo ""
-          echo "Body to be filled in by follow-on work; will route to:"
-          echo "  bun    -> bun test"
-          echo "  node   -> npm test"
-          echo "  python -> pytest"
-          echo "  rust   -> cargo nextest run --all-features"
-          echo "  mixed  -> all of the above for present languages"
-          echo "  none   -> no-op success"
+          bun install --frozen-lockfile
+          if [[ "${{ inputs.coverage }}" == "true" ]]; then
+            bun test --coverage ${{ inputs.extra-args }}
+          else
+            bun test ${{ inputs.extra-args }}
+          fi
+
+      - name: Test (node)
+        if: (inputs.language == 'node' || inputs.language == 'mixed') && hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != ''
+        shell: bash
+        run: |
+          npm ci
+          npm test -- ${{ inputs.extra-args }}
+
+      - name: Test (python)
+        if: (inputs.language == 'python' || inputs.language == 'mixed') && (hashFiles(format('{0}/pyproject.toml', inputs.working-directory)) != '' || hashFiles(format('{0}/setup.py', inputs.working-directory)) != '' || hashFiles(format('{0}/requirements.txt', inputs.working-directory)) != '')
+        shell: bash
+        run: |
+          if [[ -f pyproject.toml ]]; then
+            uv sync --all-extras --dev || uv sync || true
+          fi
+          if [[ "${{ inputs.coverage }}" == "true" ]]; then
+            uv tool install coverage
+            uv run -- coverage run -m pytest ${{ inputs.extra-args }}
+            uv run -- coverage xml -o coverage.xml
+            uv run -- coverage report --fail-under=${{ inputs.coverage-threshold }}
+          else
+            uv run -- pytest ${{ inputs.extra-args }}
+          fi
+
+      - name: Test (rust)
+        if: (inputs.language == 'rust' || inputs.language == 'mixed') && hashFiles(format('{0}/Cargo.toml', inputs.working-directory)) != ''
+        shell: bash
+        run: |
+          if cargo --list 2>/dev/null | grep -q nextest; then
+            cargo nextest run --all-features ${{ inputs.extra-args }}
+          else
+            cargo test --all-features ${{ inputs.extra-args }}
+          fi
+
+      # --- coverage artifact (best-effort, only if a coverage file shows up) ---
+      - name: Upload coverage artifact
+        if: inputs.coverage && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.run_id }}-${{ github.job }}
+          path: |
+            ${{ inputs.working-directory }}/coverage*
+            ${{ inputs.working-directory }}/target/coverage*
+            ${{ inputs.working-directory }}/.coverage
+          if-no-files-found: ignore
+          retention-days: 14
