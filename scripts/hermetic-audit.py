@@ -24,6 +24,7 @@ PATTERNS: tuple[tuple[str, str, re.Pattern[str]], ...] = (
 SCAN_GLOBS = (
     ".github/workflows/*.yml",
     "scripts/*.sh",
+    "runner/*.sh",
     "scripts/*.py",
     "Makefile",
 )

@@ -7,11 +7,12 @@
 # =============================================================================
 
 - name: python
-  path: repos/external/cpython
+  path: tools/cpython
   url: https://github.com/python/cpython
   branch: main
   kind: source-submodule
-  status: planned
+  partial_clone: "blob:none"
+  status: materialized
   purpose: Run repo-local standard-library verification scripts without relying on a system Python.
   latest_stable_policy: Track latest stable CPython release branch once materialized.
 
@@ -20,7 +21,8 @@
   url: https://github.com/rhysd/actionlint
   branch: main
   kind: source-submodule
-  status: planned
+  partial_clone: "blob:none"
+  status: materialized
   purpose: Lint GitHub Actions workflows from repo-local source/binary instead of curl-installing.
   latest_stable_policy: Track latest stable release; update source when GitHub runner runtime changes.
 
@@ -36,9 +38,10 @@
 - name: gitleaks
   path: tools/gitleaks
   url: https://github.com/gitleaks/gitleaks
-  branch: main
+  branch: master
   kind: source-submodule
-  status: planned
+  partial_clone: "blob:none"
+  status: materialized
   purpose: Secret scanning without paid GitHub Action wrapper or runtime release download.
   latest_stable_policy: Track latest stable release source/binary with checksum.
 
@@ -47,7 +50,8 @@
   url: https://github.com/aquasecurity/trivy
   branch: main
   kind: source-submodule
-  status: planned
+  partial_clone: "blob:none"
+  status: materialized
   purpose: Filesystem and IaC scanning from repo-local source/binary instead of remote action.
   latest_stable_policy: Track latest stable release source/binary with checksum.
 
@@ -56,7 +60,8 @@
   url: https://github.com/nodejs/node
   branch: main
   kind: source-submodule
-  status: planned
+  partial_clone: "blob:none"
+  status: materialized
   purpose: Latest stable Node runtime for tools that truly need Node.
   latest_stable_policy: No legacy Node pinning; update dependent tools to current stable.
 
@@ -65,7 +70,8 @@
   url: https://github.com/oven-sh/bun
   branch: main
   kind: source-submodule
-  status: planned
+  partial_clone: "blob:none"
+  status: materialized
   purpose: Bun runtime/package manager for caller repos that use Bun.
   latest_stable_policy: Track latest stable release source/binary with checksum.
 
@@ -74,6 +80,7 @@
   url: https://github.com/astral-sh/uv
   branch: main
   kind: source-submodule
-  status: planned
+  partial_clone: "blob:none"
+  status: materialized
   purpose: Python package/tool runner for caller repos while CPython hermetic path is built.
   latest_stable_policy: Track latest stable release source/binary with checksum.

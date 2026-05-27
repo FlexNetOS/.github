@@ -39,7 +39,7 @@ warn(){ printf '  \033[33m!\033[0m %s\n' "$*"; }
 say "Toolchain check"
 # -----------------------------------------------------------------------------
 required=(git bash)
-optional=(mise gh gpg pass direnv age yq actionlint bunx jq)
+optional=(mise gh gpg pass direnv age actionlint bunx jq)
 
 missing_required=()
 for t in "${required[@]}"; do
@@ -72,7 +72,6 @@ if [[ ${#missing_optional[@]} -gt 0 ]]; then
   warn "  apt-get install -y git gpg pass direnv age jq"
   warn "  curl https://mise.run | sh           # mise (node/bun/uv)"
   warn "  gh auth login                        # gh CLI"
-  warn "  wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && chmod +x /usr/local/bin/yq"
   warn "  go install github.com/rhysd/actionlint/cmd/actionlint@latest"
 fi
 

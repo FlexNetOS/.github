@@ -17,6 +17,8 @@ ALLOWED_FENCE_PREFIXES = ("```", "~~~")
 
 def should_skip(path: Path) -> bool:
     rel = path.as_posix()
+    if rel.startswith("tools/") and rel != "tools/README.md":
+        return True
     if any(part in EXCLUDE_PARTS for part in path.parts):
         return True
     return any(rel.startswith(prefix) for prefix in EXCLUDE_PREFIXES)

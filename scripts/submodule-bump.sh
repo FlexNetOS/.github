@@ -37,19 +37,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-command -v yq >/dev/null 2>&1 || { echo "ERROR: yq required" >&2; exit 1; }
+command -v python3 >/dev/null 2>&1 || { echo "ERROR: python3 required" >&2; exit 1; }
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-count=$(yq '. | length' "$MANIFEST")
 changed=0
 unchanged=0
 errored=0
 
-for i in $(seq 0 $((count - 1))); do
-  path=$(yq ".[$i].path" "$MANIFEST")
-  branch=$(yq ".[$i].branch // \"main\"" "$MANIFEST")
-  groups=$(yq ".[$i].groups[]?" "$MANIFEST" 2>/dev/null | tr '\n' ' ')
+while IFS=$'\t' read -r path branch groups; do
 
   [[ -z "$path" || "$path" == "null" ]] && continue
   [[ ! -d "$path/.git" && ! -f "$path/.git" ]] && {
@@ -91,7 +87,7 @@ for i in $(seq 0 $((count - 1))); do
   else
     unchanged=$((unchanged + 1))
   fi
-done
+done < <(python3 scripts/manifest-query.py "$MANIFEST" --fields path,branch,groups)
 
 echo
 echo "Summary: $changed bumped · $unchanged unchanged · $errored errored"

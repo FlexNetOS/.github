@@ -36,20 +36,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-command -v yq >/dev/null 2>&1 || { echo "ERROR: yq required" >&2; exit 1; }
+command -v python3 >/dev/null 2>&1 || { echo "ERROR: python3 required" >&2; exit 1; }
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-count=$(yq '. | length' "$MANIFEST")
 synced=0
 conflicts=0
 nochange=0
 
-for i in $(seq 0 $((count - 1))); do
-  path=$(yq ".[$i].path" "$MANIFEST")
-  url=$(yq ".[$i].url" "$MANIFEST")
-  upstream=$(yq ".[$i].upstream // \"\"" "$MANIFEST")
-  branch=$(yq ".[$i].branch // \"main\"" "$MANIFEST")
+while IFS=$'\t' read -r path url upstream branch; do
 
   [[ -z "$path" || "$path" == "null" ]] && continue
   [[ -z "$upstream" ]] && continue
@@ -100,7 +95,7 @@ for i in $(seq 0 $((count - 1))); do
     echo "    # resolve conflicts, then: git add . && git commit"
     conflicts=$((conflicts + 1))
   fi
-done
+done < <(python3 scripts/manifest-query.py "$MANIFEST" --fields path,url,upstream,branch)
 
 echo
 echo "Summary: $synced merged · $nochange already-current · $conflicts conflicts"

@@ -32,7 +32,23 @@ This phase replaces simple verifier dependencies with repo-local scripts:
 These scripts use Python standard library only. Python itself is still a host dependency
 until the CPython/toolchain submodule path is materialized.
 
-## Remaining debt after Phase 1
+## Phase 2: remove yq from submodule automation and seed tool sources
+
+This phase adds `scripts/manifest-query.py`, a small shell-friendly TSV query
+surface for the same manifest subset validated by `scripts/verify-manifest.py`.
+It replaces yq in:
+
+- `scripts/submodule-add-all.sh`
+- `scripts/submodule-bump.sh`
+- `scripts/submodule-sync-upstream.sh`
+- `runner/ephemeral-spawn.sh`
+- `.github/workflows/reusable-submodule-bump.yml`
+
+It also materializes shallow source submodules for the first repo-local toolchain
+seeds: actionlint, gitleaks, Trivy, Node, Bun, uv, and CPython. These are source
+pins, not yet runnable hermetic binaries.
+
+## Remaining debt after Phase 2
 
 Known non-hermetic surfaces that still need conversion:
 
@@ -42,8 +58,8 @@ Known non-hermetic surfaces that still need conversion:
   caller repositories.
 - `scripts/bootstrap.sh` still needs a follow-up mode that locates repo-local tools before
   checking the host.
-- The manifest describes many submodules, but `.gitmodules` is not yet materialized in
-  this checkout.
+- Tool source submodules are now present, but wrappers/builds/checksummed binaries still
+  need to be added before CI can execute them without setup actions or downloads.
 
 ## Conversion rule
 
