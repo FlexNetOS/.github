@@ -57,7 +57,7 @@ jobs:
 
       - name: Set up Node
         if: inputs.language == 'node' || inputs.language == 'mixed'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: ${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != '' && 'npm' || '' }}

@@ -51,7 +51,7 @@ jobs:
 
       - name: Open issue if broken links found
         if: steps.broken.outputs.broken != '0'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             await github.rest.issues.create({
