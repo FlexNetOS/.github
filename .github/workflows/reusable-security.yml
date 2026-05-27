@@ -95,10 +95,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          severity="$(printf '%s' "${{ inputs.fail-on-severity }}" | tr '[:lower:]' '[:upper:]')"
           tools/bin/trivy fs \
             --format sarif \
             --output trivy-fs.sarif \
-            --severity "${{ inputs.fail-on-severity }},CRITICAL" \
+            --severity "$severity,CRITICAL" \
             --ignore-unfixed \
             --exit-code 1 \
             "${{ inputs.working-directory }}"
@@ -108,10 +109,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          severity="$(printf '%s' "${{ inputs.fail-on-severity }}" | tr '[:lower:]' '[:upper:]')"
           tools/bin/trivy config \
             --format sarif \
             --output trivy-config.sarif \
-            --severity "${{ inputs.fail-on-severity }},CRITICAL" \
+            --severity "$severity,CRITICAL" \
             --exit-code 0 \
             "${{ inputs.working-directory }}"
 
