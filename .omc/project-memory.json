@@ -9,8 +9,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": null,
-    "testCommand": null,
+    "buildCommand": "rtk git commit -m \"$(cat <<'EOF'\nci: fill reusable workflow bodies (lint/test/build/security/release)\n\nReplace the placeholder echo bodies with working implementations. Each\nworkflow installs the matching toolchain conditionally on the `language`\ninput and gates work behind lockfile/manifest existence checks so the\nsame workflow is usable from any downstream FlexNetOS repo.\n\nreusable-lint.yml:\n- bun/node/python/rust toolchain setup conditional on language input\n- markdown lint (markdownlint-cli2) and actionlint always when present\n- per-language linters: bun/npm `lint` script, ruff+black, cargo fmt\n  --check + clippy (with `-D warnings` when fail-on-warning=true)\n- mixed mode runs every detected toolchain; pin language explicitly to\n  skip detection\n\nreusable-test.yml:\n- bun test / npm test / pytest (via uv) / cargo nextest (fallback to\n  cargo test if nextest missing)\n- coverage opt-in via `coverage` input; threshold enforced by\n  coverage CLI; artifacts uploaded best-effort with retention 14 days\n- extra-args input for passing flags to the test runner\n\nreusable-build.yml:\n- bun run build / npm run build / uv build / cargo build (release or\n  debug profile)\n- artifact upload only when artifact-name is non-empty, retention 30\n  days, error if no files match\n\nreusable-security.yml:\n- matrix-prep job converts comma-separated `languages` input into a\n  JSON matrix via jq (GHA has no string replace function)\n- CodeQL init + autobuild + analyze with security-and-quality query\n  suite, SARIF uploaded to the Security tab\n- Trivy fs scan (blocks on the severity threshold) + Trivy IaC scan\n  (reports but never blocks); both SARIFs uploaded\n- Gitleaks over full history (fetch-depth: 0)\n\nreusable-release.yml:\n- release-please default; semantic-release alternative selectable\n- outputs `release-created` and `tag-name` so callers can chain\n- moving-major-tag job: when release-please tags vX.Y.Z, force-push\n  the vX tag to the new commit (this is the only force-push the repo\n  policy permits)\n- optional `release-token` secret for branch-protection bypass\n\nAll five pass actionlint clean. ci.yml's existing calls to\nreusable-lint (language=mixed) and reusable-security (languages=\njavascript,python) remain compatible — no caller-side change needed.\n\nreusable-secrets.yml and reusable-submodule-bump.yml are unchanged this\nPR; the former depends on USER.TODO §4 (real GPG keys), the latter\nalready has a working body.\n\nCo-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>\nEOF\n)\" 2>&1 | tail -5",
+    "testCommand": "rtk git commit -m \"$(cat <<'EOF'\nci: fill reusable workflow bodies (lint/test/build/security/release)\n\nReplace the placeholder echo bodies with working implementations. Each\nworkflow installs the matching toolchain conditionally on the `language`\ninput and gates work behind lockfile/manifest existence checks so the\nsame workflow is usable from any downstream FlexNetOS repo.\n\nreusable-lint.yml:\n- bun/node/python/rust toolchain setup conditional on language input\n- markdown lint (markdownlint-cli2) and actionlint always when present\n- per-language linters: bun/npm `lint` script, ruff+black, cargo fmt\n  --check + clippy (with `-D warnings` when fail-on-warning=true)\n- mixed mode runs every detected toolchain; pin language explicitly to\n  skip detection\n\nreusable-test.yml:\n- bun test / npm test / pytest (via uv) / cargo nextest (fallback to\n  cargo test if nextest missing)\n- coverage opt-in via `coverage` input; threshold enforced by\n  coverage CLI; artifacts uploaded best-effort with retention 14 days\n- extra-args input for passing flags to the test runner\n\nreusable-build.yml:\n- bun run build / npm run build / uv build / cargo build (release or\n  debug profile)\n- artifact upload only when artifact-name is non-empty, retention 30\n  days, error if no files match\n\nreusable-security.yml:\n- matrix-prep job converts comma-separated `languages` input into a\n  JSON matrix via jq (GHA has no string replace function)\n- CodeQL init + autobuild + analyze with security-and-quality query\n  suite, SARIF uploaded to the Security tab\n- Trivy fs scan (blocks on the severity threshold) + Trivy IaC scan\n  (reports but never blocks); both SARIFs uploaded\n- Gitleaks over full history (fetch-depth: 0)\n\nreusable-release.yml:\n- release-please default; semantic-release alternative selectable\n- outputs `release-created` and `tag-name` so callers can chain\n- moving-major-tag job: when release-please tags vX.Y.Z, force-push\n  the vX tag to the new commit (this is the only force-push the repo\n  policy permits)\n- optional `release-token` secret for branch-protection bypass\n\nAll five pass actionlint clean. ci.yml's existing calls to\nreusable-lint (language=mixed) and reusable-security (languages=\njavascript,python) remain compatible — no caller-side change needed.\n\nreusable-secrets.yml and reusable-submodule-bump.yml are unchanged this\nPR; the former depends on USER.TODO §4 (real GPG keys), the latter\nalready has a working body.\n\nCo-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>\nEOF\n)\" 2>&1 | tail -5",
     "lintCommand": null,
     "devCommand": null,
     "scripts": {}
@@ -31,15 +31,15 @@
   "directoryMap": {},
   "hotPaths": [
     {
-      "path": "wiki/index.md",
-      "accessCount": 2,
-      "lastAccessed": 1779673466951,
+      "path": "README.md",
+      "accessCount": 5,
+      "lastAccessed": 1779834575533,
       "type": "file"
     },
     {
-      "path": "README.md",
+      "path": "wiki/index.md",
       "accessCount": 2,
-      "lastAccessed": 1779828850961,
+      "lastAccessed": 1779673466951,
       "type": "file"
     },
     {
@@ -58,6 +58,12 @@
       "path": "repos/MANIFEST.yaml",
       "accessCount": 2,
       "lastAccessed": 1779828853278,
+      "type": "file"
+    },
+    {
+      "path": "docs/org-setup.md",
+      "accessCount": 2,
+      "lastAccessed": 1779834753628,
       "type": "file"
     },
     {
@@ -298,6 +304,30 @@
       "path": "profile/README.md",
       "accessCount": 1,
       "lastAccessed": 1779828852020,
+      "type": "file"
+    },
+    {
+      "path": "VISION.md",
+      "accessCount": 1,
+      "lastAccessed": 1779834466379,
+      "type": "file"
+    },
+    {
+      "path": "MAINTAINERS.md",
+      "accessCount": 1,
+      "lastAccessed": 1779834475500,
+      "type": "file"
+    },
+    {
+      "path": "RELEASING.md",
+      "accessCount": 1,
+      "lastAccessed": 1779834494328,
+      "type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1779834505162,
       "type": "file"
     }
   ],
