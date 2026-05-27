@@ -92,26 +92,28 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Run Trivy filesystem scan
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          scan-type: 'fs'
-          scan-ref: ${{ inputs.working-directory }}
-          format: 'sarif'
-          output: 'trivy-fs.sarif'
-          severity: ${{ inputs.fail-on-severity }},CRITICAL
-          ignore-unfixed: true
-          exit-code: '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          tools/bin/trivy fs \
+            --format sarif \
+            --output trivy-fs.sarif \
+            --severity "${{ inputs.fail-on-severity }},CRITICAL" \
+            --ignore-unfixed \
+            --exit-code 1 \
+            "${{ inputs.working-directory }}"
 
       - name: Run Trivy IaC scan
         if: always()
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          scan-type: 'config'
-          scan-ref: ${{ inputs.working-directory }}
-          format: 'sarif'
-          output: 'trivy-config.sarif'
-          severity: ${{ inputs.fail-on-severity }},CRITICAL
-          exit-code: '0'   # IaC findings reported, never block
+        shell: bash
+        run: |
+          set -euo pipefail
+          tools/bin/trivy config \
+            --format sarif \
+            --output trivy-config.sarif \
+            --severity "${{ inputs.fail-on-severity }},CRITICAL" \
+            --exit-code 0 \
+            "${{ inputs.working-directory }}"
 
       - name: Upload Trivy filesystem SARIF
         if: always() && hashFiles('trivy-fs.sarif') != ''
@@ -137,16 +139,6 @@ jobs:
         with:
           fetch-depth: 1   # tree scan only; no paid Gitleaks action/license required
 
-      - name: Install Gitleaks
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="8.29.1"
-          archive="gitleaks_${version}_linux_x64.tar.gz"
-          curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/v${version}/${archive}" -o "$archive"
-          tar -xzf "$archive" gitleaks
-          sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
-
       - name: Run Gitleaks
         shell: bash
         env:
@@ -157,4 +149,4 @@ jobs:
           if [[ -n "$GITLEAKS_CONFIG" ]]; then
             args+=(--config "$GITLEAKS_CONFIG")
           fi
-          gitleaks "${args[@]}"
+          tools/bin/gitleaks "${args[@]}"

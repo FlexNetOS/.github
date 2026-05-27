@@ -119,10 +119,14 @@ jobs:
         if: inputs.language != 'none' && hashFiles(format('{0}/.github/workflows/*.yml', inputs.working-directory)) != ''
         shell: bash
         run: |
-          bash <(curl --silent --location \
-            https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) \
-            >/dev/null
-          ./actionlint -color
+          if [[ -x tools/bin/actionlint ]]; then
+            tools/bin/actionlint .github/workflows/*.yml
+          elif command -v actionlint >/dev/null 2>&1; then
+            actionlint .github/workflows/*.yml
+          else
+            echo "No repo-local tools/bin/actionlint and no host actionlint available" >&2
+            exit 1
+          fi
 
       # --- per-language lint ---
       - name: Lint (bun)

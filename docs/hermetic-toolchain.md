@@ -48,18 +48,41 @@ It also materializes shallow source submodules for the first repo-local toolchai
 seeds: actionlint, gitleaks, Trivy, Node, Bun, uv, and CPython. These are source
 pins, not yet runnable hermetic binaries.
 
-## Remaining debt after Phase 2
+## Phase 3: repo-local wrappers for pinned security/lint binaries
+
+This phase adds `tools/assets.json` and `scripts/toolchain.py` as the first
+pinned binary materialization path. The committed JSON records release URLs,
+versions, and SHA-256 checksums for Linux x64 archives. Generated archives and
+extracted binaries live under `tools/.cache/` and are verified before every first
+use.
+
+Repo-local wrappers now exist for:
+
+- `tools/bin/actionlint`
+- `tools/bin/gitleaks`
+- `tools/bin/trivy`
+
+`Makefile`, self-CI actionlint, reusable actionlint, reusable Gitleaks, and
+reusable Trivy now call those wrappers instead of installing tools globally or
+using remote action wrappers for those scanners.
+
+## Remaining debt after Phase 3
 
 Known non-hermetic surfaces that still need conversion:
 
-- GitHub-hosted actions such as `actions/checkout`, `actions/setup-node`, CodeQL, Trivy,
-  and upload-artifact execute remote action bundles.
-- Reusable language workflows still use setup actions and language package managers for
-  caller repositories.
-- `scripts/bootstrap.sh` still needs a follow-up mode that locates repo-local tools before
-  checking the host.
-- Tool source submodules are now present, but wrappers/builds/checksummed binaries still
-  need to be added before CI can execute them without setup actions or downloads.
+- GitHub-hosted actions such as `actions/checkout`, CodeQL, and upload-artifact
+  still execute remote action bundles.
+- Reusable language workflows still use setup actions and language package
+  managers for caller repositories that actually contain Node, Bun, Python, or
+  Rust projects.
+- `scripts/toolchain.py` still performs a network fetch when a pinned archive is
+  absent from `tools/.cache/`; this is checksum-verified but not yet a fully
+  offline zip-extract path.
+- Trivy may still download/update its vulnerability database at runtime unless a
+  runner cache or repo-owned DB mirror is added.
+- CPython, Node, Bun, and uv source submodules are present, but executable
+  wrappers/build outputs still need to be added before those runtimes are truly
+  repo-local.
 
 ## Conversion rule
 

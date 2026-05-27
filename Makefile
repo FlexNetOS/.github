@@ -25,12 +25,15 @@ bootstrap: ## Idempotent setup: tools check, submodules init, secrets unlock
 	@scripts/bootstrap.sh
 
 .PHONY: verify
-verify: verify.actionlint verify.markdown verify.manifest verify.tools verify.hermetic ## Run every local verification
+verify: verify.tool-assets verify.actionlint verify.markdown verify.manifest verify.tools verify.hermetic ## Run every local verification
 
 .PHONY: verify.actionlint
 verify.actionlint: ## Lint .github/workflows/*.yml
-	@command -v actionlint >/dev/null 2>&1 || { echo "actionlint not installed — see github.com/rhysd/actionlint"; exit 1; }
-	actionlint .github/workflows/*.yml
+	@tools/bin/actionlint .github/workflows/*.yml
+
+.PHONY: verify.tool-assets
+verify.tool-assets: ## Validate pinned repo-local tool asset manifest
+	@python3 scripts/toolchain.py validate
 
 .PHONY: verify.markdown
 verify.markdown: ## Lint all markdown except submodules/raw

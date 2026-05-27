@@ -19,6 +19,7 @@ PATTERNS: tuple[tuple[str, str, re.Pattern[str]], ...] = (
     ("package-manager", "package manager resolves deps at runtime", re.compile(r"\b(npx|npm ci|npm install|bunx|bun install|uv tool install|pip install|cargo install|go install)\b")),
     ("latest-pin", "uses moving latest/lts pin", re.compile(r"\b(latest|lts/\*)\b")),
     ("global-tool-check", "checks host PATH instead of repo-local tool first", re.compile(r"command -v\s+")),
+    ("python-network", "Python code opens network URLs", re.compile(r"urllib\.request\.urlopen|requests\.get")),
 )
 
 SCAN_GLOBS = (
@@ -26,6 +27,7 @@ SCAN_GLOBS = (
     "scripts/*.sh",
     "runner/*.sh",
     "scripts/*.py",
+    "tools/bin/*",
     "Makefile",
 )
 
@@ -38,6 +40,10 @@ ALLOWLIST = {
     ("scripts/hermetic-audit.py", "package-manager"),
     ("scripts/hermetic-audit.py", "latest-pin"),
     ("scripts/hermetic-audit.py", "global-tool-check"),
+    ("scripts/hermetic-audit.py", "python-network"),
+    # The pinned tool materializer performs checksum-verified downloads when
+    # tools/.cache is missing; this is tracked debt in docs/hermetic-toolchain.md.
+    ("scripts/toolchain.py", "python-network"),
     # The Markdown verifier documents the package-manager tools it replaces.
     ("scripts/verify-markdown.py", "package-manager"),
 }

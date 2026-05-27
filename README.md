@@ -141,11 +141,11 @@ questions across FlexNetOS repos. Link to them from any repo's README:
 git clone https://github.com/FlexNetOS/.github.git
 cd .github
 
-# Lint workflows (requires actionlint — see https://github.com/rhysd/actionlint)
-actionlint .github/workflows/*.yml
+# Lint workflows (uses pinned repo-local actionlint wrapper)
+tools/bin/actionlint .github/workflows/*.yml
 
 # Lint markdown (no install needed)
-bunx markdownlint-cli2 "**/*.md" "!.omc/**"
+python3 scripts/verify-markdown.py .
 ```
 
 The `main` branch is protected: PR with one approval, linear history, no

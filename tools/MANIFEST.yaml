@@ -23,6 +23,7 @@
   kind: source-submodule
   partial_clone: "blob:none"
   status: materialized
+  binary_asset: tools/assets.json#tools.actionlint
   purpose: Lint GitHub Actions workflows from repo-local source/binary instead of curl-installing.
   latest_stable_policy: Track latest stable release; update source when GitHub runner runtime changes.
 
@@ -42,6 +43,7 @@
   kind: source-submodule
   partial_clone: "blob:none"
   status: materialized
+  binary_asset: tools/assets.json#tools.gitleaks
   purpose: Secret scanning without paid GitHub Action wrapper or runtime release download.
   latest_stable_policy: Track latest stable release source/binary with checksum.
 
@@ -52,6 +54,7 @@
   kind: source-submodule
   partial_clone: "blob:none"
   status: materialized
+  binary_asset: tools/assets.json#tools.trivy
   purpose: Filesystem and IaC scanning from repo-local source/binary instead of remote action.
   latest_stable_policy: Track latest stable release source/binary with checksum.
 

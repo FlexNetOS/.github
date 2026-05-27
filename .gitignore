@@ -25,6 +25,7 @@ Thumbs.db
 
 # --- Local lint / cache directories ---
 .cache/
+tools/.cache/
 node_modules/
 .markdownlint-cli2.cache/
 
