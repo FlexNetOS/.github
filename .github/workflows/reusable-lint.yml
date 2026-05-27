@@ -71,13 +71,13 @@ jobs:
           enable-cache: false
 
       - name: Set up Rust
-        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        if: (inputs.language == 'rust' || inputs.language == 'mixed') && hashFiles(format('{0}/Cargo.toml', inputs.working-directory)) != ''
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
 
       - name: Rust cache
-        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        if: (inputs.language == 'rust' || inputs.language == 'mixed') && hashFiles(format('{0}/Cargo.toml', inputs.working-directory)) != ''
         uses: Swatinem/rust-cache@v2
 
       # --- markdown lint (always, unless language=none) ---
@@ -92,6 +92,8 @@ jobs:
             "!**/dist/**" \
             "!**/build/**" \
             "!.omc/**" \
+            "!repos/**" \
+            "!wiki/raw/**" \
             "!_work/**"
 
       # --- workflow lint (always when workflows present) ---
