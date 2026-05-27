@@ -67,7 +67,7 @@ the original username, and finally moving repositories.
 
 ### Step 1 — Rename the personal account
 
-1. Go to https://github.com/settings/admin (while logged in as `FlexNetOS`)
+1. Go to <https://github.com/settings/admin> (while logged in as `FlexNetOS`)
 2. Under **Change username**, pick a new name (e.g., `drdave-flexnetos`)
 3. Confirm the rename. This frees up `FlexNetOS` as an organization name.
 
@@ -77,14 +77,14 @@ the original username, and finally moving repositories.
 
 ### Step 2 — Create the `FlexNetOS` organization
 
-1. Go to https://github.com/account/organizations/new?plan=free
+1. Go to <https://github.com/account/organizations/new?plan=free>
 2. Organization name: `FlexNetOS`
 3. Choose the **Free** plan.
 4. Complete setup.
 
 ### Step 3 — Move repositories to the organization
 
-1. Go to https://github.com/settings/organizations
+1. Go to <https://github.com/settings/organizations>
 2. Under **Move to an organization**, click **Move work to an organization**
 3. Select all repositories you want to transfer (at minimum, include `.github`)
 4. Target organization: `FlexNetOS`
