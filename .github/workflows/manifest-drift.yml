@@ -1,0 +1,101 @@
+name: manifest-drift
+
+# Report-only umbrella-hygiene checks (additive reconciliation tooling).
+# Every job is `continue-on-error: true` for its first green cycle, then is
+# promoted to STRICT on `main` per the "CI invariant promotion pattern" in
+# CONTRIBUTING.md (canonical reference: the upgrade-auto-review workflow).
+# See data/brain-data/research/my-github-reconciliation.md.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  claude-dir-check:
+    name: No PascalCase Claude/ directories
+    runs-on: ubuntu-latest
+    continue-on-error: true   # REPORT_ONLY: promote to STRICT after one green cycle
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+      - name: Assert only lowercase .claude/ exists
+        run: |
+          MATCHES=$(find . -maxdepth 6 -type d -name 'Claude' \
+            -not -path '*/node_modules/*' -not -path '*/.git/*' || true)
+          if [ -n "$MATCHES" ]; then
+            echo "ERROR: PascalCase Claude/ directories found:"
+            echo "$MATCHES"
+            echo "Use lowercase .claude/ instead. See CONTRIBUTING.md -> Directory conventions for AI tooling."
+            exit 1
+          fi
+          echo "claude-dir check: OK"
+
+  claude-settings-doctor:
+    name: .claude/settings.json hygiene (report-only)
+    runs-on: ubuntu-latest
+    continue-on-error: true   # REPORT_ONLY
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Scan for hardcoded user-home paths / aspirational keys
+        run: |
+          if [ -f scripts/claude-settings-doctor.js ]; then
+            node scripts/claude-settings-doctor.js --check --allowlist .claude/.doctor-allowlist
+          else
+            echo "scripts/claude-settings-doctor.js not present yet — skipping"
+          fi
+
+  check-user-todo-step5:
+    name: USER.TODO#5 fork-dependency tags (informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true   # REPORT_ONLY / informational
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+      - name: List untagged FlexNetOS-fork MANIFEST entries
+        run: |
+          if [ -f scripts/check-user-todo-step5.sh ]; then
+            bash scripts/check-user-todo-step5.sh --list-untagged || true
+          else
+            echo "scripts/check-user-todo-step5.sh not present yet — skipping"
+          fi
+
+  open-questions-lint:
+    name: open-questions.md schema
+    runs-on: ubuntu-latest
+    continue-on-error: true   # REPORT_ONLY
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate open-questions schema
+        run: |
+          if [ -f scripts/open-questions-lint.js ] && [ -f .omc/plans/open-questions.md ]; then
+            node scripts/open-questions-lint.js .omc/plans/open-questions.md
+          else
+            echo "open-questions linter or log not present yet — skipping"
+          fi
+
+  submodules-materialize-noop:
+    name: MANIFEST/.gitmodules lockfile (deferred)
+    runs-on: ubuntu-latest
+    continue-on-error: true   # REPORT_ONLY placeholder
+    steps:
+      - name: Note deferred lockfile pattern
+        run: |
+          echo "deferred: the MANIFEST->.gitmodules lockfile (materialize) pattern is not yet adopted."
+          echo "It refactors the working submodules.add machinery and is tracked in"
+          echo ".omc/plans/open-questions.md (G4/G5)."

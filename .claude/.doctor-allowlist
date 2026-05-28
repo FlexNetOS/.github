@@ -1,0 +1,12 @@
+# claude-settings-doctor allowlist (plaintext, one pattern per line)
+# ---------------------------------------------------------------------------
+# Policy: portable home references ($HOME/, ${HOME}/, ~/, %APPDATA%) are flagged
+# by claude-settings-doctor.js UNLESS a line here matches (substring) the value.
+# Hardcoded ABSOLUTE user paths (/home/<user>/..., /Users/..., /root/...,
+# C:\Users\...) are NEVER allowed and CANNOT be allowlisted — fix those instead.
+#
+# Lines beginning with '#' are comments. Empty lines are ignored.
+# Add the smallest substring that uniquely identifies a legitimately portable
+# reference, e.g. (commented example below; uncomment + adapt if truly needed):
+#
+# ~/.config/flexnetos/
