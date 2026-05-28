@@ -127,6 +127,14 @@ def repo_checks() -> list[Check]:
     ]:
         checks.append(exists(path, "secrets", name))
 
+    for path, name in [
+        ("github-app/manifest.example.json", "manifest template"),
+        ("github-app/permissions.md", "permission matrix"),
+        ("scripts/github-app-token-smoke.py", "installation-token smoke test"),
+        ("docs/templates/github-app/token-smoke.md", "activation template"),
+    ]:
+        checks.append(exists(path, "github-app", name))
+
     for manifest in ["repos/MANIFEST.yaml", "tools/MANIFEST.yaml"]:
         ok, detail = load_yamlish_manifest(ROOT / manifest)
         area = "subrepos" if manifest.startswith("repos/") else "tools"

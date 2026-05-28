@@ -8,7 +8,10 @@ This is the Ralph loop queue for turning `FlexNetOS/.github` into the full GitHu
 | --- | --- | --- | --- |
 | #12 | `infra/network-slim-control-plane` | Network/Slim control-plane architecture | `main` |
 | #13 | `feat/vaultwarden-github-secrets` | Vaultwarden/Bitwarden to GitHub secret sync | `infra/network-slim-control-plane` |
-| next | `feat/github-control-plane-doctor` | One-command read-only GitHub control-plane doctor and roadmap | `feat/vaultwarden-github-secrets` |
+| #14 | `feat/github-control-plane-doctor` | One-command read-only GitHub control-plane doctor and roadmap | `feat/vaultwarden-github-secrets` |
+| #15 | `feat/local-runner-lifecycle` | Local runner lifecycle hardening | `feat/github-control-plane-doctor` |
+| #16 | `feat/upgrade-auto-review-merge` | Upgrade-only auto-review/auto-merge gate | `feat/local-runner-lifecycle` |
+| next | `feat/github-app-automation` | GitHub App manifest, permissions, and token smoke test | `feat/upgrade-auto-review-merge` |
 
 ## Definition of done
 
@@ -92,14 +95,23 @@ Acceptance:
 
 ### Phase 4 — GitHub App automation
 
-Status: not yet materialized.
+Status: materialized in the GitHub App automation PR.
+
+Existing surfaces:
+
+- `github-app/manifest.example.json`
+- `github-app/permissions.md`
+- `scripts/github-app-token-smoke.py`
+- `docs/templates/github-app/token-smoke.md`
+- `make github-app.smoke`
 
 Next deliverables:
 
-- [ ] Add `github-app/manifest.example.json`.
-- [ ] Add `github-app/permissions.md` least-privilege matrix.
-- [ ] Add `scripts/github-app-token-smoke.py` that reads env vars, signs a JWT, requests an installation token, masks output, and fails closed without secrets.
-- [ ] Document Vaultwarden storage for the app private key and webhook secret.
+- [x] Add `github-app/manifest.example.json`.
+- [x] Add `github-app/permissions.md` least-privilege matrix.
+- [x] Add `scripts/github-app-token-smoke.py` that reads env vars, signs a JWT, requests an installation token, masks output, and fails closed without secrets.
+- [x] Document Vaultwarden storage for the app private key and webhook secret.
+- [ ] Add workflow examples that consume an app-derived token only on trusted paths.
 
 Acceptance:
 

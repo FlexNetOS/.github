@@ -148,6 +148,13 @@ github.doctor: ## Read-only audit of runner/workflows/app/submodules/secrets/pol
 	if [ "$${STRICT:-0}" = "1" ]; then args="$$args --strict"; fi; \
 	python3 scripts/github-doctor.py $$args
 
+.PHONY: github-app.smoke
+github-app.smoke: ## Smoke-test GitHub App installation token exchange (DRY_RUN=1 skips API)
+	@args=""; \
+	if [ "$${DRY_RUN:-0}" = "1" ]; then args="$$args --dry-run"; fi; \
+	if [ "$${JSON:-0}" = "1" ]; then args="$$args --json"; fi; \
+	python3 scripts/github-app-token-smoke.py $$args
+
 # ---------- Runner ----------
 .PHONY: runner.install
 runner.install: ## Dry-run install/upgrade self-hosted runner binary (CONFIRM=1 DRY_RUN=0 to apply)
