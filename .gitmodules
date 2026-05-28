@@ -33,3 +33,6 @@
 	url = https://github.com/astral-sh/uv
 	branch = main
 	shallow = true
+[submodule "network/slim"]
+	path = network/slim
+	url = https://github.com/nilbuild/slim.git

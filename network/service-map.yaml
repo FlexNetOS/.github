@@ -1,0 +1,67 @@
+# Local service-name registry for LifeOS / Hermes / Aster.
+# Domains use .test for local-only development names.
+# Keep this file free of secrets and machine-specific certificate state.
+
+services:
+  workspace:
+    domain: workspace.test
+    target: http://127.0.0.1:3090
+    owner: hermes-workspace
+    health: http://127.0.0.1:3090/api/connection-status
+    rollout: first
+    notes: Hermes Workspace UI. First safe Slim mapping target.
+
+  hermes-gateway:
+    domain: hermes.test
+    target: http://127.0.0.1:8642
+    owner: hermes-agent
+    health: http://127.0.0.1:8642/health
+    rollout: after-workspace
+    notes: Hermes Agent gateway API.
+
+  hermes-dashboard:
+    domain: dashboard.test
+    target: http://127.0.0.1:9119
+    owner: hermes-agent
+    health: http://127.0.0.1:9119/api/status
+    rollout: after-workspace
+    notes: Hermes Agent dashboard.
+
+  firecrawl:
+    domain: firecrawl.test
+    target: http://127.0.0.1:3002
+    owner: firecrawl
+    health: http://127.0.0.1:3002/
+    rollout: later
+    notes: Firecrawl API; verify Docker bind and auth expectations before exposing.
+
+  gitnexus:
+    domain: gitnexus.test
+    target: http://127.0.0.1:4747
+    owner: memory-mesh
+    health: http://127.0.0.1:4747/
+    rollout: later
+    notes: Memory mesh GitNexus server.
+
+  memory-feeder:
+    domain: memory-feeder.test
+    target: http://127.0.0.1:4748
+    owner: memory-mesh
+    rollout: later
+    notes: Memory mesh GitNexus feeder.
+
+  ollama:
+    domain: ollama.test
+    target: http://127.0.0.1:11434
+    owner: local-models
+    health: http://127.0.0.1:11434/
+    rollout: later
+    notes: Local model API.
+
+  router:
+    domain: router.test
+    target: http://127.0.0.1:20128
+    owner: 9router
+    health: http://127.0.0.1:20128/v1/models
+    rollout: later
+    notes: 9Router gateway; verify listener before routing.
