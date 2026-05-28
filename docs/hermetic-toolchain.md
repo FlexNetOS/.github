@@ -15,6 +15,8 @@ This repo is moving toward a "fresh OS zip extract" operating model:
 - `tools/MANIFEST.yaml` records every repo-local tool source, pin, platform, and purpose.
 - `scripts/` invokes tools through repo-relative paths, never global PATH discovery first.
 - CI workflows call the same repo-local scripts that humans run locally.
+- Shared product repos, including LifeOS, consume toolchains through manifests and
+  wrappers instead of each repo privately owning duplicate Rust/Node/Vite/Vue installs.
 - Legacy runtime requirements, such as Node 20-only actions, are treated as bugs in the
   tool. The fix is to update, fork, vendor, or submodule the tool so it runs on the
   latest stable runtime.

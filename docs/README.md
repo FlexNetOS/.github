@@ -10,6 +10,7 @@ Per-project docs live in each project's own `docs/`, not here.
 | [`self-hosted-runner.md`](self-hosted-runner.md) | Self-hosted runner safety, untrusted-PR risk, label discipline, and the ephemeral-runner migration path. Required reading before touching anything in [`../runner/`](../runner/). |
 | [`automation.md`](automation.md) | The scheduled workflows (submodule bump, secrets rotate, wiki lint) and how their outputs flow back to the maintainer. |
 | [`hermetic-toolchain.md`](hermetic-toolchain.md) | The fresh-OS/zip-extract toolchain doctrine, current Phase 1 conversion, and remaining non-hermetic dependency debt. |
+| [`lifeos-system-architecture.md`](lifeos-system-architecture.md) | Locks the LifeOS-as-frontend decision: LifeOS is a separate product repo that consumes shared FlexNetOS toolchains instead of owning system-wide dependencies. |
 | [`org-setup.md`](org-setup.md) | One-time playbook for the user→organization conversion: org rulesets, Discussions, runner groups, org secrets, CODEOWNERS audit, private vulnerability reporting. Runs after the maintainer flips `FlexNetOS` from user account to org. |
 
 ## When to add a doc here

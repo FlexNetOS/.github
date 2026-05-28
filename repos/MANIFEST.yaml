@@ -223,6 +223,11 @@
 # -----------------------------------------------------------------------------
 # NOT SUBMODULED (intentionally) — documentation for future-me
 # -----------------------------------------------------------------------------
+# - lifeos/                         Local nested LifeOS repo currently has no configured remote.
+#                                    Do not commit it into this control-plane repo as plain files.
+#                                    Canonical target is a separate LifeOS product repo mounted
+#                                    as a first-party frontend subrepo/submodule once its remote
+#                                    and path are chosen. See docs/lifeos-system-architecture.md.
 # - ai-top/                          4.8 GB of NVIDIA driver/install reference PDFs and videos.
 #                                    Not a repo. Lives in sibling workspace, gitignored here.
 # - actions-runner/                  Self-hosted GH Actions runner install — see ../runner/.

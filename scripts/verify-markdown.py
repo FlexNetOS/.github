@@ -10,8 +10,8 @@ import fnmatch
 import sys
 from pathlib import Path
 
-EXCLUDE_PARTS = {".git", ".omc", "node_modules", "repos"}
-EXCLUDE_PREFIXES = ("wiki/raw/",)
+EXCLUDE_PARTS = {".git", ".omc", "lifeos", "node_modules", "repos"}
+EXCLUDE_PREFIXES = ("wiki/raw/", "network/slim/")
 ALLOWED_FENCE_PREFIXES = ("```", "~~~")
 
 
