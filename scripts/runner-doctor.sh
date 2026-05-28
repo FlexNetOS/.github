@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # Read-only local runner doctor for FlexNetOS.
 # Prints readiness signals and never mutates GitHub, systemd, or the host.
+#
+# Part of the FlexNetOS additive reconciliation tooling. The original doctor
+# covered host/tools/gh-API/systemd readiness; scripts/github-doctor.py does NOT
+# do `ps`-based runner-process detection, so the "process state" section below
+# (added by the reconciliation pass) is genuinely additive: it lists running
+# self-hosted runner processes via `ps`/`pgrep`, cross-references the on-disk
+# registration state under $RUNNER_HOME, and flags orphans (running, not
+# registered here) and ghosts (registered here, not running). Read-only.
 set -Eeuo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -148,6 +156,59 @@ if [[ -f "$ROOT/runner/.env.example" ]]; then
   add_check runner OK "env template" "runner/.env.example present"
 else
   add_check runner FAIL "env template" "runner/.env.example missing"
+fi
+
+# --- process state: ps-based orphan/ghost detection (reconciliation addition) -
+# Running runner processes (the GitHub Actions runner is `Runner.Listener`,
+# launched via the runner's `run.sh`). Match on the process command line.
+runner_pids=""
+# `|| true` guards: pgrep/grep exit 1 when nothing matches, which would abort
+# under `set -Eeuo pipefail`. No-match is a normal, expected state here.
+if have pgrep; then
+  runner_pids="$( { pgrep -af 'Runner\.Listener|actions-runner/run\.sh|/run\.sh --startuptype' 2>/dev/null || true; } | awk '{print $1}' | sort -u | tr '\n' ' ')"
+elif have ps; then
+  runner_pids="$( { ps -eo pid,args 2>/dev/null || true; } | { grep -E 'Runner\.Listener|actions-runner/run\.sh' || true; } | { grep -v grep || true; } | awk '{print $1}' | sort -u | tr '\n' ' ')"
+fi
+runner_pids="${runner_pids%% }"
+run_count=0
+if [[ -n "$runner_pids" ]]; then
+  run_count="$(printf '%s\n' $runner_pids | grep -c . || true)"
+fi
+
+# On-disk registration state: a configured runner has a .runner file under
+# $RUNNER_HOME (written by config.sh).
+registered=0
+if [[ -f "$RUNNER_HOME/.runner" ]]; then
+  registered=1
+  reg_name="$(python3 - "$RUNNER_HOME/.runner" <<'PY' 2>/dev/null || true
+import json,sys
+try:
+    print(json.load(open(sys.argv[1])).get("agentName",""))
+except Exception:
+    print("")
+PY
+)"
+  add_check process OK "registration" "registered here: $RUNNER_HOME/.runner${reg_name:+ (agent=$reg_name)}"
+else
+  add_check process WARN "registration" "no .runner under $RUNNER_HOME (not configured on this host)"
+fi
+
+if [[ "$run_count" -gt 0 ]]; then
+  add_check process OK "running processes" "$run_count Runner.Listener/run.sh process(es): pids $runner_pids"
+else
+  add_check process WARN "running processes" "no Runner.Listener/run.sh process detected via ps/pgrep"
+fi
+
+# Orphan: a process is running but this host has no registration record.
+if [[ "$run_count" -gt 0 && "$registered" -eq 0 ]]; then
+  add_check process FAIL "orphan process" "runner process(es) running (pids $runner_pids) with no $RUNNER_HOME/.runner registration"
+fi
+# Ghost: registered here but nothing is running.
+if [[ "$registered" -eq 1 && "$run_count" -eq 0 ]]; then
+  add_check process WARN "ghost registration" "registered under $RUNNER_HOME but no runner process is currently running"
+fi
+if [[ "$run_count" -gt 0 && "$registered" -eq 1 ]]; then
+  add_check process OK "process/registration match" "running and registered on this host"
 fi
 
 if [[ "$JSON" -eq 1 ]]; then

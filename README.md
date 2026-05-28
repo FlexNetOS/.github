@@ -157,4 +157,19 @@ commit-message convention and branch policy.
 See [`MAINTAINERS.md`](MAINTAINERS.md) for ownership, contact, and
 escalation. Private vulnerability reports go through [`SECURITY.md`](SECURITY.md).
 
+## Repo navigation
+
+| File / dir | Purpose |
+| --- | --- |
+| [`USER.TODO.md`](USER.TODO.md) | Human-only actions (push, fork, auth, billing, policy). The agent appends only to its `## Agent-flagged user actions` section. |
+| [`TODO.md`](TODO.md) | Agent-side working TODO list. |
+| [`CHANGELOG.md`](CHANGELOG.md) | Applied changes (Keep-a-Changelog `[Unreleased]`). |
+| [`SESSIONS.md`](SESSIONS.md) | Per-session log (`SESSION-YYYY-MM-DD-NNN`). |
+| [`data/brain-data/research/`](data/brain-data/research/) | Research dossiers and consensus plans (e.g. `my-github-reconciliation.md`). |
+
+## Operational gates
+
+- **Phase 6 (GitHub App automation) must not proceed** until the Vaultwarden→GitHub
+  secret sync is green on `main` for at least **3 consecutive runs**.
+
 [gh-default-community-files]: https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file

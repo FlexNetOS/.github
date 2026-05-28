@@ -163,6 +163,24 @@ github-app.smoke: ## Smoke-test GitHub App installation token exchange (DRY_RUN=
 	if [ "$${JSON:-0}" = "1" ]; then args="$$args --json"; fi; \
 	python3 scripts/github-app-token-smoke.py $$args
 
+# ---------- Reconciliation tooling (additive; see data/brain-data/research/my-github-reconciliation.md) ----------
+.PHONY: claude.doctor
+claude.doctor: ## Report hardcoded user-home paths / aspirational keys in .claude/settings.json (read-only)
+	node scripts/claude-settings-doctor.js --check --allowlist .claude/.doctor-allowlist
+
+.PHONY: config.doctor
+config.doctor: ## claude.doctor plus a note on the .codex allowlist (read-only)
+	@node scripts/claude-settings-doctor.js --check --allowlist .claude/.doctor-allowlist; \
+	echo "config.doctor: .codex user-global references governed by .codex/.doctor-allowlist"
+
+.PHONY: check.user-todo-5
+check.user-todo-5: ## List MANIFEST entries tagged / untagged for USER.TODO#5 (read-only)
+	@bash scripts/check-user-todo-step5.sh --list-untagged
+
+.PHONY: open-questions.lint
+open-questions.lint: ## Validate .omc/plans/open-questions.md schema
+	node scripts/open-questions-lint.js .omc/plans/open-questions.md
+
 # ---------- Runner ----------
 .PHONY: runner.install
 runner.install: ## Dry-run install/upgrade self-hosted runner binary (CONFIRM=1 DRY_RUN=0 to apply)

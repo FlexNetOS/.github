@@ -1,0 +1,11 @@
+# claude-settings-doctor allowlist for the .codex/ tree (TOML).
+# ---------------------------------------------------------------------------
+# Policy mirrors .claude/.doctor-allowlist: portable home references are allowed
+# only when an [[allow]] entry's `pattern` matches (substring) the value.
+# Hardcoded absolute user paths are NEVER allowlisted.
+# Parsed by claude-settings-doctor.js via --allowlist / --toml-allowlist
+# (it reads `pattern = "..."` lines and ignores other TOML structure).
+
+[[allow]]
+pattern = "~/.codex/config.toml"
+rationale = ".codex/AGENTS.md specifies user-specific MCPs live in ~/.codex/config.toml"
