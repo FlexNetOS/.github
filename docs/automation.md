@@ -35,6 +35,7 @@ make verify                actionlint + markdownlint + manifest validation
 make submodules.{init,add,bump,sync-upstream,status}
 make wiki.{ingest,query,lint}      prints LLM prompts to run
 make secrets.{unlock,rotate,mirror-bws}
+make secrets.sync-github-bw DRY_RUN=1
 make runner.{install,register,status}
 make ci.local WORKFLOW=ci.yml
 make clean

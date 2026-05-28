@@ -65,6 +65,9 @@ src-tauri/target/
 !secrets/.gpg-id*
 secrets/decrypted/
 secrets/scratch/
+# Local Bitwarden/Vaultwarden → GitHub mapping may reveal secret names/topology.
+secrets/github-secrets.tsv
+!secrets/github-secrets.tsv.example
 
 # --- Wiki: Obsidian local state, ingest scratch ---
 wiki/.obsidian/

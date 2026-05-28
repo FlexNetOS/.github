@@ -143,6 +143,24 @@
 # -----------------------------------------------------------------------------
 # EXTERNAL — clean upstream clones, read-only intent
 # -----------------------------------------------------------------------------
+- path: repos/external/vaultwarden
+  url: https://github.com/dani-garcia/vaultwarden
+  branch: main
+  toolchain: [rust, docker]
+  groups: [external, secrets, vault]
+  notes: |
+    Unofficial Bitwarden-compatible server for the FlexNetOS secrets vault UI/API.
+    Treat as a service source pin first; do not commit Vaultwarden runtime data,
+    admin tokens, database files, or attachments to this control-plane repo.
+
+- path: repos/external/bitwarden-clients
+  url: https://github.com/bitwarden/clients
+  branch: main
+  toolchain: [node, npm]
+  groups: [external, secrets, tools]
+  partial_clone: "blob:none"
+  notes: Source pin for the official Bitwarden CLI (`bw`) used by GitHub secret sync.
+
 - path: repos/external/chroma
   url: https://github.com/chroma-core/chroma
   branch: main

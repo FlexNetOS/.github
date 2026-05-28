@@ -127,3 +127,13 @@
   status: planned
   purpose: Shared desktop app runtime/tooling source for LifeOS and other Tauri-based FlexNetOS surfaces.
   latest_stable_policy: Track latest stable Tauri 2 release line; keep Rust/Node frontend wrappers current.
+
+- name: bitwarden-cli
+  path: tools/bitwarden-clients
+  url: https://github.com/bitwarden/clients
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Source pin for the Bitwarden CLI used to read Bitwarden/Vaultwarden vault items before syncing selected values into GitHub Actions secrets.
+  latest_stable_policy: Track latest stable Bitwarden CLI; prefer repo-local wrapper once the binary/source path is materialized.

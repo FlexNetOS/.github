@@ -133,6 +133,12 @@ secrets.mirror-bws: ## Mirror pass store to Bitwarden Secrets Manager (needs BWS
 	@PASSWORD_STORE_DIR="$$PWD/secrets/store" \
 	  scripts/secrets-mirror-to-bws.sh --project-id "$$PROJECT_ID"
 
+.PHONY: secrets.sync-github-bw
+secrets.sync-github-bw: ## Sync Bitwarden/Vaultwarden vault items to GitHub Actions secrets (MAP=, DRY_RUN=1)
+	@args="--map $${MAP:-secrets/github-secrets.tsv}"; \
+	if [ "$${DRY_RUN:-0}" = "1" ]; then args="$$args --dry-run"; fi; \
+	scripts/secrets-sync-github-from-bitwarden.sh $$args
+
 # ---------- Runner ----------
 
 .PHONY: runner.install
