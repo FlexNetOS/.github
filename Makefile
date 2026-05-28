@@ -139,8 +139,16 @@ secrets.sync-github-bw: ## Sync Bitwarden/Vaultwarden vault items to GitHub Acti
 	if [ "$${DRY_RUN:-0}" = "1" ]; then args="$$args --dry-run"; fi; \
 	scripts/secrets-sync-github-from-bitwarden.sh $$args
 
-# ---------- Runner ----------
+# ---------- GitHub control plane ----------
+.PHONY: github.doctor
+github.doctor: ## Read-only audit of runner/workflows/app/submodules/secrets/policy state
+	@args=""; \
+	if [ "$${OFFLINE:-0}" = "1" ]; then args="$$args --offline"; fi; \
+	if [ "$${JSON:-0}" = "1" ]; then args="$$args --json"; fi; \
+	if [ "$${STRICT:-0}" = "1" ]; then args="$$args --strict"; fi; \
+	python3 scripts/github-doctor.py $$args
 
+# ---------- Runner ----------
 .PHONY: runner.install
 runner.install: ## Install (or upgrade) the self-hosted runner binary
 	@runner/install.sh
