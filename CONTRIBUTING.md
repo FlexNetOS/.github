@@ -66,10 +66,10 @@ git clone https://github.com/FlexNetOS/.github.git
 cd .github
 
 # Lint workflows
-actionlint .github/workflows/*.yml
+tools/bin/actionlint .github/workflows/*.yml
 
 # Lint markdown
-bunx markdownlint-cli2 "**/*.md" "!.omc/**"
+python3 scripts/verify-markdown.py .
 ```
 
 ## Licence of contributions

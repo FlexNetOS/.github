@@ -2,7 +2,7 @@
 # Reads repos/MANIFEST.yaml and runs `git submodule add` for any entry not
 # yet present in .gitmodules. Idempotent. Safe to re-run.
 #
-# Requires: yq (mikefarah/yq v4+), git, gh (only if --create-missing is used).
+# Requires: git, python3, gh (only if --create-missing is used).
 
 set -euo pipefail
 
@@ -31,8 +31,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-command -v yq >/dev/null 2>&1 || { echo "ERROR: yq (mikefarah/yq v4+) not found" >&2; exit 1; }
 command -v git >/dev/null 2>&1 || { echo "ERROR: git not found" >&2; exit 1; }
+command -v python3 >/dev/null 2>&1 || { echo "ERROR: python3 not found" >&2; exit 1; }
 
 [[ -f "$MANIFEST" ]] || { echo "ERROR: manifest not found at $MANIFEST" >&2; exit 1; }
 
@@ -40,20 +40,16 @@ command -v git >/dev/null 2>&1 || { echo "ERROR: git not found" >&2; exit 1; }
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-count=$(yq '. | length' "$MANIFEST")
+count=$(python3 scripts/manifest-query.py "$MANIFEST" --count)
 added=0
 skipped=0
 errored=0
 
-for i in $(seq 0 $((count - 1))); do
-  path=$(yq ".[$i].path" "$MANIFEST")
-  url=$(yq ".[$i].url" "$MANIFEST")
-  branch=$(yq ".[$i].branch // \"main\"" "$MANIFEST")
-  partial=$(yq ".[$i].partial_clone // \"\"" "$MANIFEST")
+while IFS=$'\t' read -r path url branch partial; do
 
   if [[ -z "$path" || "$path" == "null" ]]; then continue; fi
   if [[ -z "$url"  || "$url"  == "null" ]]; then
-    echo "WARN: manifest entry $i has no url, skipping ($path)"
+    echo "WARN: manifest entry for $path has no url, skipping"
     continue
   fi
 
@@ -92,7 +88,7 @@ for i in $(seq 0 $((count - 1))); do
       errored=$((errored + 1))
     fi
   fi
-done
+done < <(python3 scripts/manifest-query.py "$MANIFEST" --fields path,url,branch,partial_clone)
 
 echo
 echo "Summary: $added added · $skipped already-present · $errored errored · $count total"

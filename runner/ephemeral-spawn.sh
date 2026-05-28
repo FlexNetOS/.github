@@ -23,12 +23,13 @@ if ! flock -n 9; then
 fi
 
 command -v gh >/dev/null 2>&1 || { echo "ERROR: gh CLI required" >&2; exit 1; }
-command -v yq >/dev/null 2>&1 || { echo "ERROR: yq required" >&2; exit 1; }
+command -v python3 >/dev/null 2>&1 || { echo "ERROR: python3 required" >&2; exit 1; }
 [[ -f "$MANIFEST" ]] || { echo "ERROR: manifest not found at $MANIFEST" >&2; exit 1; }
+[[ -f "$REPO_ROOT/scripts/manifest-query.py" ]] || { echo "ERROR: manifest-query.py not found under $REPO_ROOT/scripts" >&2; exit 1; }
 
 # Extract FlexNetOS repo names from MANIFEST (any path under owned/ or forked/)
-mapfile -t repos < <(yq '.[].url' "$MANIFEST" \
-  | grep -oE 'https://github\.com/FlexNetOS/[^"]+' \
+mapfile -t repos < <(python3 "$REPO_ROOT/scripts/manifest-query.py" "$MANIFEST" --fields url \
+  | grep -oE 'https://github\.com/FlexNetOS/[^[:space:]]+' \
   | sed 's|.*/||' | sort -u)
 
 [[ ${#repos[@]} -eq 0 ]] && { echo "INFO: no FlexNetOS repos in manifest"; exit 0; }

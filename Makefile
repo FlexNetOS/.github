@@ -25,23 +25,31 @@ bootstrap: ## Idempotent setup: tools check, submodules init, secrets unlock
 	@scripts/bootstrap.sh
 
 .PHONY: verify
-verify: verify.actionlint verify.markdown verify.manifest ## Run every local verification
+verify: verify.tool-assets verify.actionlint verify.markdown verify.manifest verify.tools verify.hermetic ## Run every local verification
 
 .PHONY: verify.actionlint
 verify.actionlint: ## Lint .github/workflows/*.yml
-	@command -v actionlint >/dev/null 2>&1 || { echo "actionlint not installed — see github.com/rhysd/actionlint"; exit 1; }
-	actionlint .github/workflows/*.yml
+	@tools/bin/actionlint .github/workflows/*.yml
+
+.PHONY: verify.tool-assets
+verify.tool-assets: ## Validate pinned repo-local tool asset manifest
+	@python3 scripts/toolchain.py validate
 
 .PHONY: verify.markdown
 verify.markdown: ## Lint all markdown except submodules/raw
-	@bunx --bun markdownlint-cli2 \
-	  "**/*.md" "!.omc/**" "!repos/**" "!wiki/raw/**" "!node_modules/**"
+	@python3 scripts/verify-markdown.py .
 
 .PHONY: verify.manifest
 verify.manifest: ## Validate repos/MANIFEST.yaml structure
-	@command -v yq >/dev/null 2>&1 || { echo "yq not installed (mikefarah/yq v4+)"; exit 1; }
-	@yq '.' repos/MANIFEST.yaml > /dev/null
-	@n=$$(yq '. | length' repos/MANIFEST.yaml); echo "OK: $$n manifest entries parse"
+	@python3 scripts/verify-manifest.py repos/MANIFEST.yaml
+
+.PHONY: verify.tools
+verify.tools: ## Validate tools/MANIFEST.yaml structure
+	@python3 scripts/verify-manifest.py tools/MANIFEST.yaml
+
+.PHONY: verify.hermetic
+verify.hermetic: ## Report non-hermetic workflow/script dependencies (advisory)
+	@python3 scripts/hermetic-audit.py .
 
 # ---------- Submodules ----------
 

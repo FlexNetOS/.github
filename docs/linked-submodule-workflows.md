@@ -97,12 +97,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq \
-            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-
       - name: Dispatch selected child repos
         env:
           GH_TOKEN: ${{ secrets.FLEXNETOS_BOT_TOKEN }}
@@ -111,8 +105,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          yq -r '.[] | select(.groups[]? == env(GROUP)) | .url' repos/MANIFEST.yaml |
-          while read -r url; do
+          python3 scripts/manifest-query.py repos/MANIFEST.yaml --fields url,groups |
+          while IFS=$'\t' read -r url groups; do
+            [[ " $groups " == *" $GROUP "* ]] || continue
             repo="${url#https://github.com/}"
             echo "Dispatching $COMMAND to $repo"
 
