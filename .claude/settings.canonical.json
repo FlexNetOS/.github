@@ -9,6 +9,23 @@
     "_note": "Include only umbrella-backed servers whose 'command' is repo-relative or resolved via PATH/env. Drop user-specific MCPs (those live in ~/.codex/config.toml or the user's global ~/.claude)."
   },
   "hooks": {
-    "_note": "Hook commands must be repo-relative (e.g. 'bash scripts/foo.sh' or 'node scripts/foo.js'). Commands referencing /home/<user>/.claude/hooks/... are user-global config that does not belong in the committed umbrella settings."
+    "_note": "Hook commands must be repo-relative (e.g. 'bash scripts/foo.sh' or 'node scripts/foo.js'). Commands referencing /home/<user>/.claude/hooks/... are user-global config that does not belong in the committed umbrella settings. The PostToolUse/PreToolUse entries below are the umbrella's OWN repo-relative hooks (scripts/hooks/*.sh) and should survive the gated trim of the live settings.json; the user-global hooks in the live file (ruvector/ccg/gitnexus/global/*) are drift to be dropped.",
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "bash scripts/hooks/actionlint-on-workflow-edit.sh", "timeout": 10000 }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "bash scripts/hooks/protect-secrets-store.sh", "timeout": 5000 },
+          { "type": "command", "command": "bash scripts/hooks/gitmodules-drift-guard.sh", "timeout": 5000 }
+        ]
+      }
+    ]
   }
 }

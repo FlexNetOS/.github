@@ -1,0 +1,16 @@
+{
+  "_README": "Project-scoped MCP servers for the FlexNetOS umbrella. Commands resolve via PATH/env; secrets come from the environment (never literals). See CONTRIBUTING 'Doctor allowlist policy' — no hardcoded user-home paths here.",
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}
