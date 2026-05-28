@@ -1,61 +1,93 @@
-# Directory layout for local checkouts
+# Directory layout — FlexNetOS umbrella (Model B)
 
-The on-disk convention for FlexNetOS contributors who keep many
-repositories cloned at once.
+All FlexNetOS repositories live as git submodules **inside** this umbrella
+repo (`FlexNetOS/.github`). Contributors clone the umbrella once and
+initialize the submodules they need. There are no separate sibling clones.
 
 ## The layout
 
 ```text
-$HOME/_work/repos/
-├── _forks/             # FlexNetOS-owned forks of third-party projects
-│   ├── ruvector/       # fork of ruvnet/RuVector
-│   ├── chroma/         # fork of chroma-core/chroma
-│   └── ...
-├── _firstparty/        # FlexNetOS-owned original projects (no upstream)
-│   ├── weftos/
-│   └── ...
-├── _readonly/          # third-party projects we clone but never modify
-│   ├── cpython/
-│   └── ...
-└── my-github/          # the FlexNetOS/.github community defaults repo
+~/workspace/my-github/            ← the FlexNetOS/.github checkout
+│
+├── repos/
+│   ├── owned/                    # FlexNetOS-original repos (no upstream)
+│   │   ├── ruvector/             ← git submodule → FlexNetOS/ruvector
+│   │   ├── ruOS/                 ← git submodule → FlexNetOS/ruOS
+│   │   ├── understand-anything/  ← …
+│   │   └── …
+│   │
+│   ├── forked/                   # FlexNetOS forks tracking a third-party upstream
+│   │   ├── n8n/                  ← git submodule → FlexNetOS/n8n (upstream: n8n-io/n8n)
+│   │   ├── rtk/                  ← git submodule → FlexNetOS/rtk
+│   │   └── …
+│   │
+│   └── external/                 # Read-only upstream references (no local patches)
+│       ├── cpython/              ← git submodule → python/cpython
+│       ├── chroma/               ← git submodule → chroma-core/chroma
+│       └── …
+│
+├── repos/MANIFEST.yaml           ← single source of truth for all submodule pointers
+├── .gitmodules                   ← generated from MANIFEST (keep in sync)
+│
+├── .github/workflows/            ← reusable CI templates consumed by downstream repos
+├── docs/                         ← this file and its siblings
+├── scripts/                      ← Makefile-backed operator scripts
+└── …
 ```
 
-## Why three lanes
+## Three lanes, one rule
 
-| Lane | Why it exists |
-| --- | --- |
-| `_forks/` | Needs upstream-tracking discipline (see [fork-workflow.md](fork-workflow.md)). Grouping them makes it obvious which directories require `git fetch upstream` in routine work. |
-| `_firstparty/` | No upstream to track — no second remote, no rebase dance. Distinct directory makes that obvious at a glance. |
-| `_readonly/` | Cloned for reference (reading source, running examples) but not for modification. Distinct directory prevents accidental commits and keeps `git status` quiet during global scans. |
+| Lane | What lives here | Fork required? |
+|------|----------------|----------------|
+| `repos/owned/` | FlexNetOS-original projects — no upstream to track | No — `gh repo create` |
+| `repos/forked/` | Third-party repos we patch and stay current with | Yes — after the research.pack gate |
+| `repos/external/` | Third-party repos we reference read-only | No — clone URL only |
+
+`repos/MANIFEST.yaml` is authoritative. `.gitmodules` mirrors it.
+Use `make submodules.add` (never `git submodule add` directly) to register a new entry.
+
+## Getting started locally
+
+```bash
+# Clone the umbrella
+git clone https://github.com/FlexNetOS/.github.git ~/workspace/my-github
+cd ~/workspace/my-github
+
+# Initialize all submodules (shallow, depth=1)
+make submodules.init
+
+# Or initialize a specific group only
+make submodules.init GROUP=core
+```
 
 ## Per-project conventions
 
-Inside each project, prefer per-project virtual environments and
-toolchain files rather than relying on host state:
+Each submodule keeps its own toolchain config. Prefer per-project environments
+rather than relying on host state:
 
 | Stack | Convention |
-| --- | --- |
-| Python | `.venv/` inside the project, created with `uv venv` or `python3 -m venv .venv`. |
-| Node | `node_modules/` inside the project; toolchain via [`mise`](https://mise.jdx.dev) per `~/.config/mise/config.toml`. |
-| Rust | per-project `target/` directory (the cargo default). |
+|-------|-----------|
+| Python | `.venv/` inside the submodule, created with `uv venv` or `python3 -m venv .venv`. |
+| Node | `node_modules/` inside the submodule; toolchain via [`mise`](https://mise.jdx.dev). |
+| Rust | Per-project `target/` directory (the cargo default). |
 
 Per-project files **must not** leak into `$HOME` or `~/.local/bin`.
-
-## What does NOT go in `$HOME/_work/repos/`
-
-- Generated artifacts you would `rm -rf` without thinking — those go in a per-project `target/`, `dist/`, `build/`, or `.cache/`.
-- Scratch experiments unrelated to any tracked repo — those go in `$HOME/_work/scratch/` or `$HOME/_work/personal/`.
-- Anything you would not commit. Lockfiles, package manifests, and CI configs are tracked; one-off `.env.local` is not.
 
 ## Devcontainer interaction
 
 The base devcontainer at `$HOME/.devcontainer/devcontainer.json` mounts
 the project directory, not all of `$HOME`. Files written outside the
 project tree are invisible inside the container — keep work inside the
-project root.
+submodule root.
+
+## What does NOT go in `repos/`
+
+- Generated artifacts (`target/`, `dist/`, `build/`, `.cache/`) — these live inside each submodule.
+- Scratch experiments unrelated to any tracked repo — `work/` or `personal/` scratch dirs.
+- Anything you would not commit. Lockfiles and CI configs are tracked; `.env.local` is not.
 
 ## See also
 
-- [`fork-workflow.md`](fork-workflow.md) — what `_forks/` requires.
-- [`self-hosted-runner.md`](self-hosted-runner.md) — where runner state
-  lives and why it isn't in `_work/`.
+- [`fork-workflow.md`](fork-workflow.md) — branch model and upstream-sync pattern for `forked/`.
+- [`submodule-vision.md`](submodule-vision.md) — why this structure beats a monorepo or `.gitignore` soup.
+- [`self-hosted-runner.md`](self-hosted-runner.md) — where runner state lives (outside `repos/`).

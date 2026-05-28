@@ -137,9 +137,23 @@ version. If it doesn't, that's a useful signal: upstream changed the
 patch in review, and we should adopt the upstream variant rather than
 re-applying ours.
 
+## Adopting a new upstream
+
+Choose the lane before you fork:
+
+| Case | Lane | First step |
+|------|------|------------|
+| FlexNetOS-original, no upstream | `repos/owned/` | `gh repo create FlexNetOS/<name>` |
+| Third-party we will patch and track | `repos/forked/` | Step 0 (`make research.pack`) → fill dossier → `gh repo fork` |
+| Third-party for reference only | `repos/external/` | No fork — add URL to MANIFEST as-is |
+
+The research-before-fork gate is mandatory for `repos/forked/` entries.
+See [`../CLAUDE.md`](../CLAUDE.md) for the full ritual and the
+`data/brain-data/research/` dossier schema.
+
 ## See also
 
-- [`directory-layout.md`](directory-layout.md) — where forks vs upstream
-  vs first-party live on disk.
+- [`directory-layout.md`](directory-layout.md) — umbrella layout and the
+  `repos/{owned,forked,external}/` submodule tree.
 - [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — commit conventions and
   branch policy.
