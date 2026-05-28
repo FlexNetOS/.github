@@ -5,6 +5,8 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this repo aims to adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once `v1.0.0` is cut (see `USER.TODO.md` step 10).
 
+**Ownership handoff (UA-2026-05-28-001):** This file is hand-maintained until `v1.0.0` is tagged. At that point, the operator renames `## [Unreleased]` below to `## [0.x.0-bootstrap] - <date>`, then activates `release.yml` (release-please). Release-please will manage `## [Unreleased]` and all version sections from that point forward, auto-generating entries from Conventional Commits. The bootstrap history below is preserved as a versioned section. The `release.yml` workflow is currently `workflow_dispatch`-only pending USER.TODO org/App setup — do not activate it before those gates pass.
+
 ---
 
 ## [Unreleased]

@@ -14,7 +14,7 @@
 
 - [x] **Review + merge PR #20** (additive reconciliation tooling: doctors, reversibility chain, report-only CI, docs). ✓ Merged 2026-05-28.
 - [x] After `manifest-drift.yml` runs green once on a PR, **promote its jobs REPORT_ONLY → STRICT** (remove `continue-on-error: true`) and create `.github/workflows/promote-strict.md` tracking which jobs are still report-only. ✓ Promoted `claude-dir-check` + `open-questions-lint` 2026-05-28; 3 jobs still REPORT_ONLY per `.github/workflows/promote-strict.md`.
-- [ ] Resolve **`UA-2026-05-28-001`** (hand-maintained `CHANGELOG.md` vs release-please) before `CHANGELOG.md` lands on `main`.
+- [x] Resolve **`UA-2026-05-28-001`** (hand-maintained `CHANGELOG.md` vs release-please). ✓ Resolved 2026-05-28: hand-maintained until `v1.0.0`; at tag-cut the operator renames `[Unreleased]` → `[0.x.0-bootstrap]` and activates release-please. Bootstrap history is preserved. Note added to CHANGELOG.md header.
 
 ## Pre-adoption dossier review gate (Phase 0 — GATED, human decision)
 
