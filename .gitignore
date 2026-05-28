@@ -76,5 +76,10 @@ runner/_work/
 runner/.runner
 runner/.credentials*
 
+# --- Local nested repos pending canonical submodule mount ---
+# LifeOS is a separate product repo; keep a local checkout from being committed
+# into this control-plane repo as plain files before its remote/path are chosen.
+lifeos/
+
 # --- ai-top reference materials live in the sibling workspace, never here ---
 ai-top/
