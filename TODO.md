@@ -12,8 +12,8 @@
 
 ## Next steps (immediate — post SESSION-005)
 
-- [ ] **Review + merge PR #20** (additive reconciliation tooling: doctors, reversibility chain, report-only CI, docs).
-- [ ] After `manifest-drift.yml` runs green once on a PR, **promote its jobs REPORT_ONLY → STRICT** (remove `continue-on-error: true`) and create `.github/workflows/promote-strict.md` tracking which jobs are still report-only.
+- [x] **Review + merge PR #20** (additive reconciliation tooling: doctors, reversibility chain, report-only CI, docs). ✓ Merged 2026-05-28.
+- [x] After `manifest-drift.yml` runs green once on a PR, **promote its jobs REPORT_ONLY → STRICT** (remove `continue-on-error: true`) and create `.github/workflows/promote-strict.md` tracking which jobs are still report-only. ✓ Promoted `claude-dir-check` + `open-questions-lint` 2026-05-28; 3 jobs still REPORT_ONLY per `.github/workflows/promote-strict.md`.
 - [ ] Resolve **`UA-2026-05-28-001`** (hand-maintained `CHANGELOG.md` vs release-please) before `CHANGELOG.md` lands on `main`.
 
 ## Pre-adoption dossier review gate (Phase 0 — GATED, human decision)
@@ -45,9 +45,9 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 
 ## Umbrella state fixes (deferred from 4-clone session)
 
-- [ ] **Rewrite `docs/directory-layout.md` to Model B.** Current doc describes a retired sibling-checkout pattern conflicting with the MANIFEST-based layout.
-- [ ] Append 5-line "Adopting a new upstream" pointer to `docs/fork-workflow.md` (owned vs already-forked vs needs-fork).
-- [ ] Verify `docs/submodule-vision.md` still consistent with Model B.
+- [x] **Rewrite `docs/directory-layout.md` to Model B.** ✓ Done 2026-05-28.
+- [x] Append 5-line "Adopting a new upstream" pointer to `docs/fork-workflow.md` (owned vs already-forked vs needs-fork). ✓ Done 2026-05-28.
+- [x] Verify `docs/submodule-vision.md` still consistent with Model B. ✓ Consistent — no changes needed.
 
 ## `.claude/settings.json` trim (G8 — tooling DONE, trim itself GATED)
 
@@ -70,14 +70,14 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 
 ## USER.TODO#5 sequencing (detector DONE; tags + 404-resilience remain)
 
-- [ ] Add `# depends-on: USER.TODO#5` comments to the 4 pending-fork MANIFEST entries (Archon, everything-claude-code, oh-my-claudecode, oh-my-pi) so `scripts/check-user-todo-step5.sh --list-tagged` surfaces them.
-- [ ] Refactor `scripts/submodule-add-all.sh` to be 404-resilient: tagged 404 → WARN exit 0; untagged 404 → ERROR exit 1.
+- [x] Add `# depends-on: USER.TODO#5` comments to the 4 pending-fork MANIFEST entries (Archon, everything-claude-code, oh-my-claudecode, oh-my-pi). ✓ Done 2026-05-28 — `check-user-todo-step5.sh --list-tagged` surfaces all 4.
+- [x] Refactor `scripts/submodule-add-all.sh` to be 404-resilient: tagged 404 → WARN exit 0; untagged 404 → ERROR exit 1. ✓ Done 2026-05-28.
 - [ ] **CRITICAL:** No `gh repo fork ... --org FlexNetOS` until the original-side cleanup is verified per-fork. See memory `feedback-fork-after-original-setup`.
 
 ## CI invariant promotion (workflow DONE; promotion remains)
 
-- [ ] Create `.github/workflows/promote-strict.md` (tracks which `manifest-drift.yml` jobs are still REPORT_ONLY).
-- [ ] After one green PR cycle each, flip jobs to STRICT (remove `continue-on-error`).
+- [x] Create `.github/workflows/promote-strict.md` (tracks which `manifest-drift.yml` jobs are still REPORT_ONLY). ✓ Done 2026-05-28.
+- [ ] After one green PR cycle each, flip remaining jobs to STRICT (remove `continue-on-error`). Remaining: `claude-settings-doctor` (fix G8 first), `check-user-todo-step5` (intentionally soft), `submodules-materialize-noop` (deferred). See `.github/workflows/promote-strict.md`.
 
 ## Reservations (carry-forward)
 

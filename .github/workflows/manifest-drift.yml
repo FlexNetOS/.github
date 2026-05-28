@@ -18,7 +18,7 @@ jobs:
   claude-dir-check:
     name: No PascalCase Claude/ directories
     runs-on: ubuntu-latest
-    continue-on-error: true   # REPORT_ONLY: promote to STRICT after one green cycle
+    # STRICT: promoted 2026-05-28 after one green cycle on feat/reconciliation-slice-tooling (run 26598828751)
     steps:
       - uses: actions/checkout@v6
         with:
@@ -73,7 +73,7 @@ jobs:
   open-questions-lint:
     name: open-questions.md schema
     runs-on: ubuntu-latest
-    continue-on-error: true   # REPORT_ONLY
+    # STRICT: promoted 2026-05-28 after one green cycle on feat/reconciliation-slice-tooling (run 26598828751)
     steps:
       - uses: actions/checkout@v6
         with:
