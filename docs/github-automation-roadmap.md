@@ -72,15 +72,17 @@ Acceptance:
 
 ### Phase 3 — Reusable workflows
 
-Status: present, needs deeper validation and caller examples.
+Status: present, with stacked-branch CI and an upgrade-only auto-review/auto-merge gate added.
 
-Existing surfaces include reusable lint, test, build, security, release, secrets, and submodule workflows under `.github/workflows/`.
+Existing surfaces include reusable lint, test, build, security, release, secrets, and submodule workflows under `.github/workflows/`, plus the metadata-only `auto-review-merge.yml` upgrade gate.
 
 Next deliverables:
 
 - [ ] Add caller examples for normal repos, submodule repos, and secrets-aware repos.
 - [ ] Add a workflow permission matrix documenting required `permissions:` and secrets per reusable workflow.
 - [ ] Add local `act --list` guidance or a repo-local wrapper that never requires secrets by default.
+- [x] Run CI on stacked PR branches (`branches: ['**']`) so every PR layer reports checks.
+- [x] Add same-repo upgrade-only auto-review/auto-merge gating that never checks out PR code.
 
 Acceptance:
 
