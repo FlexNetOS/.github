@@ -362,3 +362,82 @@ These run automatically — no human action unless they alert:
 - **Runner not picking up jobs:** check `sudo systemctl status 'actions.runner.*'`
   and the workflow's `runs-on:` matches every label the runner advertises
   (all four: `self-hosted, linux, x64, local`).
+
+---
+
+## Agent-flagged user actions
+
+> Append-only. The agent adds `UA-YYYY-MM-DD-NNN` items here when it needs a human
+> to decide or act on something it cannot do itself. The numbered sections above are
+> hand-authored by the maintainer and are never edited by the agent.
+
+### UA-2026-05-28-002 — Rotate Anthropic + OpenRouter API keys IMMEDIATELY (chat-transcript leak)
+
+- **Surfaced by:** `SESSION-2026-05-28-003`
+- **Blocks:** running `scripts/install-v5-architecture.sh` safely; any production use of `~/bifrost/.env`
+- **Why:** During SESSION-2026-05-28-003, both `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` were pasted by the user directly into the chat transcript so the agent could write `~/bifrost/.env` for the bifrost LLM gateway. The keys are now in the conversation history and any logs Claude Code retains. Treat both as compromised. The agent cannot rotate them — only the human key owner can.
+- **What to do:**
+  1. Go to `https://console.anthropic.com/settings/keys`, revoke the existing key, create a new one.
+  2. Go to `https://openrouter.ai/keys`, revoke the existing key, create a new one.
+  3. Update `~/bifrost/.env` with the new values (keep `chmod 600`).
+  4. If bifrost is already running, `docker compose -f ~/bifrost/docker-compose.yml restart`.
+- **How to verify done:** `curl -sS https://bifrost.test/v1/chat/completions -H "Content-Type: application/json" -d '{"model":"anthropic/claude-3-7-sonnet-latest","messages":[{"role":"user","content":"ping"}]}'` returns a 200 with a reply (requires the install script to have run).
+- **Status:** `open`
+
+---
+
+### UA-2026-05-28-003 — Move the v5 plan from `.omc/plans/` to `data/brain-data/research/` (convention violation)
+
+- **Surfaced by:** `SESSION-2026-05-28-003`
+- **Blocks:** clean compliance with the project research-location convention (`feedback-research-location` memory)
+- **Why:** SESSION-2026-05-28-003 produced a six-layer workstation-architecture plan and committed it to `.omc/plans/ralplan-browser-choice.md`. Per the project convention (`feedback-research-location.md`), research and plans MUST go to `data/brain-data/research/`; the `.omc/plans/` path is explicitly disallowed ("NEVER `.omc/plans/` or scratch"). The agent violated the convention while recreating the file under cost pressure and after the file had been destroyed once by a concurrent branch rewrite. The file is currently committed at `3dd0ef4` on `feat/restore-session-convention-files`.
+- **What to do:**
+  ```bash
+  cd /home/drdave/workspace/my-github
+  git mv .omc/plans/ralplan-browser-choice.md \
+         data/brain-data/research/v5-workstation-architecture.md
+  # Update internal cross-reference in TODO.md "Sibling plan status" line and in
+  # scripts/install-v5-architecture.sh header comment if it refers to the old path.
+  git commit -m "chore(docs): move v5 workstation plan to canonical research/ path"
+  ```
+- **How to verify done:** `test -f data/brain-data/research/v5-workstation-architecture.md && ! test -f .omc/plans/ralplan-browser-choice.md && echo ok`
+- **Status:** `open`
+
+---
+
+### UA-2026-05-28-004 — Decide whether `3dd0ef4` should remain on `main` (cherry-picked from a transient branch)
+
+- **Surfaced by:** `SESSION-2026-05-28-003`
+- **Blocks:** clean branch history; relates to the new branch-guard hard rule
+- **Why:** Mid-session, the agent attempted to write the v5 plan and install script while the working tree was concurrently being rewritten by cherry-pick / branch-delete operations. The first writes were destroyed. The agent eventually recreated and committed both files as `3dd0ef4` directly on `main` (the working tree was on `main` at that moment). The new branch-guard hook (installed in the same session) would now block exactly this pattern. You then created `feat/restore-session-convention-files` and the commit landed here too. Decide: is `3dd0ef4` allowed to stay on `main`, or should `main` be reset to its prior tip and the commit only live on this feature branch (the post-rule canonical pattern)?
+- **What to do:** review `git log --oneline main..feat/restore-session-convention-files` and `git log --oneline origin/main..main`; decide whether to `git reset --hard <prior-main-tip>` on `main` and re-push, or accept `3dd0ef4` as a valid main-direct commit (one-time pre-rule exception).
+- **How to verify done:** `git log --oneline -1 main` matches the maintainer's decided tip.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-28-001 — Decide how the hand-maintained `CHANGELOG.md` coexists with release-please
+
+**Context:** This session restored a root `CHANGELOG.md` in the Keep-a-Changelog `[Unreleased]`
+style (per the documented project convention in memory `feedback-research-location`). The repo
+*also* runs release-please via `.github/workflows/reusable-release.yml`, which generates its **own**
+`CHANGELOG.md` — the `1.0.0` section currently lives on the branch
+`origin/release-please--branches--main` (not yet merged to `main`).
+
+**Why it needs you:** When that release-please PR eventually merges, it and the hand-maintained
+`[Unreleased]` section will both own `CHANGELOG.md`, producing a merge conflict and ambiguity about
+which file is canonical.
+
+**Options:**
+1. **Keep both, configured to coexist (recommended).** Configure release-please to preserve an
+   `## [Unreleased]` section it prepends below (release-please supports a changelog header /
+   sections config). The hand log stays as the working buffer; release-please promotes entries into
+   dated releases.
+2. **release-please owns `CHANGELOG.md` exclusively.** Move the hand-maintained working log to a
+   differently-named file (e.g., `CHANGES.unreleased.md`) so there is no collision.
+3. **Drop release-please's changelog generation.** Keep only the hand-maintained `CHANGELOG.md`
+   (set `skip-changelog` / changelog off), accept manual changelog discipline.
+
+**Blocker for resolution:** Maintainer preference; touches the release pipeline config, so it is a
+human decision, not an agent default. Until resolved, the restored `CHANGELOG.md` is safe on this
+feature branch but should not be merged to `main` without picking one of the above.
