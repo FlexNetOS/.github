@@ -60,13 +60,11 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 - [x] Append 5-line "Adopting a new upstream" pointer to `docs/fork-workflow.md` (owned vs already-forked vs needs-fork). ✓ Done 2026-05-28.
 - [x] Verify `docs/submodule-vision.md` still consistent with Model B. ✓ Consistent — no changes needed.
 
-## `.claude/settings.json` trim (G8 — tooling DONE, trim itself GATED)
+## `.claude/settings.json` trim (G8 — DONE)
 
-> The doctor exists: `make claude.doctor` reports **39 violations** in the live file (read-only, never modifies it). Performing the trim moves the user's working hooks to user-global `~/.claude/settings.json` — a user-environment change, so it stays a deliberate, reviewed step.
-
-- [ ] Remove the 10 hardcoded `/home/drdave/.claude/hooks/...` + `/home/drdave/memory/...` hook paths from `.claude/settings.json`; relocate to `~/.claude/settings.json`.
-- [ ] Remove the 5 hardcoded plugin marketplace paths.
-- [ ] Remove `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
+- [x] Remove hardcoded `/home/drdave/.claude/hooks/...` hook paths from `.claude/settings.json`; relocated to `~/.claude/settings.json`. ✓ Done SESSION-2026-05-29-007 (`make claude.doctor` 0 violations).
+- [x] Remove the 5 hardcoded plugin marketplace paths. ✓ Done SESSION-2026-05-29-007.
+- [x] Remove `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. ✓ Done SESSION-2026-05-29-007.
 
 ## MANIFEST ↔ `.gitmodules` reconciliation (P4 closure, Option B lockfile) — DEFERRED
 
@@ -85,12 +83,12 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 - [x] Refactor `scripts/submodule-add-all.sh` to be 404-resilient: tagged 404 → WARN exit 0; untagged 404 → ERROR exit 1. ✓ Done 2026-05-28.
 - [ ] **CRITICAL:** No `gh repo fork ... --org FlexNetOS` until the original-side cleanup is verified per-fork. See memory `feedback-fork-after-original-setup`.
   - Dirty diffs captured at `data/brain-data/research/fork-remediation/` (SESSION-2026-05-28-006). Next step per `/clone-setup`: `make research.pack URL=<upstream>` for each repo — gated on UA-2026-05-28-005 (`gh auth login`). (SESSION-2026-05-28-007)
-- [ ] Update `branch: main` → `branch: develop` in `repos/MANIFEST.yaml` for everything-claude-code, oh-my-claudecode, oh-my-pi (Vision: `develop` carries FlexNetOS changes; gated until after fork remediation).
+- [x] Update `branch: main` → `branch: develop` in `repos/MANIFEST.yaml` for everything-claude-code, oh-my-claudecode, oh-my-pi. ✓ Done SESSION-2026-05-29-008.
 
 ## CI invariant promotion (workflow DONE; promotion remains)
 
 - [x] Create `.github/workflows/promote-strict.md` (tracks which `manifest-drift.yml` jobs are still REPORT_ONLY). ✓ Done 2026-05-28.
-- [ ] After one green PR cycle each, flip remaining jobs to STRICT (remove `continue-on-error`). Remaining: `claude-settings-doctor` (fix G8 first), `check-user-todo-step5` (intentionally soft), `submodules-materialize-noop` (deferred). See `.github/workflows/promote-strict.md`.
+- [x] Promote `claude-settings-doctor`, `claude-dir-check`, `open-questions-lint` to STRICT. ✓ Done SESSION-2026-05-29-008. Remaining REPORT_ONLY: `check-user-todo-step5` (intentionally informational), `submodules-materialize-noop` (deferred G4/G5).
 
 ## Reservations (carry-forward)
 
