@@ -11,6 +11,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed (SESSION-2026-05-29-007)
+- `.claude/settings.json` — repaired malformed JSON. Two settings objects were spliced together (stray `],` at the `extraKnownMarketplaces` boundary), making the file invalid so `/doctor` flagged it and Claude Code silently dropped all settings. Reconstructed losslessly: kept the richer hooks block + `permissions` + `extraKnownMarketplaces` from block 1, carried over the unique tail keys (`sandbox`, `advisorModel`, `theme`, `teammateMode`, `omcHud`, `skip*` flags) from block 2; verified all 28 hook commands in the dropped duplicate block were already present in the kept block (0 unique commands lost). Now 13 valid top-level keys. (commit b970ac5)
+
+### Added (SESSION-2026-05-29-007)
+- `.mcp.json` — registered `n8n-mcp` HTTP MCP server (`http://localhost:5678/mcp-server/http`) using `Bearer ${N8N_MCP_TOKEN}` env interpolation, mirroring the existing `github`/`${GITHUB_TOKEN}` server per the file's no-secret-literals rule. (commits b970ac5 + 787f449; unblocks: UA-2026-05-29-005)
+- `~/.claude.json` (global, not in repo) — same `n8n-mcp` server at user scope, hardened with `Bearer ${N8N_MCP_TOKEN:-}` (empty default) so a missing env var in any shell degrades to a 401 instead of failing the parse of the whole global config. (SESSION-2026-05-29-007)
+
+### Removed (SESSION-2026-05-29-007)
+- `.claude/settings.json.corrupt.bak` and `~/.claude.json.bak.1780053267` — session backups, removed after the repair verified clean. (SESSION-2026-05-29-007)
+
+### Decisions recorded (2026-05-29)
+- n8n-mcp bearer token is stored via env-var indirection (`N8N_MCP_TOKEN`), never as a literal in any tracked or global config — confirmed against Claude Code docs that `${VAR}` expansion is supported in HTTP `headers`. The real JWT was never written to disk. (SESSION-2026-05-29-007)
+
+### Notes (SESSION-2026-05-29-007)
+- No `gh repo fork`, no submodule mutations, no push to origin, no host-side installs. Only `.claude/settings.json` and `.mcp.json` were committed (feature branch `feat/install-github-app`). Global `~/.claude.json` was edited in place (user-scope MCP, not version-controlled).
+
 ### Added (SESSION-2026-05-29-006)
 - `.github/workflows/promote-develop-to-main.yml` — auto-promote workflow: triggers on `ci` `workflow_run` success on `develop`; finds or creates a perpetual `develop → main` PR; auto-approves via `PROMOTE_TOKEN` (admin PAT, different actor from `github-actions[bot]` PR creator so GitHub allows the review); enables auto-merge with `--rebase` to preserve conventional commits for release-please. (SESSION-2026-05-29-006)
 - `.claude/skills/install-github-app/SKILL.md` — skill for Phase 4 GitHub App automation setup. (SESSION-2026-05-29-006)

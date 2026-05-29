@@ -8,6 +8,57 @@
 
 ---
 
+## SESSION-2026-05-29-007 — repair malformed `.claude/settings.json` (/doctor) + add n8n-mcp MCP server
+
+- **ID:** `SESSION-2026-05-29-007`
+- **Date:** 2026-05-29
+- **Branch:** `feat/install-github-app`
+- **HEAD at end:** `4c25173`
+- **Mode:** `/update-config`, `/verify`, `/wrap-up` (manual)
+- **Outcome:** `.claude/settings.json` valid in working tree + git HEAD; n8n-mcp registered in project `.mcp.json` and global `~/.claude.json`; no secret on disk. All work committed.
+- **User-action gates surfaced:** `UA-2026-05-29-005`
+- **Cost:** ~$58 (Opus; large config-file analysis + doc fetch)
+
+### What the user asked
+> "Help me fix the issues reported by /doctor below. … - Settings (/home/drdave/workspace/my-github/.claude/settings.json): Invalid or malformed JSON"
+
+Then, via `/update-config`: *"yes update and fix the config file. no downgrade and loss of capability. also add this: … n8n-mcp … http … Authorization: Bearer …"* — scope expanded to register an n8n MCP server (both global and project), env-token only.
+
+### What the answer is
+- **`/doctor` issue resolved.** `settings.json` had two settings objects spliced together (stray `],` at the `extraKnownMarketplaces` boundary). Repaired losslessly (0 of 28 hook commands lost; all unique keys preserved) and **committed** — the corruption was in git HEAD, and an uncommitted fix got reverted to HEAD by a restore-from-git event, so committing was the durable fix.
+- **n8n-mcp added** to `.mcp.json` (`Bearer ${N8N_MCP_TOKEN}`) and `~/.claude.json` (`Bearer ${N8N_MCP_TOKEN:-}`, hardened). URL `http://localhost:5678/mcp-server/http`. The bearer JWT was **never written to disk** (env-var indirection; verified by grep).
+- Durable artifact: `CHANGELOG.md` `[Unreleased]` (SESSION-2026-05-29-007).
+
+### What was actually done this session
+1. Diagnosed the splice; confirmed git HEAD itself was committed-corrupt.
+2. Reconstructed `settings.json` programmatically; proved losslessness (every dropped hook command duplicated in the kept block).
+3. Committed the repair (`b970ac5`) so HEAD became valid.
+4. Added n8n-mcp to project `.mcp.json` + global `~/.claude.json`; corrected URL when the user supplied the real localhost endpoint (`787f449`); hardened the global header with `:-` default.
+5. Verified env-header expansion is supported (Claude Code docs); confirmed no token literal on disk.
+6. Removed session backups; ran `/verify` (7/7 PASS).
+
+### Reservations / risks
+- The real n8n JWT appeared in the chat transcript (user-pasted) — flagged for rotation; it is not on disk.
+- The one-time restore-to-HEAD reverter was not definitively identified (no hook does `git restore`; most likely Claude Code file-checkpointing). Now moot — HEAD is valid.
+- Negative gates: no `gh repo fork`, no submodule mutations, no push to origin, no host installs. Global `~/.claude.json` edited in place (not version-controlled).
+
+### User-action gates (if any)
+- `UA-2026-05-29-005 — set N8N_MCP_TOKEN in env (pass + direnv for project; shell startup for global)`
+
+### What's next
+- User sets `N8N_MCP_TOKEN` (UA-2026-05-29-005), restarts Claude Code, verifies with `claude mcp get n8n-mcp` / `/mcp` (n8n must be running on localhost:5678). Nothing else actionable by the agent on this thread.
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `.claude/settings.json` | Repaired malformed JSON, lossless (committed b970ac5) |
+| `.mcp.json` | Added n8n-mcp server; corrected URL (committed b970ac5 + 787f449) |
+| `~/.claude.json` | Added n8n-mcp at user scope, hardened header (global, not in repo) |
+| `TODO.md`, `CHANGELOG.md`, `SESSIONS.md`, `USER.TODO.md` | `/wrap-up` bookkeeping |
+
+---
+
 ## SESSION-2026-05-29-006 — main/develop branch protections + promote-develop-to-main workflow
 
 - **ID:** `SESSION-2026-05-29-006`
