@@ -1,3 +1,12 @@
+# Changelog
+
+## 1.0.0 (2026-05-27)
+
+
+### Features
+
+* add github-conventions ECC bundle ([95a5c2e](https://github.com/FlexNetOS/.github/commit/95a5c2ebf1debbc8f300fcf0e77423a6b9e81ffc))
+* scaffold FlexNetOS .github mega-umbrella ([6ee1630](https://github.com/FlexNetOS/.github/commit/6ee1630a887cdb6e8610608d757d9f5211c125a8))
 # CHANGELOG
 
 > Applied changes to the FlexNetOS/.github umbrella repo. Entries are dated and reference the source TODO item or research artifact where applicable.
@@ -90,6 +99,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Notes (SESSION-2026-05-29-006)
 - Framework merged to develop via PR #27 (`9b6ef51`); cross-link fix follows in PR #29. Built via full multi-model OPSX (Claude + codex); antigravity backend unavailable. `architecture/.claude/` gitignored (OpenSpec init tooling). No submodule/`docs`-relocation/`lifeos` changes.
+
 ### Fixed (SESSION-2026-05-29-007)
 - `.claude/settings.json` — repaired malformed JSON. Two settings objects were spliced together (stray `],` at the `extraKnownMarketplaces` boundary), making the file invalid so `/doctor` flagged it and Claude Code silently dropped all settings. Reconstructed losslessly: kept the richer hooks block + `permissions` + `extraKnownMarketplaces` from block 1, carried over the unique tail keys (`sandbox`, `advisorModel`, `theme`, `teammateMode`, `omcHud`, `skip*` flags) from block 2; verified all 28 hook commands in the dropped duplicate block were already present in the kept block (0 unique commands lost). Now 13 valid top-level keys. (commit b970ac5)
 

@@ -592,6 +592,7 @@ feature branch but should not be merged to `main` without picking one of the abo
   ```
 
 - **How to verify done:** on updated `develop`, `architecture/prd/PRD-0001-architecture-framework.md` links to `../openspec/changes/archive/2026-05-29-architecture-framework/proposal.md` (the `archive/` path), and a link-resolution scan of `architecture/**/*.md` reports 0 broken.
+
 ### UA-2026-05-29-004 — Merge `feat/install-github-app` PR to `main` to activate the promote-develop-to-main workflow
 
 - **Surfaced by:** `SESSION-2026-05-29-006`
