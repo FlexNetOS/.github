@@ -199,27 +199,32 @@ Case: **already forked — just normalize**.
 
 ## 9. Verification
 
-Phase 3 setup **CONFIRMED** (2026-05-28):
+Phase 3 setup **BLOCKED** (2026-05-28):
 
 | Step | Command | Exit | Result |
 | --- | --- | --- | --- |
 | Env file | `cp .env.local.example .env.local` | 0 | ✓ `.env.local` created |
-| node_modules | (pre-existing) | — | ✓ Already installed |
-| CLI dist | (pre-existing) | — | ✓ `packages/cli/dist/` present |
-| Smoke test | `node packages/cli/bin/n8n --version` | 0 | ✓ `2.23.0` |
+| node_modules | `bunx pnpm@10.32.1 install` | 0 | ⚠ Install ran but postinstalls NOT applied (see below) |
+| Build | `bunx pnpm@10.32.1 exec node .../turbo run build --continue` | 1 | ✗ 24 of 59 packages fail |
+| Launch | `node packages/cli/bin/n8n start` | 1 | ✗ MissingModuleError: community-packages.ee dist not built |
 
-Toolchain at verification time: Node v24.15.0, pnpm 11.4.0 (host), `packageManager` pinned to `pnpm@10.32.1` (corepack will enforce in-project).
+**Root cause:** `pnpm 11.4.0` (mise-managed on this host) ignores `pnpm.onlyBuiltDependencies`. This prevents postinstall scripts from running during `pnpm install`, so `turbo` and `tsdown` native binaries are never downloaded and their `.bin/` symlinks are never created. All downstream builds that depend on those tools then fail in cascade.
 
-For future setup from scratch:
+**Fix (requires clean reinstall with pnpm 10.x):**
 ```bash
-# From repos/n8n/ (or repos/forked/n8n/ after submodule migration):
-corepack enable
-pnpm install          # corepack enforces pnpm 10.32.1 from packageManager field
-bunx turbo run build > build.log 2>&1   # NOTE: use bunx, not pnpm build (pnpm 11.x drops turbo .bin symlink)
-tail -20 build.log    # check for errors
-node packages/cli/bin/n8n start &      # launch
-curl -s http://localhost:5678/healthz  # verify HTTP 200
+cd repos/n8n
+rm -rf node_modules          # clear pnpm 11.x-poisoned install
+bunx pnpm@10.32.1 install    # pnpm 10.x respects onlyBuiltDependencies, runs postinstalls
+# Verify turbo and tsdown are now in .bin/:
+ls node_modules/.bin/turbo node_modules/.bin/tsdown
+# Build:
+bunx pnpm@10.32.1 exec node node_modules/turbo/bin/turbo run build --continue
+# Launch:
+node packages/cli/bin/n8n start &
+curl http://localhost:5678/healthz   # expect HTTP 200
 ```
+
+Note: `mise exec pnpm@10.32.1` also fails on this host (GitHub API 401 when downloading pnpm 10.32.1 via aqua). Use `bunx pnpm@10.32.1` instead (downloads via npm registry).
 
 ## 10. Open decisions for user ~~DO NOT FORK UNTIL SOURCE CLONE IS PROPERLY SET UP~~ **ALL DECISIONS RESOLVED ✓ — adoption cleared**
 
