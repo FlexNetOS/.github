@@ -74,9 +74,15 @@
 - path: repos/forked/n8n
   url: https://github.com/FlexNetOS/n8n
   upstream: https://github.com/n8n-io/n8n
-  branch: master
-  toolchain: [node]
-  groups: [forked, automation]
+  branch: develop
+  toolchain: [node, pnpm, docker]
+  groups: [forked, automation, workflow]
+  notes: |
+    Workflow automation platform (fair-code SUL license — internal use approved).
+    Upstream uses `master`; fork's `master` mirrors upstream, `develop` carries
+    FlexNetOS changes. Sync cadence: as-needed via `make submodules.bump`.
+    Community free tier only — no EE license. Telemetry: PostHog free tier.
+    Research dossier: data/brain-data/research/n8n.md
 
 - path: repos/forked/nanochat
   url: https://github.com/FlexNetOS/nanochat
