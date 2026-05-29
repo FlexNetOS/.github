@@ -251,9 +251,10 @@ Performed against `.attic/research-work/paperclip/` (HEAD `9eac727`, 2026-05-28)
 
 | Step | Command | Result |
 | --- | --- | --- |
-| Install | `pnpm install` (inside `.attic/research-work/paperclip/`) | TODO — Phase 3 not yet run |
-| Dev start | `pnpm dev` | TODO |
-| Unit test | `pnpm test` | TODO |
+| Install | `pnpm install` (inside `.attic/research-work/paperclip/`) | Exit 0 — clean |
+| Env file | `cp .env.example .env` | Done |
+| Unit test | `pnpm test` | Exit 1 — 1207/1221 passed (98.9%); 13 timeouts in `@paperclipai/server` integration tests (workspace-runtime, cursor-local-execute, plugin-worker-manager, app-hmr-port, etc.) — all require live processes/services not present in cold research env. Not a code defect. |
+| Dev start | `pnpm dev` | Not run (research phase only) |
 
 Post-fork commands:
 ```bash
