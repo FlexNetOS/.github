@@ -298,7 +298,7 @@ curl http://localhost:5678/healthz   # → HTTP 200 {"status":"ok"}
 ## 14. Self-hosting environment variables — all free features
 
 Full comprehensive `.env.local` applied at `repos/n8n/.env.local` (gitignored, 585 lines).
-The file is organized into 23 sections, each citing the source config file.
+The file is organized into 22 named sections + 1 EE-only reference block (23 total), each citing the source config file.
 
 **Key free-feature flags to set explicitly:**
 
