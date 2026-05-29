@@ -65,6 +65,66 @@ All three bucket-A priorities completed and committed:
 
 ---
 
+## SESSION-2026-05-29-009 — paperclip clone-setup ritual (Phases 1–3) + deepinit full local setup + AGENTS.md
+
+- **ID:** `SESSION-2026-05-29-009`
+- **Date:** 2026-05-29
+- **Branch:** `feat/todo-session-2026-05-28-006` (substantive work) / `feat/session-2026-05-29-007` (wrap-up bookkeeping; branch switch occurred mid-session)
+- **HEAD at end:** `6ae53bf` (last research(paperclip) commit on work branch); bookkeeping on `feat/session-2026-05-29-007` `083b2e6`
+- **Mode:** `/clone-setup` → `/deepinit`
+- **Outcome:** paperclip dossier complete (13 sections, Phase 3 verified); full local dev env in `repos/paperclip feat/local-setup`; AGENTS.md hierarchy (6 files) committed. Fork deferred per user.
+- **User-action gates surfaced:** none
+- **Cost:** ~$23 (Opus; extensive multi-phase research + setup + AGENTS.md generation)
+
+### What the user asked
+> `/clone-setup <paperclipai/paperclip> [skip the clone step if you can verify the clone is up to date at /home/drdave/workspace/my-github/repos/paperclip]`
+
+Follow-up: `/deepinit complete full feature setup [*local-host-only* free tier - (all)free setup | if optional always choose rust/cargo first | then bunx, mise, direnv | all ways choose full feature dev setup (all features)] fix any issue before moving to fork`
+
+### What the answer is
+
+1. **`data/brain-data/research/paperclip.md`** — complete 13-section dossier. Key findings: MIT no-CLA, pnpm monorepo, Drizzle+Postgres, React 19, Express v5, native deps (`sharp`, `embedded-postgres` patched). Fork deferred (user "No go").
+2. **Local setup in `repos/paperclip feat/local-setup`**: install clean, `pnpm -r build` clean, dev server confirmed on `127.0.0.1:3091`. Root cause of startup failure: system `HOST=0.0.0.0` → fix: `PAPERCLIP_BIND=loopback` in `.paperclip/.env`.
+3. **AGENTS.md hierarchy**: root (updated §12), `server/`, `ui/`, `cli/`, `packages/`, `skills/` — all parent references validate.
+4. **Makefile fix**: `research.pack` nounset bug (`$$BRANCH` → `$${BRANCH:-}`).
+
+### What was actually done this session
+1. Verified `repos/paperclip` clone at HEAD 9eac727 (2026-05-28); ran `make research.pack URL=paperclipai/paperclip` (fixed Makefile nounset bug along the way)
+2. Phase 2 deep research: spawned agent to analyze 2,578-file monorepo; wrote complete 13-section dossier
+3. Phase 3 setup in `repos/paperclip`: created `feat/local-setup` branch; ran `pnpm install` + `pnpm -r build`; debugged `HOST=0.0.0.0` → `PAPERCLIP_BIND=loopback` fix; confirmed dev server starts; identified port 3090 constraint (CC session); untracked locally-generated migration 0092
+4. Phase B deepinit: generated 6 AGENTS.md files (root updated, server/ui/cli/packages/skills created); all parent refs validate
+
+### Reservations / risks
+- **Branch split**: substantive work (`feat/todo-session-2026-05-28-006`) and bookkeeping (`feat/session-2026-05-29-007`) are on different branches. Branch switch root cause not identified; monitor for recurrence.
+- **Migration 0092** (`cloud_upstream_connections`) is locally generated and untracked — do not commit to shared branches.
+- **Port 3090**: `workspace-runtime.test.ts` requires it free. Always fails during CC sessions. Normal in CI.
+- No `gh repo fork`, no submodule mutations, no push to origin for paperclip.
+
+### What's next
+- User go/no-go on `gh repo fork paperclipai/paperclip --org FlexNetOS` (deferred; see `data/brain-data/research/paperclip.md` §10)
+- Adoption priority: resolve paperclip vs. fabro sequencing
+
+### Files created/modified this session
+
+| Path | What |
+|------|------|
+| `data/brain-data/research/paperclip.md` | Complete 13-section dossier (Phases 1–3, deepinit) |
+| `data/brain-data/research/paperclip/repomix-pack.xml` | Full repomix pack (37 MB) |
+| `data/brain-data/research/paperclip/repomix-pack.compressed.xml` | Compressed pack (21 MB) |
+| `data/brain-data/research/paperclip/repomix-summary.md` | Stats + HEAD |
+| `Makefile` | Fix `research.pack` nounset bug |
+| `repos/paperclip/AGENTS.md` | Updated — FlexNetOS §12 appended |
+| `repos/paperclip/server/AGENTS.md` | Created |
+| `repos/paperclip/ui/AGENTS.md` | Created |
+| `repos/paperclip/cli/AGENTS.md` | Created |
+| `repos/paperclip/packages/AGENTS.md` | Created |
+| `repos/paperclip/skills/AGENTS.md` | Created |
+| `repos/paperclip/.envrc` | Created — direnv dotenv loader |
+| `repos/paperclip/.paperclip/config.json` | Created — loopback server config |
+| `repos/paperclip/.paperclip/.env` | Created — `PAPERCLIP_BIND=loopback` + secrets |
+
+---
+
 ## SESSION-2026-05-29-008 — ci-failure-tracker workflow + autofix TODO follow-on
 
 - **ID:** `SESSION-2026-05-29-008`

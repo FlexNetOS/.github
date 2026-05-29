@@ -1,2 +1,3 @@
 {"t":0,"agent":"acd7f42","agent_type":"wrap-up-verifier","event":"agent_start","parent_mode":"none"}
 {"t":0,"agent":"acd7f42","agent_type":"wrap-up-verifier","event":"agent_stop","success":true,"duration_ms":116334}
+{"t":0,"agent":"a9c0895","agent_type":"unknown","event":"agent_stop","success":true}

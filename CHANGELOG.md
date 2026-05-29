@@ -25,6 +25,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `check-user-todo-step5` CI job: no promotion planned per `promote-strict.md` (intentionally informational).
 - `submodules-materialize-noop` CI job: deferred until `scripts/materialize-gitmodules.sh` lands (G4/G5).
 
+### Added (SESSION-2026-05-29-009)
+- `data/brain-data/research/paperclip.md` — complete 13-section dossier for `paperclipai/paperclip` (Phase 1–3 verified). Stack: pnpm monorepo, Drizzle+Postgres, better-auth, React 19, Express v5, native `sharp`+`embedded-postgres` (patched). License: MIT, no CLA. Fork deferred per user (§10 "No go"). (research: paperclip)
+- `data/brain-data/research/paperclip/` — repomix full pack + compressed pack + summary (2,578 files, HEAD 9eac727). (research: paperclip)
+- `repos/paperclip feat/local-setup` branch — `.envrc` (direnv), `.paperclip/config.json` (loopback mode), `.paperclip/.env` (`PAPERCLIP_BIND=loopback`, `PAPERCLIP_TELEMETRY_DISABLED=1`). Build clean, dev server confirmed on 127.0.0.1:3091. (TODO: paperclip adoption)
+- `repos/paperclip/` AGENTS.md hierarchy: `server/`, `ui/`, `cli/`, `packages/`, `skills/` created; root updated with FlexNetOS §12. All parent refs validate. (deepinit)
+
+### Fixed (SESSION-2026-05-29-009)
+- `Makefile` `research.pack` target — `$$BRANCH` → `$${BRANCH:-}` to prevent `unbound variable` under `.SHELLFLAGS := -eu -o pipefail -c`. (commit on `feat/todo-session-2026-05-28-006`)
+
+### Decisions recorded (2026-05-29, SESSION-2026-05-29-009)
+- `paperclip` fork deferred: user "No go" at §10. `repos/paperclip feat/local-setup` is a pre-fork working copy.
+- Root cause of `local_trusted requires server.bind=loopback`: system `HOST=0.0.0.0` overrides Paperclip's loopback inference. Fix: `PAPERCLIP_BIND=loopback` in `.paperclip/.env`.
+- Migration 0092 (`cloud_upstream_connections`) locally generated, not in upstream — keep untracked; committing it breaks integration tests.
+- `workspace-runtime.test.ts` port 3090 failures are environment-only (CC session holds the port). Pass in CI.
+
+### Notes (SESSION-2026-05-29-009)
+- Work split across two branches: umbrella `feat/todo-session-2026-05-28-006` (dossier + Makefile) and `repos/paperclip feat/local-setup` (setup + AGENTS.md). Bookkeeping committed to `feat/session-2026-05-29-007` (current HEAD at wrap-up time; branch switch root cause not identified).
+- No `gh repo fork`, no submodule mutations, no push to origin for paperclip repos.
+
 ### Added (SESSION-2026-05-29-008)
 - `.github/workflows/ci-failure-tracker.yml` — watches the umbrella's top-level CI workflows (ci, manifest-drift, release, secrets-rotate, wiki-lint, auto-review-merge, promote-develop-to-main, dependency-review, submodule-bump) via `workflow_run`. On a `failure` conclusion it opens (or updates) a tracking issue tagged `ci-failure` + `needs-autofix` whose body **references the run log URL and each failed job's log URL** (branch, commit, event, run id). Dedupes by `ci-failure: <workflow> on <branch>` title so repeat failures append a comment instead of spawning duplicates (the `secrets-rotate.yml` pattern). A companion `resolve` job auto-closes the issue when the same workflow next succeeds on that branch. House conventions: `@v6`/`@v9` action pins, blocked default permissions (`contents: read`, `issues: write`, `actions: read`), `concurrency` guard. actionlint clean; both inline `github-script` bodies pass `node --check` under the async wrapper github-script uses. (commit 4c25173; TODO: ci-failure-autofix)
 - `TODO.md` — new "CI-failure autofix" section: the follow-on loop that consumes `needs-autofix` issues (fetch logs → diagnose → open fix PR), gated behind one green tracker cycle, plus a note to pre-create the `ci-failure`/`needs-autofix` labels. (SESSION-2026-05-29-008)
