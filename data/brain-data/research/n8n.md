@@ -133,7 +133,7 @@ git -C repos/forked/n8n diff upstream/master..develop -- \
     package.json Dockerfile README.md           # must be empty
 ```
 
-## 10. Open decisions for user
+## 10. Open decisions for user **DO NOT USE FORK UNTIL SOURCE CLONE IS PROPERLY SET UP**
 
 - [ ] License: confirm SUL terms compatible with intended FlexNetOS use
       case before adoption or any hosted deployment.

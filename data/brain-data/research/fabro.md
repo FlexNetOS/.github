@@ -147,13 +147,28 @@ git -C repos/forked/fabro diff upstream/main..develop -- \
 
 - [ ] **Go/no-go on `gh repo fork fabro-sh/fabro --org FlexNetOS`.** The
       irreversible action.
+      *(drdave_input)* No go: must set up and verify everything works as is before any fork
 - [ ] Intended use case for fabro inside FlexNetOS — orchestration of
       what, specifically? Affects which integrations to prioritize.
+      *(drdave_input)* use to create our own dark factory. We are setting up Github the proper way to so AI can automate the process end to end. Also must referance:
+        - [Dan Shapiro - The Dark Factory Era of Software Development](https://glowforge.com/blog/the-dark-factory-era-of-software-development)
+        - [This repository contains NLSpecs to build your own version of Attractor](github.com/strongdm/attractor)
+        - [Article on StrongDM's dark factory - StrongDM Attractor (32K lines of Rust shipped by AI)](https://factory.strongdm.ai/)
+        - [Spotify Honk write-up (Part 1 - 1,500+ merged agent PRs)](https://engineering.atspotify.com/2025/11/spotifys-background-coding-agent-part-1)
+       - [(861) I'm Building an AI Dark Factory That Ships Its Own Code (Public Experiment) - YouTube](https://www.youtube.com/watch?v=6woc6ii-zoE&t=1131s)
+        - [StrongDM Software Factory](https://factory.strongdm.ai/)
+        - [(861) Pushing My Dark Factory Further with Kimi K2.6: A Codebase That Writes Its Own Code, Live - YouTube](https://www.youtube.com/watch?v=BGpYeE1dKI8)
+        - [Superconductor - The multiplayer workspace for your team and coding agents · Superconductor](https://www.superconductor.com/)
+        - [coleam00/dark-factory-experiment: AI chat app for conversational RAG over YouTube video transcripts](https://github.com/coleam00/dark-factory-experiment)
+        - [obra/superpowers: An agentic skills framework & software development methodology that works.](https://github.com/obra/superpowers)
 - [ ] Partial clone? Rust workspace + Node monorepo + Docker → heavy
       submodule. `tree:0` recommended for CI runners.
+       *(drdave_input)* No Full Clone for all features. **Never partial clone**
 - [ ] Adopt fabro alongside or before the 4 PENDING-FORK agents (archon,
       everything-claude-code, oh-my-claudecode, oh-my-pi)? Adjacent in
       role.
+       *(drdave_input)* Adobt before
+       **Fresh clones of the rest and start from the beggening
 
 ## 10. Decision log
 

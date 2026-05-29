@@ -57,6 +57,8 @@ Likely use: candidate for daily AI-agent management surface, with
 `skills/` being the most interesting hook for FlexNetOS-wide skill
 standardization.
 
+*(drdave_input)* Use case is org chart and workflow
+
 ## 5. Pre-adoption audit
 
 - License is MIT — no friction to fork.
@@ -153,6 +155,7 @@ git -C repos/forked/paperclip diff upstream/master..develop -- \
 ## 9. Open decisions for user
 
 - [ ] **Go/no-go on `gh repo fork paperclipai/paperclip --org FlexNetOS`.**
+*(drdave_input)* No go
 - [ ] Adoption priority vs fabro and the 4 PENDING-FORK agents — all
       overlap in role; sequencing matters for which becomes daily driver
       vs. reference.
