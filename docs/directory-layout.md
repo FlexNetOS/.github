@@ -32,6 +32,7 @@ initialize the submodules they need. There are no separate sibling clones.
 ├── .github/workflows/            ← reusable CI templates consumed by downstream repos
 ├── docs/                         ← this file and its siblings
 ├── scripts/                      ← Makefile-backed operator scripts
+├── architecture/                 ← design-artifact framework: prd/ adr/ plan/ openspec/ (see architecture/README.md)
 └── …
 ```
 

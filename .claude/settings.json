@@ -413,6 +413,26 @@
         ]
       },
       {
+        "matcher": "Bash|Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /home/drdave/.claude/hooks/ccg/subagent-context.js",
+            "timeout": 15000
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/drdave/.claude/hooks/global/bash-log.sh",
+            "timeout": 2000
+          }
+        ]
+      },
+      {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
           {
@@ -448,6 +468,16 @@
             "timeout": 3000
           }
         ]
+      },
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /home/drdave/.claude/hooks/ccg/session-start.js",
+            "timeout": 15000
+          }
+        ]
       }
     ],
     "Stop": [
@@ -456,6 +486,15 @@
           {
             "type": "command",
             "command": "ruvector hooks session-end --export-metrics",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/drdave/.claude/hooks/global/stop-notify.sh",
             "timeout": 5000
           }
         ]
@@ -468,6 +507,20 @@
             "type": "command",
             "command": "ruvector hooks suggest-context",
             "timeout": 2000
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /home/drdave/.claude/hooks/ccg/workflow-state.js",
+            "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "node /home/drdave/.claude/hooks/ccg/skill-router.js",
+            "timeout": 5000
           }
         ]
       }
@@ -495,6 +548,39 @@
     "ui5-typescript-conversion@claude-plugins-official": true,
     "understand-anything@understand-anything": true,
     "frontend-design@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-stack-local": {
+      "source": {
+        "source": "directory",
+        "path": "/home/drdave/_work/claude-stack/plugins"
+      }
+    },
+    "ecc": {
+      "source": {
+        "source": "file",
+        "path": "/home/drdave/_work/repos/everything-claude-code/.claude-plugin/marketplace.json"
+      }
+    },
+    "karpathy-skills": {
+      "source": {
+        "source": "file",
+        "path": "/home/drdave/_work/repos/andrej-karpathy-skills/.claude-plugin/marketplace.json"
+      }
+    },
+    "omc": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/Yeachan-Heo/oh-my-claudecode.git",
+        "path": "/home/drdave/repos/oh-my-claudecode/.claude-plugin/marketplace.json"
+      }
+    },
+    "understand-anything": {
+      "source": {
+        "source": "file",
+        "path": "/home/drdave/_work/repos/Understand-Anything/.claude-plugin/marketplace.json"
+      }
+    }
   },
   "sandbox": {
     "enabled": false,

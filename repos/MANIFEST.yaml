@@ -127,7 +127,7 @@
   # depends-on: USER.TODO#5
   url: https://github.com/FlexNetOS/everything-claude-code   # NEW — fork required
   upstream: https://github.com/affaan-m/everything-claude-code
-  branch: main
+  branch: develop
   toolchain: [node, python]
   groups: [forked, agents]
   notes: |
@@ -138,7 +138,7 @@
   # depends-on: USER.TODO#5
   url: https://github.com/FlexNetOS/oh-my-claudecode  # NEW — fork required
   upstream: https://github.com/yeachan-heo/oh-my-claudecode
-  branch: main
+  branch: develop
   toolchain: [node]
   groups: [forked, agents]
   notes: PENDING FORK. 3 dirty files locally.
@@ -147,7 +147,7 @@
   # depends-on: USER.TODO#5
   url: https://github.com/FlexNetOS/oh-my-pi         # NEW — fork required
   upstream: https://github.com/can1357/oh-my-pi
-  branch: main
+  branch: develop
   toolchain: [node, cargo, bun]
   groups: [forked, agents]
   notes: PENDING FORK. 2 dirty files locally.

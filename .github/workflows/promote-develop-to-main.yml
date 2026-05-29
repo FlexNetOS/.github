@@ -1,0 +1,107 @@
+name: promote-develop-to-main
+
+# Promotes develop to main automatically after all CI checks pass.
+#
+# Security model:
+# - Only triggers on CI success on develop — never on failed CI.
+# - PR creation uses GITHUB_TOKEN (github-actions[bot]).
+# - Auto-approval uses PROMOTE_TOKEN (an admin PAT with repo scope) — a
+#   different actor from the PR creator, so GitHub allows the approval.
+# - Without PROMOTE_TOKEN the PR is created but waits for a human reviewer.
+# - Rebase merge preserves individual conventional commits so release-please
+#   can compute the correct version bump from the full commit history.
+
+on:
+  workflow_run:
+    workflows: [ci]
+    branches: [develop]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: promote-develop-to-main
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    name: Promote develop → main
+    runs-on: ubuntu-latest
+    if: "github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'"
+    steps:
+      - name: Find or create promote PR
+        id: pr
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const { data: prs } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'open',
+              head: `${owner}:develop`,
+              base: 'main',
+            });
+
+            if (prs.length > 0) {
+              const existing = prs[0];
+              core.setOutput('number', String(existing.number));
+              core.setOutput('url', existing.html_url);
+              core.info(`Found existing promote PR #${existing.number}: ${existing.html_url}`);
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner,
+              repo,
+              title: 'chore: promote develop → main',
+              body: [
+                'Automated promotion of `develop` to `main` after CI passed.',
+                '',
+                'This PR is managed by the `promote-develop-to-main` workflow and',
+                'stays open perpetually — it is updated each time `develop` advances.',
+                '',
+                '**Do not close this PR manually.** The workflow will recreate it.',
+              ].join('\n'),
+              head: 'develop',
+              base: 'main',
+            });
+
+            core.setOutput('number', String(pr.number));
+            core.setOutput('url', pr.html_url);
+            core.info(`Created promote PR #${pr.number}: ${pr.html_url}`);
+
+      - name: Auto-approve (requires PROMOTE_TOKEN)
+        if: steps.pr.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.PROMOTE_TOKEN }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+          PR_URL: ${{ steps.pr.outputs.url }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::notice title=Manual approval required::PROMOTE_TOKEN secret is not set." \
+              "PR #${PR_NUMBER} needs a human approval before it can auto-merge." \
+              "Add a PROMOTE_TOKEN secret (admin PAT with repo scope) to enable" \
+              "fully automated promotion. PR: ${PR_URL}"
+            exit 0
+          fi
+          gh pr review "$PR_NUMBER" \
+            --repo "${{ github.repository }}" \
+            --approve \
+            --body "Auto-approved: CI passed on \`develop\`. Promoting to \`main\`."
+
+      - name: Enable auto-merge (rebase)
+        if: steps.pr.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        run: |
+          gh pr merge "$PR_NUMBER" \
+            --repo "${{ github.repository }}" \
+            --auto \
+            --rebase

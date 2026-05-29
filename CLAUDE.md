@@ -97,6 +97,22 @@ Research/plans go in `data/brain-data/research/` — never in `.omc/plans/` or s
 ### Commit discipline
 **Commit agent-produced work as you go** (stage + commit incrementally). Untracked drafts in this repo have been wiped by routine `git reset`/cherry-pick before — this overrides any "only commit when asked" default. Branch off `main` with `<type>/<short-slug>`; `main` is protected (PR + 1 approval, linear history, no force-push). Conventional Commits are required (the release workflow computes bumps from them). Squash- or rebase-merge only, no merge commits.
 
+## Architecture artifacts
+
+Design-time artifacts live under the single `architecture/` root (see
+[`architecture/README.md`](architecture/README.md)). The installed skills are routed
+here, overriding their built-in defaults:
+
+| Stage | Skill | Output path |
+|---|---|---|
+| PRD | `ecc:plan-prd`, `ecc:prp-prd` | `architecture/prd/PRD-NNNN-<slug>.md` |
+| ADR | `ecc:architecture-decision-records` | `architecture/adr/ADR-NNNN-<slug>.md` |
+| Spec | `ccg:spec-research` -> `spec-plan` -> `spec-impl` | `architecture/openspec/` (run from `architecture/`) |
+| Plan | `writing-plans`, `oh-my-claudecode:plan` | `architecture/plan/YYYY-MM-DD-<slug>-plan.md` |
+
+`architecture/README.md` is the PRD/ADR registry + numbering source of truth.
+`architecture/.claude/` is git-ignored. Submodule rollout is deferred.
+
 ## Conventions that won't show up in the code
 
 - **`.claude/` is lowercase, leading dot, always.** Never create a PascalCase `Claude/` directory — that's a different product (Claude Desktop on macOS/Windows). CI enforces this via the `claude-dir-check` job in `manifest-drift.yml`. `AGENTS.md` is the cross-CLI instruction file at repo root; per-tool config lives in `.claude/` / `.codex/`.
