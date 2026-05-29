@@ -19,6 +19,14 @@
 - [x] After `manifest-drift.yml` runs green once on a PR, **promote its jobs REPORT_ONLY → STRICT** (remove `continue-on-error: true`) and create `.github/workflows/promote-strict.md` tracking which jobs are still report-only. ✓ Promoted `claude-dir-check` + `open-questions-lint` 2026-05-28; 3 jobs still REPORT_ONLY per `.github/workflows/promote-strict.md`.
 - [x] Resolve **`UA-2026-05-28-001`** (hand-maintained `CHANGELOG.md` vs release-please). ✓ Resolved 2026-05-28: hand-maintained until `v1.0.0`; at tag-cut the operator renames `[Unreleased]` → `[0.x.0-bootstrap]` and activates release-please. Bootstrap history is preserved. Note added to CHANGELOG.md header.
 
+## CI-failure autofix (follow-on to `ci-failure-tracker.yml`)
+
+> `ci-failure-tracker.yml` watches the umbrella's workflows and opens an issue tagged `ci-failure` + `needs-autofix` that references the failed run + per-job logs whenever CI fails. The autofix loop below consumes those issues.
+
+- [ ] **Autofix failed workflows from `needs-autofix` issues.** Build the loop that picks up an open `ci-failure` issue, fetches the referenced run/job logs, diagnoses the root cause, and opens a fix PR against the failing branch (or comments a diagnosis when the fix needs human judgement). Candidate trigger: `issues` (labeled `needs-autofix`) → dispatch a Claude autofix job; or a scheduled sweep over open `ci-failure` issues. On success the tracker's `resolve` job auto-closes the issue when the workflow next goes green.
+  - Gate: do not enable write-mode autofix on `main` until the tracker has run green for ≥1 cycle and the issue-noise/dedupe behaviour is confirmed sane on a feature branch.
+  - First create the `ci-failure` + `needs-autofix` repo labels (the tracker assumes they can be applied; `github.rest.issues.create` will create missing labels on first use, but pre-creating them with colors/descriptions is cleaner).
+
 ## Pre-adoption dossier review gate (Phase 0 — GATED, human decision)
 
 Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references the 17-gap plan in `data/brain-data/research/my-github-reconciliation.md`. Each dossier's section 9 gates every irreversible action below.
