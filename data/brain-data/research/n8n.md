@@ -255,3 +255,71 @@ Note: `mise exec pnpm@10.32.1` also fails on this host (GitHub API 401 when down
 | LICENSE.md: branches other than `master` not licensed | Not disclosed in README | warn (relevant for fork — all FlexNetOS work must stay on `develop`, never browse unlicensed branches for code) |
 | No mention of telemetry in quick-start | PostHog + RudderStack wired into `base-command.ts` startup by default | info (can disable; not deceptive, but worth knowing) |
 | CONTRIBUTING: `corepack prepare pnpm@10.22.0 --activate` | `engines.pnpm >= 10.22.0` — consistent | none |
+
+## 13. Build fix — Phase 3 unblocked (2026-05-29)
+
+The §9 build failure was resolved without a clean reinstall. Root cause: pnpm 11.x partially installed node_modules but did not run `tsc-alias` post-build for some workspace packages, leaving `@/` path aliases unresolved in their `dist/` files. Additionally `@n8n/utils` was not symlinked into `packages/cli/node_modules/@n8n/`.
+
+**Actual fix applied (SESSION-2026-05-29-002):**
+
+```bash
+cd repos/n8n
+
+# 1. Fix unresolved @/ path aliases in packages/core dist (35 occurrences)
+#    (tsc compiled but tsc-alias step was skipped in prior partial build)
+cd packages/core
+node ../../node_modules/tsc-alias/dist/bin/index.js -p tsconfig.build.json
+cd ../..
+
+# 2. Re-install with pnpm 10.x to restore missing workspace symlinks
+bunx pnpm@10.32.1 install --frozen-lockfile
+#    → @n8n/utils symlink now created in packages/cli/node_modules/@n8n/
+
+# 3. Full turbo build to compile the 6 packages missing dist/
+#    (turbo bin is a sh shim — execute directly, do NOT prefix with 'node')
+node_modules/.bin/turbo run build --filter='!@n8n/extension-sdk'
+#    → 59/59 tasks successful (35 cached), 1m17s
+
+# 4. Health check
+node node_modules/@dotenvx/dotenvx/src/cli/dotenvx.js run -f .env.local \
+  -- node packages/cli/bin/n8n start &
+sleep 20
+curl http://localhost:5678/healthz   # → HTTP 200 {"status":"ok"}
+```
+
+**Result:** n8n starts clean with zero ERROR/FATAL log entries. DB migrations run and complete. `/healthz` → 200.
+
+**Key learnings:**
+- `node_modules/.bin/turbo` is a `#!/bin/sh` wrapper — run as shell, not `node node_modules/.bin/turbo`
+- `@n8n/extension-sdk` excluded from build (`--filter='!@n8n/extension-sdk'`) — causes build failures
+- `tsc-alias` must be run AFTER `tsc` for any package using the `@/` path alias
+- pnpm 11.x breaks workspace symlinks; always use `bunx pnpm@10.32.1` for this repo
+
+## 14. Self-hosting environment variables — all free features
+
+Full comprehensive `.env.local` applied at `repos/n8n/.env.local` (gitignored, 585 lines).
+The file is organized into 23 sections, each citing the source config file.
+
+**Key free-feature flags to set explicitly:**
+
+| Variable | Value | Why |
+| --- | --- | --- |
+| `N8N_ENCRYPTION_KEY` | `openssl rand -hex 32` | **Required** — without it credentials cannot be encrypted |
+| `N8N_USER_MANAGEMENT_JWT_SECRET` | `openssl rand -hex 24` | Stable sessions across restarts |
+| `N8N_USER_FOLDER` | `$HOME/.n8n` | Data directory (dotenvx expands `$HOME`) |
+| `N8N_AI_ENABLED` | `true` | Unlocks all AI nodes and workflow builder |
+| `N8N_COMMUNITY_PACKAGES_ENABLED` | `true` | Enables npm community node installation |
+| `N8N_PYTHON_ENABLED` | `true` | Python in Code node (requires Python 3 on host) |
+| `N8N_MFA_ENABLED` | `true` | TOTP-based MFA |
+| `N8N_METRICS` | `true` | Prometheus endpoint at `/metrics` |
+| `N8N_PUBLIC_API_DISABLED` | `false` | REST API at `/api/v1/` |
+| `N8N_DIAGNOSTICS_ENABLED` | `false` | **Opt out** of PostHog/RudderStack telemetry |
+| `N8N_SECURE_COOKIE` | `false` | Must be false for `http://`; true for `https://` |
+| `N8N_SSRF_PROTECTION_ENABLED` | `false` (dev) / `true` (prod) | Blocks requests to private IPs |
+| `DB_TYPE` | `sqlite` | Default; switch to `postgresdb` for production |
+| `EXECUTIONS_MODE` | `regular` | Single-process; use `queue` + Redis for multi-worker |
+
+**EE-only variables (never set without license):** `N8N_SOURCE_CONTROL_*`, `N8N_EXTERNAL_SECRETS_*`, `N8N_SSO_SAML_LOGIN_ENABLED`, `N8N_SSO_OIDC_LOGIN_ENABLED`, `N8N_MULTI_MAIN_SETUP_*`.
+
+**Source config files** (all under `packages/@n8n/config/src/configs/`):
+`generic.config.ts`, `database.config.ts`, `executions.config.ts`, `security.config.ts`, `auth.config.ts`, `instance-settings-config.ts`, `instance-settings-loader.config.ts`, `ai.config.ts`, `ai-assistant.config.ts`, `ai-builder.config.ts`, `agents.config.ts`, `instance-ai.config.ts`, `logging.config.ts`, `endpoints.config.ts`, `cache.config.ts`, `user-management.config.ts`, `password.config.ts`, `mfa.config.ts`, `workflows.config.ts`, `tags.config.ts`, `workflow-history.config.ts`, `templates.config.ts`, `version-notifications.config.ts`, `credentials.config.ts`, `diagnostics.config.ts`, `deployment.config.ts`, `nodes.config.ts`, `runners.config.ts`, `event-bus.config.ts`, `public-api.config.ts`, `ssrf-protection.config.ts`, `sso.config.ts` + `packages/core/src/binary-data/binary-data.config.ts` + CLI module configs: `community-packages.config.ts`, `insights.config.ts`, `otel.config.ts`, `push.config.ts`, `redaction.config.ts`, `runtime-credentials.config.ts`, `token-exchange.config.ts`, `quick-connect.config.ts`.
