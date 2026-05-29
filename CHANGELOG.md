@@ -42,6 +42,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `README.md` — added Repo-navigation table + Phase-6 Vaultwarden operational gate. (SESSION-2026-05-28-005; research: G13)
 - `Makefile` — added the reconciliation-tooling target block. (SESSION-2026-05-28-005)
 
+### Changed (2026-05-29)
+- `.claude/skills/clone-setup/SKILL.md` — **fix:** added `HARD RULES` section and `Idempotency` decision table to prevent false-positive health detection on re-runs; script's `✅ Step 0 complete` is now documented as "pack available" not "healthy"; fork gate overrides script output. (SESSION-2026-05-29-001)
+- `.claude/skills/clone-setup/SKILL.md` — **feat:** added `Setup philosophy` section: (1) local-host-only free tier over paid cloud (service substitution table + docker-compose-first heuristic), (2) tooling preference order (Rust/cargo → bunx → mise → direnv), (3) always full-feature dev setup (never `--production`/`--slim`). (SESSION-2026-05-29-001)
+
 ### Removed
 - _(none yet)_
 

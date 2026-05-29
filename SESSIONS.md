@@ -8,6 +8,57 @@
 
 ---
 
+## SESSION-2026-05-29-001 — clone-setup skill: fix false-positive health detection + add setup philosophy
+
+- **ID:** `SESSION-2026-05-29-001`
+- **Date:** 2026-05-29
+- **Branch:** `feat/todo-session-2026-05-28-006`
+- **HEAD at end:** `47c62e5`
+- **Mode:** `/run-skill-generator` (×2) + `/oh-my-claudecode:verify` + `/wrap-up`
+- **Outcome:** Two skill updates committed, PR #21 created; 22/22 verification checks pass.
+- **User-action gates surfaced:** none
+
+### What the user asked
+> "update skill [ /clone-setup <owner/repo> | Problem: claude attempts to move to fork everytime with false positive that repo is setup and 100% healthy | fix and upgrade skill]"
+
+Second request: add local-host-only free tier, tooling preference order (Rust/cargo → bunx → mise → direnv), always full-feature dev setup. Then: "commit all changes and create pr".
+
+### What the answer is
+
+`.claude/skills/clone-setup/SKILL.md` updated with two commits, PR #21 at `https://github.com/FlexNetOS/.github/pull/21`. Root cause of the bug: `clone-and-pack.sh` prints `✅ Step 0 complete` on every run and skips the dossier if it exists — Claude read those as "setup done" and jumped to fork suggestion.
+
+### What was actually done this session
+1. Read `.claude/skills/clone-setup/SKILL.md` and `scripts/clone-and-pack.sh` — identified root causes of false-positive
+2. Rewrote skill with `HARD RULES` + `Idempotency` decision table (5 state combos, none say "skip to fork"), dossier TODO-count check, Phase 3 re-install mandate, stronger fork gate in summary template
+3. Added `Setup philosophy` section (free-tier table, tooling preference order, full-feature rules)
+4. Ran 22/22 structural verification checks — all pass
+5. Committed side-artifacts: `ai-top-utility.md` formatting, `n8n.md` build cmd correction (`bunx turbo run build`)
+6. Pushed branch, created PR #21
+7. Committed `n8n.md` build-command correction as separate concern
+
+### Reservations / risks
+- No `gh repo fork` calls made.
+- No submodule mutations.
+- No host-side installs.
+- PR #21 merged during session — skill is live on the branch.
+- Pre-existing untracked dirs (`repos/`, `data/brain-data/DeepTutor/`, `network/`) are user's in-progress work — not touched.
+
+### What's next
+Merge PR #21. Then resume TODO items: MANIFEST ↔ `.gitmodules` reconciliation (G4/G5), CI promotion (remaining REPORT_ONLY jobs), G8 settings trim.
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `.claude/skills/clone-setup/SKILL.md` | Fix false-positive + setup philosophy (2 commits) |
+| `data/brain-data/research/ai-top-utility.md` | Formatting cleanup |
+| `data/brain-data/research/n8n.md` | Build cmd correction + healthz smoke test |
+| `TODO.md` | Last-updated date bumped |
+| `CHANGELOG.md` | Two `Changed` entries for skill updates |
+| `SESSIONS.md` | This entry |
+
+---
+
 ## SESSION-2026-05-28-007 — Vision audit: align CLAUDE.md/AGENTS.md; capture fork-remediation dirty state
 
 - **ID:** `SESSION-2026-05-28-007`
