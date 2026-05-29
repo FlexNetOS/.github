@@ -165,3 +165,55 @@ one subsystem → that submodule's `architecture/`.
 
 See `tasks.md` for the execution breakdown and
 `specs/architecture-framework/spec.md` for the capability delta.
+
+## Research Summary for OPSX (codex-verified, 2026-05-29)
+
+Multi-model exploration (Claude + codex/gpt-5.5; antigravity unavailable)
+cross-checked the design against the actual repo. Key constraints and the
+corrections they force:
+
+**Hard constraints**
+
+- `scripts/verify-markdown.py` excludes `{.git, .omc, .attic, lifeos,
+  node_modules, repos}` and the `.claude/plugins/` prefix — but **not**
+  `architecture/`. Every `architecture/**/*.md` is linted (untagged/unclosed
+  code fences fail CI).
+- The `openspec init`-generated `architecture/.claude/` (opsx commands + 4
+  skills) **fails `make verify.markdown` with 18 errors** (untagged fences).
+- OpenSpec discovery needs a literal `openspec/` dir; tooling must run with CWD
+  at `architecture/` (or a parent walk) to resolve `architecture/openspec/`.
+- `repos/MANIFEST.yaml` governs only `repos/` submodules — `architecture/` adds
+  no manifest obligation.
+
+**Corrections to the design (adopted)**
+
+1. **`architecture/.claude/` is git-ignored, not committed.** It breaks CI and
+   contradicts the "no `.claude` churn" non-goal; the opsx skills still function
+   locally. Add `architecture/.claude/` to `.gitignore`.
+2. **`lifeos/openspec/` is a *local, untracked* precedent** (`git ls-files
+   lifeos/` is empty on this branch), not an in-repo committed one. Wording in
+   this proposal and ADR-0001 reflects "local precedent that informed the
+   layout," not "proven in-repo."
+3. **Real skill default paths** to override in the `CLAUDE.md`/`AGENTS.md`
+   routing block: Superpowers plans → `docs/superpowers/plans/`; ECC PRDs →
+   `.claude/prds/` or `.claude/PRPs/prds/`; ADRs → `docs/adr/`. The routing block
+   must explicitly redirect each to `architecture/`.
+4. **`architecture/openspec/config.yaml` gets umbrella `context:` + `rules:`**
+   (it is stock template today).
+
+**Risks & mitigations**
+
+- Untracked-draft wipe (concurrent session) → work in an isolated worktree;
+  commit incrementally.
+- PRD/ADR numbering collisions across concurrent sessions → `architecture/README.md`
+  registry is the source of truth; numbering is per-repo sequential.
+- Green-local/red-CI mismatch if CI uses markdownlint-cli2 fallback → keep all
+  `architecture/**/*.md` fences tagged + closed.
+
+**Success criteria**
+
+- `make verify` (incl. `verify.markdown`) passes with `architecture/` present.
+- `git status --short` shows no unintended untracked `architecture/` artifacts.
+- `docs/directory-layout.md` documents the committed `architecture/` root.
+- `CLAUDE.md` + `AGENTS.md` carry consistent routing for PRD/ADR/plan/OpenSpec.
+- OpenSpec resolves `architecture/openspec/` and lists the active change.

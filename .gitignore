@@ -99,3 +99,6 @@ tools/repomix/
 
 # --- ai-top reference materials live in the sibling workspace, never here ---
 ai-top/
+
+# OpenSpec init AI-tooling under architecture/ (local only; fails markdown lint, not committed)
+architecture/.claude/
