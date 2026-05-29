@@ -80,6 +80,13 @@ jobs:
 
       - name: Typecheck
         shell: bash
+        env:
+          LANGUAGE: ${{ inputs.language }}
+          STRICT_INPUT: ${{ inputs.strict }}
+          TSCONFIG_PATH: ${{ inputs.tsconfig-path }}
+        run: |
+          if jq -e '.scripts.typecheck' package.json >/dev/null 2>&1; then
+            if [[ "$LANGUAGE" == "bun" ]]; then
         run: |
           if jq -e '.scripts.typecheck' package.json >/dev/null 2>&1; then
             if [[ "${{ inputs.language }}" == "bun" ]]; then
@@ -89,6 +96,10 @@ jobs:
             fi
           elif [[ -f node_modules/.bin/tsc ]]; then
             STRICT_FLAG=""
+            if [[ "$STRICT_INPUT" == "true" ]]; then
+              STRICT_FLAG="--strict"
+            fi
+            node_modules/.bin/tsc --noEmit --project "$TSCONFIG_PATH" $STRICT_FLAG
             if [[ "${{ inputs.strict }}" == "true" ]]; then
               STRICT_FLAG="--strict"
             fi

@@ -4,6 +4,8 @@
 > Applied changes move to `CHANGELOG.md`. Per-session logs land in `SESSIONS.md`.
 > The full deep-research plan that produced this list lives at `data/brain-data/research/my-github-reconciliation.md`.
 
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-012)
+**Branch:** `feat/session-2026-05-29-007`
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-007 — repaired malformed `.claude/settings.json`; added n8n-mcp MCP server) — no new agent TODO items
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-006 — main/develop branch protections + promote-develop-to-main workflow)
 **Branch:** `feat/install-github-app`
@@ -17,11 +19,14 @@
 
 ---
 
-## Next steps (immediate — post SESSION-005)
 
-- [x] **Review + merge PR #20** (additive reconciliation tooling: doctors, reversibility chain, report-only CI, docs). ✓ Merged 2026-05-28.
-- [x] After `manifest-drift.yml` runs green once on a PR, **promote its jobs REPORT_ONLY → STRICT** (remove `continue-on-error: true`) and create `.github/workflows/promote-strict.md` tracking which jobs are still report-only. ✓ Promoted `claude-dir-check` + `open-questions-lint` 2026-05-28; 3 jobs still REPORT_ONLY per `.github/workflows/promote-strict.md`.
-- [x] Resolve **`UA-2026-05-28-001`** (hand-maintained `CHANGELOG.md` vs release-please). ✓ Resolved 2026-05-28: hand-maintained until `v1.0.0`; at tag-cut the operator renames `[Unreleased]` → `[0.x.0-bootstrap]` and activates release-please. Bootstrap history is preserved. Note added to CHANGELOG.md header.
+## CI-failure autofix (follow-on to `ci-failure-tracker.yml`)
+
+> `ci-failure-tracker.yml` watches the umbrella's workflows and opens an issue tagged `ci-failure` + `needs-autofix` that references the failed run + per-job logs whenever CI fails. The autofix loop below consumes those issues.
+
+- [ ] **Autofix failed workflows from `needs-autofix` issues.** Build the loop that picks up an open `ci-failure` issue, fetches the referenced run/job logs, diagnoses the root cause, and opens a fix PR against the failing branch (or comments a diagnosis when the fix needs human judgement). Candidate trigger: `issues` (labeled `needs-autofix`) → dispatch a Claude autofix job; or a scheduled sweep over open `ci-failure` issues. On success the tracker's `resolve` job auto-closes the issue when the workflow next goes green.
+  - Gate: do not enable write-mode autofix on `main` until the tracker has run green for ≥1 cycle and the issue-noise/dedupe behaviour is confirmed sane on a feature branch.
+  - First create the `ci-failure` + `needs-autofix` repo labels (the tracker assumes they can be applied; `github.rest.issues.create` will create missing labels on first use, but pre-creating them with colors/descriptions is cleaner).
 
 ## CI-failure autofix (follow-on to `ci-failure-tracker.yml`)
 
@@ -49,6 +54,10 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
   - blocked by: UA-2026-05-29-003 (develop-branch push + submodule conversion; needs human `git push`).
 - [ ] Per `fabro.md` §6 (gated by §9 + explicit user OK) — fork, set up develop, convert to `repos/forked/fabro/` + MANIFEST entry.
 - [ ] Per `paperclip.md` §6 (gated by §9 + explicit user OK) — fork, set up develop, convert to `repos/forked/paperclip/` + MANIFEST entry.
+  - ✓ Full dossier complete (Phases 1–3 verified; SESSION-2026-05-29-009).
+  - ✓ Local setup: `repos/paperclip feat/local-setup` — pnpm install, build, dev server, AGENTS.md hierarchy.
+  - Fork explicitly **deferred** by user (§10: "No go" as of 2026-05-29). Revisit when priority resolved vs. fabro.
+  - blocked by: user go/no-go decision.
 
 ## Per-fork org-only setup (Phase B/C/D — once each fork exists, on `develop`)
 
@@ -61,19 +70,6 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 
 **Out of scope (would break upstream sync):** internal package renames, Docker image refs, README badges, upstream-authored docs.
 
-## Umbrella state fixes (deferred from 4-clone session)
-
-- [x] **Rewrite `docs/directory-layout.md` to Model B.** ✓ Done 2026-05-28.
-- [x] Append 5-line "Adopting a new upstream" pointer to `docs/fork-workflow.md` (owned vs already-forked vs needs-fork). ✓ Done 2026-05-28.
-- [x] Verify `docs/submodule-vision.md` still consistent with Model B. ✓ Consistent — no changes needed.
-
-## `.claude/settings.json` trim (G8 — tooling DONE, trim itself GATED)
-
-> The doctor exists: `make claude.doctor` reports **39 violations** in the live file (read-only, never modifies it). Performing the trim moves the user's working hooks to user-global `~/.claude/settings.json` — a user-environment change, so it stays a deliberate, reviewed step.
-
-- [ ] Remove the 10 hardcoded `/home/drdave/.claude/hooks/...` + `/home/drdave/memory/...` hook paths from `.claude/settings.json`; relocate to `~/.claude/settings.json`.
-- [ ] Remove the 5 hardcoded plugin marketplace paths.
-- [ ] Remove `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
 
 ## MANIFEST ↔ `.gitmodules` reconciliation (P4 closure, Option B lockfile) — DEFERRED
 
@@ -86,18 +82,15 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 - [ ] Add `make submodules.materialize-resolve` (S5) and `make submodules.init GROUP=<name>` (G17).
 - [ ] Flip the `submodules-materialize-noop` job in `manifest-drift.yml` from placeholder to a real check once the pattern lands.
 
-## USER.TODO#5 sequencing (detector DONE; tags + 404-resilience remain)
+## USER.TODO#5 sequencing (detector DONE; branch targets set)
 
-- [x] Add `# depends-on: USER.TODO#5` comments to the 4 pending-fork MANIFEST entries (Archon, everything-claude-code, oh-my-claudecode, oh-my-pi). ✓ Done 2026-05-28 — `check-user-todo-step5.sh --list-tagged` surfaces all 4.
-- [x] Refactor `scripts/submodule-add-all.sh` to be 404-resilient: tagged 404 → WARN exit 0; untagged 404 → ERROR exit 1. ✓ Done 2026-05-28.
 - [ ] **CRITICAL:** No `gh repo fork ... --org FlexNetOS` until the original-side cleanup is verified per-fork. See memory `feedback-fork-after-original-setup`.
   - Dirty diffs captured at `data/brain-data/research/fork-remediation/` (SESSION-2026-05-28-006). Next step per `/clone-setup`: `make research.pack URL=<upstream>` for each repo — gated on UA-2026-05-28-005 (`gh auth login`). (SESSION-2026-05-28-007)
-- [ ] Update `branch: main` → `branch: develop` in `repos/MANIFEST.yaml` for everything-claude-code, oh-my-claudecode, oh-my-pi (Vision: `develop` carries FlexNetOS changes; gated until after fork remediation).
 
-## CI invariant promotion (workflow DONE; promotion remains)
+## n8n + n8n-mcp service persistence
 
-- [x] Create `.github/workflows/promote-strict.md` (tracks which `manifest-drift.yml` jobs are still REPORT_ONLY). ✓ Done 2026-05-28.
-- [ ] After one green PR cycle each, flip remaining jobs to STRICT (remove `continue-on-error`). Remaining: `claude-settings-doctor` (fix G8 first), `check-user-todo-step5` (intentionally soft), `submodules-materialize-noop` (deferred). See `.github/workflows/promote-strict.md`.
+- [ ] **n8n and n8n-mcp are running as unmanaged background processes** — both die on reboot. Create systemd user units (or pm2 config) so they auto-start. n8n: `node packages/cli/bin/n8n start` via dotenvx from `repos/n8n/`. n8n-mcp: `node dist/mcp/index.js` from `repos/n8n/mcp/n8n-mcp/` with env from `.env`.
+- [ ] **n8n-mcp `.env` is not pass-managed** — `AUTH_TOKEN` and `N8N_API_KEY` are plaintext in `repos/n8n/mcp/n8n-mcp/.env` (gitignored). Consider wiring via `direnv` + `pass` after UA-2026-05-29-003 (n8n submodule conversion) lands.
 
 ## Reservations (carry-forward)
 

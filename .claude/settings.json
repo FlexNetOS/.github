@@ -1,7 +1,4 @@
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
   "permissions": {
     "allow": [
       "mcp__open-pencil",
@@ -61,27 +58,6 @@
             "type": "command",
             "command": "ruvector hooks async-agent --action complete --agent-id \"$TOOL_INPUT_SUBAGENT_TYPE\"",
             "timeout": 2000
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"/home/drdave/.claude/hooks/gitnexus/gitnexus-hook.cjs\"",
-            "timeout": 10,
-            "statusMessage": "Checking GitNexus index freshness..."
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash /home/drdave/.claude/hooks/global/auto-format.sh",
-            "timeout": 30
           }
         ]
       },

@@ -18,9 +18,7 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "make build",
-    "testCommand": "make test",
-    "buildCommand": "rtk git add data/brain-data/research/n8n.md && rtk git commit -m \"$(cat <<'EOF'\nresearch(n8n): correct §9 build cmd to bunx turbo; add healthz smoke test\n\npnpm 11.x drops the turbo .bin symlink so `pnpm build` fails — use\n`bunx turbo run build` instead. Add `curl healthz` smoke-test step.\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n)\"",
+    "buildCommand": "cd /home/drdave/workspace/my-github\ngh pr create --base main --head feat/install-github-app \\\n  --title \"ci+config: GitHub App automation, branch-promotion workflows, settings.json repair + n8n-mcp (SESSION-2026-05-29-006/007)\" \\\n  --body \"$(cat <<'PRBODY'\n## Summary\n\nBundles the `feat/install-github-app` branch (sessions SESSION-2026-05-29-006 and SESSION-2026-05-29-007) for merge to `main`. Merging also satisfies **UA-2026-05-29-004** — `promote-develop-to-main.yml` only triggers via `workflow_run` once it exists on the default branch.\n\n## What's in it\n\n**CI / automation (SESSION-2026-05-29-006)**\n- `.github/workflows/promote-develop-to-main.yml` — auto-promote `develop → main` (perpetual PR, `PROMOTE_TOKEN` auto-approve, rebase auto-merge).\n- `.github/workflows/ci-failure-tracker.yml` — opens `ci-failure`/`needs-autofix` issues referencing failed runs + per-job logs.\n- `.github/workflows/reusable-typecheck.yml` — reusable `tsc --noEmit` gate.\n- `.claude/skills/install-github-app/SKILL.md` — Phase 4 GitHub App setup skill.\n- `main`/`develop` branch protections + `allow_auto_merge` (configured out-of-tree).\n\n**Config fixes (SESSION-2026-05-29-007)**\n- `.claude/settings.json` — **repaired malformed JSON** flagged by `/doctor`. Two settings objects were spliced together (stray `],` at the `extraKnownMarketplaces` boundary), invalidating the file so Claude Code silently dropped all settings. Reconstructed losslessly (0 of 28 hook commands lost; all unique keys preserved) and committed so HEAD is valid.\n- `.mcp.json` — registered `n8n-mcp` HTTP server (`http://localhost:5678/mcp-server/http`) using `Bearer ${N8N_MCP_TOKEN}` env interpolation, per the file's no-secret-literals rule. No token literal committed.\n\n## What's next\n- **UA-2026-05-29-005** — set `N8N_MCP_TOKEN` in the environment (pass + direnv project-side; shell startup for the global `~/.claude.json` entry) before n8n-mcp will connect.\n\n## Notes\n- No `gh repo fork`, no submodule mutations, no host installs.\n- No secret literals on disk (verified by grep across `.mcp.json`, `.claude/settings.json`, `~/.claude.json`).\n\n---\n*Opened via `/wrap-up`. Per-session detail: `SESSIONS.md` entries SESSION-2026-05-29-006 / -007.*\nPRBODY\n)\" 2>&1 | tail -5",
     "testCommand": "rtk git -C /home/drdave/workspace/my-github add data/brain-data/research/paperclip.md && rtk git -C /home/drdave/workspace/my-github commit -m \"$(cat <<'EOF'\nresearch(paperclip): add Phase 3 verification results to dossier\n\npnpm install exit 0 (clean). pnpm test: 1207/1221 passed; 13 timeouts\nin @paperclipai/server integration tests (workspace-runtime, cursor-\nlocal-execute, plugin-worker-manager) — all require live processes not\npresent in cold research env. Not a code defect.\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n)\"",
     "lintCommand": null,
     "devCommand": null,
@@ -238,20 +236,20 @@
   "hotPaths": [
     {
       "path": "USER.TODO.md",
-      "accessCount": 29,
-      "lastAccessed": 1780036110074,
+      "accessCount": 40,
+      "lastAccessed": 1780054561648,
       "type": "file"
     },
     {
       "path": "repos/MANIFEST.yaml",
-      "accessCount": 20,
-      "lastAccessed": 1780034716467,
+      "accessCount": 24,
+      "lastAccessed": 1780055809107,
       "type": "file"
     },
     {
       "path": "README.md",
-      "accessCount": 11,
-      "lastAccessed": 1779999465436,
+      "accessCount": 15,
+      "lastAccessed": 1780054749818,
       "type": "file"
     },
     {
@@ -267,9 +265,6 @@
       "type": "file"
     },
     {
-      "path": "Makefile",
-      "accessCount": 6,
-      "lastAccessed": 1779999469009,
       "path": "Makefile",
       "accessCount": 8,
       "lastAccessed": 1780031673590,
@@ -537,18 +532,6 @@
       "path": "MAINTAINERS.md",
       "accessCount": 1,
       "lastAccessed": 1779834475500,
-      "type": "file"
-    },
-    {
-      "path": "RELEASING.md",
-      "accessCount": 1,
-      "lastAccessed": 1779834494328,
-      "type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "accessCount": 1,
-      "lastAccessed": 1779834505162,
       "type": "file"
     }
   ],

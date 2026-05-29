@@ -153,7 +153,7 @@ make github-app.smoke
 
 **Expected output (non-dry-run):**
 
-```
+```text
 [OK] App ID      : <numeric>
 [OK] Installation: <numeric>
 [OK] JWT issued  : iat=<ts> exp=<ts>
@@ -274,7 +274,7 @@ Copy this into the PR description or `USER.TODO.md` when activating:
 
 ## Verification evidence (record here after each activation run)
 
-```
+```text
 Date        :
 App ID      :
 Pilot repo  :
