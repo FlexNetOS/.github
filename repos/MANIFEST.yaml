@@ -13,7 +13,9 @@
 #
 # Generation: `scripts/submodule-add-all.sh` reads this file and runs
 # `git submodule add` for any entry not yet present in `.gitmodules`.
-# Do NOT hand-edit `.gitmodules` — regenerate from here.
+# Prefer not to hand-edit `.gitmodules` directly — use the script to append
+# missing entries. Full MANIFEST→.gitmodules regeneration is deferred (see
+# G4/G5 in .omc/plans/open-questions.md). Never blindly regenerate.
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -96,8 +98,8 @@
   toolchain: [shell, node]
   groups: [forked, distro]
   notes: |
-    Currently the only repo with a self-hosted runner registered
-    (`_work/repos/actions-runner/`). See `runner/README.md`.
+    Currently the only repo with a self-hosted runner registered.
+    Runner config lives in `runner/` at the umbrella root. See `runner/README.md`.
 
 # --- The four below need a `gh repo fork` before they can be submoduled.
 #     They live as plain clones in _work/repos/ today with local diffs that
@@ -111,9 +113,9 @@
   toolchain: [node, bun, docker]
   groups: [forked, agents]
   notes: |
-    PENDING FORK. Local checkout at /home/drdave/_work/repos/Archon is
-    1 file dirty. Run `gh repo fork coleam00/Archon --org FlexNetOS`,
-    then push local changes before adding as submodule.
+    PENDING FORK. Original local clone not found on disk (see UA-2026-05-28-006).
+    Run `gh repo fork coleam00/Archon --org FlexNetOS --clone=false`,
+    then add as submodule (no local diffs to push — clone was lost).
 
 - path: repos/forked/everything-claude-code
   # depends-on: USER.TODO#5

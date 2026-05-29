@@ -53,12 +53,34 @@ There is no test runner — `make verify` is the equivalent. CI mirrors these (`
 ## Critical workflows (non-obvious)
 
 ### Adding a new repo: research-before-fork ritual
-**Never** `gh repo fork` or add a submodule before researching the upstream first. The required order:
-1. **Step 0 — clone and pack:** `make research.pack URL=<owner/repo>` (wraps `scripts/clone-and-pack.sh`, uses `tools/bin/repomix`) to pack the *upstream source* into `data/brain-data/research/<name>/`.
-2. Write the research dossier at `data/brain-data/research/<name>.md` from that packed source.
-3. Only after the dossier exists, and after the original clone is properly set up, fork/add the submodule. Forking before original setup previously broke repos — this gate is mandatory.
 
-Fork branch model: `main`/`master` mirrors upstream untouched, `develop` carries FlexNetOS changes, PRs target `develop`; sync = fast-forward `main` + rebase `develop`.
+The Vision mandates a strict sequence — skipping or reversing steps creates more work. See `data/brain-data/obsidian-mind/brain/GitHub Workspace Vision.md` for the full rationale.
+
+**Step 1 — Clone first, on a feature branch. Do not fork yet.**
+Forking immediately causes naming collisions, release conflicts, and upstream drift. Get the repo working in its original state first.
+
+**Step 2 — Research.**
+`make research.pack URL=<owner/repo>` (wraps `scripts/clone-and-pack.sh`, uses `tools/bin/repomix`) packs the upstream source into `data/brain-data/research/<name>/`. Write the dossier at `data/brain-data/research/<name>.md` from that packed source. Understand what the repo installs and where dependencies land on the host.
+
+**Step 3 — Set it up working.**
+Get the original running as intended. Dependencies scatter to the host at this stage — node_modules, cargo artifacts, wherever. This is a *temporary* state, not the destination.
+
+**Step 4 — Fork, only after setup is proven.**
+`gh repo fork <upstream> --org FlexNetOS --clone=false`. The fork's `main`/`master` always tracks upstream and stays clean. All FlexNetOS changes live on `develop`. The `develop` branch is what becomes the submodule.
+
+**Step 5 — Refactor into submodules.**
+Anything that landed outside the repo boundary during setup gets pulled back as a submodule. Use `make submodules.add` to register the fork.
+
+**What Claude gets wrong** (from the Vision — treat these as hard guards):
+- Suggesting `--depth 1` or `--filter=blob:none` shallow clones (the Vision requires full clones)
+- Reversing the sequence (forking before cloning/researching/setting up)
+- Treating host-level dependency installs as the final state rather than temporary
+- Starting edits directly on `main` or `develop` instead of opening a feature branch
+- Treating submodules as optional overhead
+
+### Branch discipline at session start
+
+Every session, every clone, every setup goes onto a new feature branch — never directly on `main`. The `branch-guard.sh` hook enforces this for file edits. For new clones of upstream repos: `git checkout -b feat/<short-slug>` before any work.
 
 ### Manifest ↔ .gitmodules consistency
 `repos/MANIFEST.yaml` is authoritative. Today `.gitmodules` is hand-maintained *alongside* it — keep the two consistent. `scripts/submodule-add-all.sh` appends missing entries; full MANIFEST→`.gitmodules` regeneration (the "materialize/lockfile" pattern) is **deferred** (tracked as G4/G5 in `.omc/plans/open-questions.md`). Don't blindly regenerate `.gitmodules`.

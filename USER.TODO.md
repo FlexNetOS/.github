@@ -16,7 +16,7 @@ The committed scaffold is at HEAD = `feat: scaffold FlexNetOS .github mega-umbre
 inheritance / CI behavior activates until they land on GitHub.
 
 ```bash
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 git push origin main
 ```
 
@@ -49,8 +49,8 @@ GitHub UI: **Settings → Branches → Branch protection rules → Add rule**
 - Allow force pushes: **No**
 - Allow deletions: **No**
 - Require status checks to pass before merging: (enable after CI runs
-  green at least once — pick `lint`, `manifest-validate`, `actionlint`,
-  `markdownlint`, `security`)
+green at least once — pick `lint`, `manifest-validate`, `actionlint`,
+`markdownlint`, `security`)
 
 ---
 
@@ -67,7 +67,7 @@ the original username, and finally moving repositories.
 
 ### Step 1 — Rename the personal account
 
-1. Go to <https://github.com/settings/admin> (while logged in as `FlexNetOS`)
+1. Go to [https://github.com/settings/admin](https://github.com/settings/admin) (while logged in as `FlexNetOS`)
 2. Under **Change username**, pick a new name (e.g., `drdave-flexnetos`)
 3. Confirm the rename. This frees up `FlexNetOS` as an organization name.
 
@@ -77,14 +77,14 @@ the original username, and finally moving repositories.
 
 ### Step 2 — Create the `FlexNetOS` organization
 
-1. Go to <https://github.com/account/organizations/new?plan=free>
+1. Go to [https://github.com/account/organizations/new?plan=free](https://github.com/account/organizations/new?plan=free)
 2. Organization name: `FlexNetOS`
 3. Choose the **Free** plan.
 4. Complete setup.
 
 ### Step 3 — Move repositories to the organization
 
-1. Go to <https://github.com/settings/organizations>
+1. Go to [https://github.com/settings/organizations](https://github.com/settings/organizations)
 2. Under **Move to an organization**, click **Move work to an organization**
 3. Select all repositories you want to transfer (at minimum, include `.github`)
 4. Target organization: `FlexNetOS`
@@ -99,7 +99,7 @@ gh auth status
 # gh auth login
 
 # Update the origin remote if it still points at the old username
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 git remote set-url origin https://github.com/FlexNetOS/.github.git
 git remote -v  # verify
 ```
@@ -139,7 +139,7 @@ case, but conceptually it's a separate identity).
 
 ```bash
 gpg --full-generate-key
-# Use a runner-specific identity, e.g. name: "FlexNetOS runner",
+# Use a runner-specific identity, e.g. name: "FlexNetOS Runner",
 # email: noreply+runner@flexnetos.local
 
 gpg --list-secret-keys --keyid-format LONG
@@ -238,7 +238,7 @@ URL — push wherever the remote ends up.
 Idempotent — safe to re-run after fixing 404s.
 
 ```bash
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 
 # Install yq if not already
 command -v yq >/dev/null 2>&1 || sudo wget -qO /usr/local/bin/yq \
@@ -278,7 +278,7 @@ cd /home/drdave/_work/repos/actions-runner
 ORG_TOKEN=<paste-here>
 
 # 3. Re-register at org scope
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 make runner.register MODE=org   # interactive — paste $ORG_TOKEN when prompted
 # OR run runner/register.sh directly:
 # runner/register.sh --org --token "$ORG_TOKEN" --name local-gh-rnr-lnx \
@@ -299,7 +299,7 @@ New group `local`**, restrict to the allowlist from
 **Why:** Prove the loop works before relying on it.
 
 ```bash
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 
 # Verify local toolchain + scaffold one more time
 make verify
@@ -342,12 +342,14 @@ and merge.
 
 These run automatically — no human action unless they alert:
 
-| Cadence | Workflow | What you do |
-| --- | --- | --- |
-| Monday 14:00 UTC | `submodule-bump.yml` | Review the auto-PR, merge if CI green |
-| Monday 14:30 UTC | `secrets-rotate.yml` | If issue opened, `pass edit <entry>`, commit, push |
-| Nightly 11:00 UTC | `wiki-lint.yml` | If issue opened, ingest the missing source or fix the broken link |
-| Every PR | `dependency-review.yml` | Block on `high` severity CVEs; bump or vendor differently |
+
+| Cadence           | Workflow                | What you do                                                       |
+| ----------------- | ----------------------- | ----------------------------------------------------------------- |
+| Monday 14:00 UTC  | `submodule-bump.yml`    | Review the auto-PR, merge if CI green                             |
+| Monday 14:30 UTC  | `secrets-rotate.yml`    | If issue opened, `pass edit <entry>`, commit, push                |
+| Nightly 11:00 UTC | `wiki-lint.yml`         | If issue opened, ingest the missing source or fix the broken link |
+| Every PR          | `dependency-review.yml` | Block on `high` severity CVEs; bump or vendor differently         |
+
 
 ---
 
@@ -356,12 +358,12 @@ These run automatically — no human action unless they alert:
 - **gh CLI auth issues:** `gh auth status`, then `gh auth login` if needed.
 - **GPG agent not running:** `gpg-connect-agent reloadagent /bye`.
 - **direnv not auto-loading:** ensure `eval "$(direnv hook bash)"` is in `~/.bashrc`,
-  then `direnv allow .` in the repo.
+then `direnv allow .` in the repo.
 - **Submodule 404:** the entry's `url` in MANIFEST.yaml points at a repo that
-  doesn't exist yet. Either fork-then-push (steps 5, 6) or edit the URL.
+doesn't exist yet. Either fork-then-push (steps 5, 6) or edit the URL.
 - **Runner not picking up jobs:** check `sudo systemctl status 'actions.runner.*'`
-  and the workflow's `runs-on:` matches every label the runner advertises
-  (all four: `self-hosted, linux, x64, local`).
+and the workflow's `runs-on:` matches every label the runner advertises
+(all four: `self-hosted, linux, x64, local`).
 
 ---
 
@@ -429,15 +431,70 @@ style (per the documented project convention in memory `feedback-research-locati
 which file is canonical.
 
 **Options:**
+
 1. **Keep both, configured to coexist (recommended).** Configure release-please to preserve an
-   `## [Unreleased]` section it prepends below (release-please supports a changelog header /
+  `## [Unreleased]` section it prepends below (release-please supports a changelog header /
    sections config). The hand log stays as the working buffer; release-please promotes entries into
    dated releases.
 2. **release-please owns `CHANGELOG.md` exclusively.** Move the hand-maintained working log to a
-   differently-named file (e.g., `CHANGES.unreleased.md`) so there is no collision.
+  differently-named file (e.g., `CHANGES.unreleased.md`) so there is no collision.
 3. **Drop release-please's changelog generation.** Keep only the hand-maintained `CHANGELOG.md`
-   (set `skip-changelog` / changelog off), accept manual changelog discipline.
+  (set `skip-changelog` / changelog off), accept manual changelog discipline.
 
 **Blocker for resolution:** Maintainer preference; touches the release pipeline config, so it is a
 human decision, not an agent default. Until resolved, the restored `CHANGELOG.md` is safe on this
 feature branch but should not be merged to `main` without picking one of the above.
+
+---
+
+### UA-2026-05-28-005 — Re-authenticate `gh` CLI before attempting section 5 forks
+
+- **Surfaced by:** audit against brain/GitHub Workspace Vision.md
+- **Blocks:** all `gh repo fork` commands in USER.TODO#5; any `gh` operation
+- **Why:** `gh auth status` returns HTTP 401 Bad credentials. All section 5 `gh repo fork` commands will fail silently or error until this is fixed.
+- **What to do:**
+  ```bash
+  gh auth login
+  # choose: GitHub.com → HTTPS → browser
+  gh auth status   # should show: ✓ Logged in to github.com as FlexNetOS
+  ```
+- **How to verify done:** `gh api user --jq '.login'` returns `FlexNetOS` (or the renamed account after section 3).
+- **Status:** `open`
+
+---
+
+### UA-2026-05-28-006 — Archon repo not found on disk — blocks section 5 for that entry
+
+- **Surfaced by:** audit against brain/GitHub Workspace Vision.md
+- **Blocks:** USER.TODO#5 for the `coleam00/Archon` fork entry
+- **Why:** `repos/MANIFEST.yaml` entry for `repos/forked/archon` notes "Local checkout at /home/drdave/_work/repos/Archon is 1 file dirty." That path does not exist. Neither does `workspace/Archon`. The dirty local changes referenced are not recoverable from disk.
+- **What to do:**
+  1. Decide: were the local Archon changes important? If yes — check git stash, backup drives, or other locations.
+  2. If the changes are lost or unimportant: proceed with `gh repo fork coleam00/Archon --org FlexNetOS --clone=false` (no local changes to push).
+  3. Update the `repos/MANIFEST.yaml` note for `repos/forked/archon` to remove the stale "1 file dirty" note.
+- **How to verify done:** either the local changes are recovered and pushed to `FlexNetOS/Archon`, or the MANIFEST note is updated to drop the dirty-file reference.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-28-007 — Runner GPG key still placeholder — section 4 incomplete
+
+- **Surfaced by:** audit against brain/GitHub Workspace Vision.md
+- **Blocks:** full `pass` vault initialization for the runner subtree; secrets rotation workflow
+- **Why:** `secrets/store/runner/.gpg-id` still contains `PLACEHOLDER-NO-RUNNER-KEY-CONFIGURED`. The personal key is set (`6EC33743AA0CB75126F63F8765A937C4164F966F`) but the runner subtree cannot be initialized until a runner key fingerprint is added. `pass` will refuse to encrypt to the runner subtree.
+- **What to do:**
+  ```bash
+  # On the runner host (same machine in this case):
+  gpg --full-generate-key
+  # Name: FlexNetOS Runner, email: noreply+runner@flexnetos.local, no expiry
+  RUNNER_FP=$(gpg --list-secret-keys --keyid-format LONG noreply+runner@flexnetos.local \
+    | grep -E "^      [0-9A-F]{40}" | tr -d ' ')
+  echo "$RUNNER_FP" > /home/drdave/workspace/my-github/secrets/store/runner/.gpg-id
+
+  # Re-init runner subtree under both keys
+  cd /home/drdave/workspace/my-github
+  PASSWORD_STORE_DIR="$PWD/secrets/store" \
+    pass init -p runner "$(cat secrets/store/.gpg-id)" "$RUNNER_FP"
+  ```
+- **How to verify done:** `cat secrets/store/runner/.gpg-id` is a real 40-char fingerprint (not the placeholder string).
+- **Status:** `open`
