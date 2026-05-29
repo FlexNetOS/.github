@@ -576,3 +576,23 @@ feature branch but should not be merged to `main` without picking one of the abo
 
 - **How to verify done:** `git ls-remote https://github.com/FlexNetOS/n8n.git develop` returns a sha AND `git -C /home/drdave/workspace/my-github submodule status repos/forked/n8n` lists the submodule.
 - **Status:** `open`
+
+### UA-2026-05-29-004 — Merge `feat/install-github-app` PR to `main` to activate the promote-develop-to-main workflow
+
+- **Surfaced by:** `SESSION-2026-05-29-006`
+- **Blocks:** `promote-develop-to-main.yml` triggering via `workflow_run` — GitHub only fires `workflow_run` events for workflows that exist on the **default branch**. The workflow is currently only on `feat/install-github-app`.
+- **Why:** The agent committed `promote-develop-to-main.yml` and validated it (actionlint clean, branch protections live, `PROMOTE_TOKEN` set) but cannot trigger a live end-to-end test until the file lands on `main`. All static checks pass; the only remaining gate is this merge.
+- **What to do:**
+
+  ```bash
+  # Option A: create a PR and merge through the normal review flow
+  gh pr create --base main --head feat/install-github-app \
+    --title "ci: SESSION-2026-05-29-006 — branch protections + promote workflow" \
+    --body "Adds promote-develop-to-main.yml + install-github-app skill. See SESSION-2026-05-29-006."
+
+  # Option B: if you have already opened a PR, just approve + merge it
+  gh pr merge <number> --squash --admin
+  ```
+
+- **How to verify done:** `gh api repos/FlexNetOS/.github/contents/.github/workflows/promote-develop-to-main.yml --jq .name` returns `"promote-develop-to-main.yml"`.
+- **Status:** `open`

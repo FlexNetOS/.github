@@ -11,6 +11,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added (SESSION-2026-05-29-006)
+- `.github/workflows/promote-develop-to-main.yml` — auto-promote workflow: triggers on `ci` `workflow_run` success on `develop`; finds or creates a perpetual `develop → main` PR; auto-approves via `PROMOTE_TOKEN` (admin PAT, different actor from `github-actions[bot]` PR creator so GitHub allows the review); enables auto-merge with `--rebase` to preserve conventional commits for release-please. (SESSION-2026-05-29-006)
+- `.claude/skills/install-github-app/SKILL.md` — skill for Phase 4 GitHub App automation setup. (SESSION-2026-05-29-006)
+- `PROMOTE_TOKEN` repo secret — set from `pass show github/personal/cli`; identity `drdave-flexnetos` with full `repo` + `workflow` scopes. (SESSION-2026-05-29-006)
+
+### Changed (SESSION-2026-05-29-006)
+- `main` branch protection — added 6 required CI status checks in strict mode: `lint / Lint (mixed)`, `actionlint .github/workflows`, `markdownlint`, `Validate manifests`, `Hermetic dependency audit`, `security / Gitleaks secret scan`. Existing 1-approval + linear-history + no-force-push rules preserved. (SESSION-2026-05-29-006)
+- `develop` branch protection — created: same 6 CI gates, 1 approval, no force-push, `strict=false` (feature branches don't need to rebase on main before merging to develop). (SESSION-2026-05-29-006)
+- Repo `allow_auto_merge` — enabled (required for `gh pr merge --auto` to work). (SESSION-2026-05-29-006)
+
 ### Added (SESSION-2026-05-29-005)
 - `.claude/AGENTS.md`, `.github/AGENTS.md`, `scripts/AGENTS.md`, `tools/AGENTS.md`, `data/brain-data/research/AGENTS.md` — deepinit AGENTS.md hierarchy with `<!-- Parent: -->` tags + per-directory AI-agent guidance; `scripts/AGENTS.md` documents all 26 scripts. Architect-approved (26/26 after fix). (commits 1ca3663 + efba627)
 - `.omc/autoresearch/codebase-health/` — autoresearch mission: `mission.md`, `evaluator.json` (`make verify`), `runs/run-001/` iteration-0001 PASS + decision log. (SESSION-2026-05-29-005)

@@ -4,8 +4,9 @@
 > Applied changes move to `CHANGELOG.md`. Per-session logs land in `SESSIONS.md`.
 > The full deep-research plan that produced this list lives at `data/brain-data/research/my-github-reconciliation.md`.
 
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-006 — main/develop branch protections + promote-develop-to-main workflow)
+**Branch:** `feat/install-github-app`
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-001 — clone-setup skill fix + setup philosophy; PR #21)
-**Branch:** `feat/session-2026-05-29-002`
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-002 — wrap-up skill updated: commit all + push + PR)
 **Branch:** `feat/todo-session-2026-05-28-006`
 **Status:** Vision sequence enforced in CLAUDE.md+AGENTS.md; fork-remediation dirty diffs captured; `make verify` clean; adoption/forks gated pending `gh auth login` (UA-005).
