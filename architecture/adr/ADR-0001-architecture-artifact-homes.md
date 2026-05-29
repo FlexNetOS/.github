@@ -3,7 +3,7 @@
 **Date**: 2026-05-29
 **Status**: accepted
 **Deciders**: FlexNetOS
-**Related**: [PRD-0001](../prd/PRD-0001-architecture-framework.md) · [OpenSpec change](../openspec/changes/2026-05-29-architecture-framework/proposal.md)
+**Related**: [PRD-0001](../prd/PRD-0001-architecture-framework.md) · [OpenSpec change](../openspec/changes/archive/2026-05-29-architecture-framework/proposal.md)
 
 > Routing note: `ecc:architecture-decision-records` defaults to `docs/adr/`.
 > Per this framework's convention, ADRs live at

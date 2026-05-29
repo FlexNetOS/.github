@@ -5,7 +5,7 @@
 - **Date:** 2026-05-29
 - **Author:** FlexNetOS (session SESSION-2026-05-29)
 - **Capability:** `architecture-framework`
-- **Related:** [PRD-0001](../../../prd/PRD-0001-architecture-framework.md) · [ADR-0001](../../../adr/ADR-0001-architecture-artifact-homes.md)
+- **Related:** [PRD-0001](../../../../prd/PRD-0001-architecture-framework.md) · [ADR-0001](../../../../adr/ADR-0001-architecture-artifact-homes.md)
 
 ## Why
 

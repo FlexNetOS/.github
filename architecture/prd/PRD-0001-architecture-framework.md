@@ -3,7 +3,7 @@
 - **Status:** Active
 - **Date:** 2026-05-29
 - **Owner:** FlexNetOS
-- **Related:** [ADR-0001](../adr/ADR-0001-architecture-artifact-homes.md) · [OpenSpec change](../openspec/changes/2026-05-29-architecture-framework/proposal.md)
+- **Related:** [ADR-0001](../adr/ADR-0001-architecture-artifact-homes.md) · [OpenSpec change](../openspec/changes/archive/2026-05-29-architecture-framework/proposal.md)
 
 > Routing note: `ecc:plan-prd` defaults to `.claude/prds/`. Per this framework's
 > convention, PRDs live at `architecture/prd/PRD-NNNN-<slug>.md`. This file
@@ -73,7 +73,7 @@ seed the dogfood PRD-0001/ADR-0001 + the OpenSpec change, add the routing block 
 
 | # | Milestone | Outcome | Status | Plan |
 |---|---|---|---|---|
-| 1 | Umbrella framework | `architecture/` exists, dogfood artifacts seeded, routing wired, CI green | in-progress | [design.md](../openspec/changes/2026-05-29-architecture-framework/design.md) |
+| 1 | Umbrella framework | `architecture/` exists, dogfood artifacts seeded, routing wired, CI green | in-progress | [design.md](../openspec/changes/archive/2026-05-29-architecture-framework/design.md) |
 | 2 | Submodule rollout | `owned`/`forked` submodules carry `architecture/` per convention | pending | — |
 | 3 | Registry automation | README registry generated, optionally MANIFEST-driven | pending | — |
 
