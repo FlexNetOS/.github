@@ -33,6 +33,10 @@ if [[ "${FLEXNETOS_NO_TOOL_DOWNLOAD:-0}" == "1" ]]; then
   exit 1
 fi
 
-# Network-permitted path: npx with --yes reuses the cached install when
-# the version spec matches, so steady-state runs are local-only.
+# Network-permitted path: bunx (workspace-preferred bun runtime) caches the
+# package on first run; steady-state runs are local-only. Falls back to npx
+# if bun is not on PATH.
+if command -v bunx >/dev/null 2>&1; then
+  exec bunx "repomix@${REPOMIX_VERSION}" "$@"
+fi
 exec npx --yes "repomix@${REPOMIX_VERSION}" "$@"
