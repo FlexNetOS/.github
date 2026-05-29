@@ -15,6 +15,12 @@ The target shape is a graph of real repositories. Each node keeps its own
 history, issues, releases, CI, and `.gitignore`; the umbrella stores the exact
 commit pointers and automation policy.
 
+LifeOS follows the same rule. It is the FlexNetOS frontend/UI-UX product repo,
+not the `.github` control plane and not the owner of every runtime it consumes.
+Shared runtimes and frameworks such as Rust, Node, Bun, Vite, Vue, and Tauri
+belong in the shared toolchain graph when they are useful beyond LifeOS; LifeOS
+pins and consumes them through manifests and repo-local wrappers.
+
 ## High-level structure
 
 ```text

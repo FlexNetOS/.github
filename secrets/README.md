@@ -127,16 +127,86 @@ secret with a friendly env-var name.
 - **Never** use the same GPG key for the dev box and the runner.
   Separate keys, separate blast radius.
 
+## Bitwarden / Vaultwarden GitHub secret sync
+
+This is the preferred next-generation path for GitHub Actions secrets:
+
+```text
+Vaultwarden or Bitwarden vault
+        │
+        ▼
+Bitwarden CLI (`bw`) on trusted admin machine
+        │
+        ▼
+scripts/secrets-sync-github-from-bitwarden.sh
+        │
+        ▼
+GitHub Actions repo / environment / org secrets
+```
+
+Why this shape:
+
+- Vaultwarden (`github.com/dani-garcia/vaultwarden`) is a self-hosted,
+  Bitwarden-compatible server. It can become the human-friendly vault UI/API.
+- The official Bitwarden CLI (`bw`) can point at either Bitwarden Cloud or a
+  Vaultwarden server via `bw config server`.
+- GitHub receives only encrypted Actions secrets through `gh secret set`; the
+  repo stores mapping metadata, never cleartext values.
+
+First create a local mapping file:
+
+```bash
+cp secrets/github-secrets.tsv.example secrets/github-secrets.tsv
+$EDITOR secrets/github-secrets.tsv
+```
+
+Then dry-run the sync:
+
+```bash
+# If using Vaultwarden instead of Bitwarden Cloud:
+export BW_SERVER="https://vaultwarden.example.test"
+
+# Unlock the Bitwarden/Vaultwarden vault for this shell:
+export BW_SESSION="$(bw unlock --raw)"
+
+make secrets.sync-github-bw DRY_RUN=1
+```
+
+Apply the sync:
+
+```bash
+make secrets.sync-github-bw
+```
+
+The mapping supports three GitHub scopes:
+
+| scope | target format | Example |
+| --- | --- | --- |
+| `repo` | `OWNER/REPO` | `FlexNetOS/lifeos` |
+| `env` | `OWNER/REPO:ENVIRONMENT` | `FlexNetOS/lifeos:production` |
+| `org` | `ORG` | `FlexNetOS` |
+
+Supported Bitwarden fields are `password`, `username`, `notes`, and
+`field:<custom-field-name>`.
+
+Keep `secrets/github-secrets.tsv` local/private. It contains no cleartext secret
+values, but it can reveal secret names, repo names, and vault item names. The
+example file is safe to commit; the real mapping is ignored by `.gitignore`.
+
 ## Bitwarden Secrets Manager mirror (optional)
 
-`scripts/secrets-mirror-to-bws.sh` walks the `pass` store and creates
-corresponding secrets in BWS. Useful when a workflow runs on a
-GitHub-hosted (no GPG) runner. That workflow then uses the official
-[Bitwarden Action](https://github.com/marketplace/actions/bitwarden-secrets)
-instead of the `pass`-based reusable workflow.
+`secrets-sync-github-from-bitwarden.sh` uses the normal Bitwarden/Vaultwarden
+vault plus `bw` CLI to write GitHub Actions secrets.
 
-Sync is **one-way**: `pass` is the source of truth, BWS is a mirror.
-Editing a secret in BWS will be overwritten on the next mirror run.
+`secrets-mirror-to-bws.sh` is different: it mirrors the legacy `pass` store into
+Bitwarden Secrets Manager (`bws`). Use BWS when a workflow itself needs to fetch
+secrets on GitHub-hosted infrastructure via the official Bitwarden Secrets
+action. Vaultwarden compatibility should not be assumed for BWS; treat BWS as a
+separate Bitwarden Secrets Manager lane.
+
+Sync is **one-way** for both lanes: the vault is source of truth and downstream
+stores are mirrors. Editing a secret in GitHub or BWS will be overwritten on the
+next sync.
 
 ## Recovery
 

@@ -1,0 +1,10 @@
+{
+  "command": "cd /home/drdave/workspace/my-github && make verify 2>&1; echo \"EXIT:$?\"",
+  "passCondition": "EXIT:0 present in output AND output contains 'OK:' lines for all checks",
+  "scoreFormula": "100 if EXIT:0, 0 if EXIT non-zero",
+  "requiredOutputPatterns": [
+    "OK: \\d+ markdown files checked",
+    "OK: \\d+ manifest entries parse",
+    "OK: \\d+ pinned tool assets"
+  ]
+}

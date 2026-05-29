@@ -1,0 +1,44 @@
+# claude-settings-doctor allowlist (plaintext, one pattern per line)
+# ---------------------------------------------------------------------------
+# Policy: portable home references ($HOME/, ${HOME}/, ~/, %APPDATA%) are flagged
+# by claude-settings-doctor.js UNLESS a line here matches (substring) the value.
+# Hardcoded ABSOLUTE user paths (/home/<user>/..., /Users/..., /root/...,
+# C:\Users\...) are NEVER allowed and CANNOT be allowlisted — fix those instead.
+#
+# Lines beginning with '#' are comments. Empty lines are ignored.
+# Add the smallest substring that uniquely identifies a legitimately portable
+# reference, e.g. (commented example below; uncomment + adapt if truly needed):
+#
+# ~/.config/flexnetos/
+
+# statusLine.command: portable env-var gated ref for HUD; uses
+# ${CLAUDE_CONFIG_DIR:-$HOME/.claude} which is portable across machines
+${CLAUDE_CONFIG_DIR:-$HOME/.claude}
+
+# sandbox.filesystem.allowWrite ~/... entries: XDG/home dirs needed by
+# installed toolchains (cargo, bun, npm, mise, docker, kube, etc.)
+# All entries use ~/ prefix which is portable (expands to $HOME at runtime)
+~/.cache
+~/.npm
+~/.bun
+~/.cargo
+~/.rustup
+~/.local
+~/.config
+~/.claude
+~/.kube
+~/.docker
+~/repos
+~/work
+~/personal
+~/containers
+
+# sandbox.filesystem.denyWrite ~/... entries: shell/auth config dirs
+# protected from agent writes; ~/ is portable (expands to $HOME at runtime)
+~/.bashrc
+~/.profile
+~/.bash_profile
+~/.bash_history
+~/.ssh
+~/.gnupg
+~/.aws

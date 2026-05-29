@@ -1,0 +1,24 @@
+title = "FlexNetOS .github gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+  description = "False-positive suppressions for this umbrella repo"
+
+  paths = [
+    # repomix-packed research archives contain "secretId" field names and
+    # example AWS ARNs from upstream source code — not real credentials
+    '''data/brain-data/research/''',
+    # gitignored Claude plugin cache: not tracked by git, but scanned
+    # because gitleaks uses --no-git tree scan; contains public OAuth
+    # client IDs flagged as generic-api-key false positives
+    '''\.claude/plugins/cache/''',
+  ]
+
+  regexes = [
+    # Alpine Linux's publicly-documented minisign verification key used in
+    # scripts/install-v5-architecture.sh to verify Alpine package signatures.
+    # This is a public key, not a secret: https://alpinelinux.org/downloads/
+    '''RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3''',
+  ]

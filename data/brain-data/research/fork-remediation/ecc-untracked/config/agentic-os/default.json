@@ -1,0 +1,55 @@
+{
+  "_doc": "Default agentic-os harness configuration. Override at ~/.agentic-os/config.json or via env vars (AGENTIC_LOCAL_ENDPOINT, AGENTIC_FREELLMAPI_URL, AGENTIC_FREELLMAPI_KEY, AGENTIC_BUDGET_USD).",
+
+  "localEndpoint": null,
+  "localApiKey": "local",
+  "_localEndpoint_help": "OpenAI-compatible URL for local inference. Examples: http://localhost:11434/v1 (Ollama), http://localhost:8080/v1 (llama.cpp), http://localhost:8000/v1 (vLLM). Null = disabled.",
+
+  "freellmapi": {
+    "endpoint": "http://localhost:3001/v1",
+    "apiKey": null,
+    "_apiKey_help": "Generate via the freellmapi dashboard (http://localhost:5173 dev / :3001 prod) after running bootstrap.sh."
+  },
+
+  "cloud": {
+    "anthropic": {
+      "enabled": true,
+      "apiKeyEnv": "ANTHROPIC_API_KEY",
+      "models": ["claude-haiku-4-5-20251001", "claude-sonnet-4-6", "claude-opus-4-7"]
+    },
+    "openai": {
+      "enabled": true,
+      "apiKeyEnv": "OPENAI_API_KEY",
+      "models": ["gpt-4o-mini", "gpt-4o"]
+    },
+    "gemini": {
+      "enabled": true,
+      "apiKeyEnv": "GEMINI_API_KEY",
+      "models": ["gemini-2.5-flash", "gemini-2.5-pro"]
+    }
+  },
+
+  "routes": {
+    "auto": ["local", "freellmapi-free", "anthropic-haiku", "openai-mini", "gemini-flash"],
+    "fast": ["freellmapi-free", "anthropic-haiku", "gemini-flash"],
+    "deep": ["anthropic-opus", "anthropic-sonnet", "openai-gpt4o", "gemini-pro"],
+    "free-only": ["local", "freellmapi-free"]
+  },
+
+  "budget": {
+    "dailyUsd": 2.0,
+    "perTaskMaxTokens": 4000
+  },
+
+  "maxAttempts": 3,
+  "maxTokens": 1024,
+  "temperature": 0.7,
+  "timeoutMs": 60000,
+  "cooldownMs": 60000,
+  "stickyTtlMs": 1800000,
+
+  "queuePath": null,
+  "costLogPath": null,
+  "stateDir": null,
+  "_paths_help": "Null falls back to $HOME/.agentic-os/{queue.json,cost-log.jsonl, ...}."
+}

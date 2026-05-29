@@ -1,0 +1,28 @@
+{
+  "_doc": "Example user override. Copy to ~/.agentic-os/config.json and edit. Anything you don't override falls back to config/agentic-os/default.json. Env vars override these too.",
+
+  "localEndpoint": "http://localhost:11434/v1",
+
+  "freellmapi": {
+    "endpoint": "http://localhost:3001/v1",
+    "apiKey": "freellmapi-CHANGEME-paste-from-dashboard"
+  },
+
+  "cloud": {
+    "anthropic": { "enabled": true,  "apiKeyEnv": "ANTHROPIC_API_KEY" },
+    "openai":    { "enabled": false, "apiKeyEnv": "OPENAI_API_KEY" },
+    "gemini":    { "enabled": false, "apiKeyEnv": "GEMINI_API_KEY" }
+  },
+
+  "routes": {
+    "auto":      ["local", "freellmapi-free", "anthropic-haiku"],
+    "fast":      ["local", "freellmapi-free"],
+    "deep":      ["anthropic-opus", "anthropic-sonnet"],
+    "free-only": ["local", "freellmapi-free"]
+  },
+
+  "budget": {
+    "dailyUsd": 1.0,
+    "perTaskMaxTokens": 2000
+  }
+}

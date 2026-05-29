@@ -1,0 +1,144 @@
+name: ci-failure-tracker
+
+# Watches the umbrella's CI workflows and, when one concludes in `failure`,
+# opens (or updates) a tracking issue that REFERENCES THE RUN LOGS and tags it
+# `ci-failure` + `needs-autofix` so the failure can be triaged / autofixed.
+#
+# How it works:
+# - `workflow_run` fires after a watched workflow completes. We act only when
+#   `conclusion == 'failure'` (skips success/cancelled/skipped).
+# - The issue body links the run's log URL and each failed job's log URL, plus
+#   the branch, commit SHA, triggering event, and run number — everything a
+#   triager (human or autofix agent) needs to start from.
+# - Dedupe by title (`ci-failure: <workflow> on <branch>`): a repeated failure
+#   appends a comment to the existing open issue instead of spamming new ones.
+#   The issue auto-closes itself once a later run of the same workflow on the
+#   same branch succeeds (handled by the `resolve` job).
+#
+# Constraints / notes:
+# - `workflow_run` only takes effect from the workflow file on the DEFAULT
+#   branch (main). It will not trigger from a feature branch — that is a
+#   GitHub platform rule, not a bug here.
+# - `workflows:` must enumerate names explicitly (no glob). Add new top-level
+#   workflows to the list below when they are introduced. Reusable
+#   (`workflow_call`) workflows run under their caller's name, so watching the
+#   caller (e.g. `ci`) already covers them.
+
+on:
+  workflow_run:
+    workflows:
+      - ci
+      - manifest-drift
+      - release
+      - secrets-rotate
+      - wiki-lint
+      - auto-review-merge
+      - promote-develop-to-main
+      - dependency-review
+      - submodule-bump
+    types: [completed]
+
+# Block default permissions; grant only what the issue bookkeeping needs.
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+concurrency:
+  # One tracker action per (workflow, branch) at a time so the dedupe lookup
+  # is not racing itself when several runs finish together.
+  group: ci-failure-tracker-${{ github.event.workflow_run.name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+jobs:
+  track:
+    name: Open / update failure issue
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure'
+    steps:
+      - name: File or update CI-failure issue with log references
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const run = context.payload.workflow_run;
+
+            // Collect the failed jobs and their per-job log URLs.
+            const jobs = await github.paginate(
+              github.rest.actions.listJobsForWorkflowRun,
+              { owner, repo, run_id: run.id, per_page: 100 }
+            );
+            const failedJobs = jobs.filter(
+              j => j.conclusion === 'failure' || j.conclusion === 'timed_out'
+            );
+            const jobLines = failedJobs.length
+              ? failedJobs.map(j => `- **${j.name}** — [job log](${j.html_url})`).join('\n')
+              : '- _(no individual job marked failed — see the full run log)_';
+
+            const title = `ci-failure: ${run.name} on ${run.head_branch}`;
+            const body = [
+              `Workflow **${run.name}** failed.`,
+              ``,
+              `| field | value |`,
+              `| --- | --- |`,
+              `| run | [#${run.run_number}](${run.html_url}) |`,
+              `| logs | ${run.html_url} |`,
+              `| branch | \`${run.head_branch}\` |`,
+              `| commit | \`${run.head_sha.slice(0, 12)}\` |`,
+              `| event | \`${run.event}\` |`,
+              `| run id | \`${run.id}\` |`,
+              ``,
+              `**Failed jobs:**`,
+              jobLines,
+              ``,
+              `<sub>Filed automatically by \`ci-failure-tracker\`. Tagged \`needs-autofix\` for triage.</sub>`,
+            ].join('\n');
+
+            // Dedupe: reuse an open issue with the same title + label.
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'ci-failure', per_page: 100,
+            });
+            const match = existing.find(i => i.title === title);
+
+            if (match) {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: match.number, body,
+              });
+              core.notice(`Updated existing CI-failure issue #${match.number}`);
+            } else {
+              const created = await github.rest.issues.create({
+                owner, repo, title, body,
+                labels: ['ci-failure', 'needs-autofix'],
+              });
+              core.notice(`Opened CI-failure issue #${created.data.number}`);
+            }
+
+  resolve:
+    name: Auto-close failure issue on recovery
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Close any open issue for this workflow + branch
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const run = context.payload.workflow_run;
+            const title = `ci-failure: ${run.name} on ${run.head_branch}`;
+
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: 'open', labels: 'ci-failure', per_page: 100,
+            });
+            const match = existing.find(i => i.title === title);
+            if (!match) return;
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: match.number,
+              body: `Resolved: **${run.name}** succeeded on \`${run.head_branch}\` — [run #${run.run_number}](${run.html_url}). Closing.`,
+            });
+            await github.rest.issues.update({
+              owner, repo, issue_number: match.number, state: 'closed', state_reason: 'completed',
+            });
+            core.notice(`Closed recovered CI-failure issue #${match.number}`);

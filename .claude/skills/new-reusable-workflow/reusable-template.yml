@@ -1,0 +1,38 @@
+# reusable-<verb>.yml — FlexNetOS shared CI template (scaffold)
+# Consumed by downstream repos via `uses: FlexNetOS/.github/.github/workflows/reusable-<verb>.yml@v1`.
+# Replace <verb> and fill the run body. Keep permissions least-privilege.
+name: reusable-<verb>
+
+on:
+  workflow_call:
+    inputs:
+      language:
+        description: "Toolchain to target (e.g. bun, node, python, rust, go)."
+        type: string
+        required: true
+      working-directory:
+        description: "Subdirectory to run in."
+        type: string
+        required: false
+        default: "."
+    # secrets:
+    #   TOKEN:
+    #     description: "Optional secret; prefer `secrets: inherit` at the caller."
+    #     required: false
+
+permissions:
+  contents: read   # add only what the job needs (id-token: write, security-events: write, ...)
+
+jobs:
+  <verb>:
+    runs-on: ubuntu-latest
+    # Report-only first: keep this true on PRs until one green cycle on main, then remove (STRICT).
+    continue-on-error: ${{ github.event_name == 'pull_request' }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4   # first-party action: major tag OK; pin third-party to a full SHA
+      - name: <verb>
+        run: |
+          echo "TODO: implement <verb> for ${{ inputs.language }}"

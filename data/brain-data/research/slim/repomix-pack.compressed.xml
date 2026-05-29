@@ -1,0 +1,6802 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+The content has been processed where content has been compressed (code blocks are separated by ⋮---- delimiter).
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Content has been compressed - code blocks are separated by ⋮---- delimiter
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/
+  ISSUE_TEMPLATE/
+    bug_report.yml
+    config.yml
+    feature_request.yml
+  workflows/
+    ci.yml
+    release.yml
+  FUNDING.yml
+  PULL_REQUEST_TEMPLATE.md
+cmd/
+  doctor_test.go
+  doctor.go
+  domain.go
+  down_test.go
+  down.go
+  list.go
+  login.go
+  logout.go
+  logs_format_test.go
+  logs_test.go
+  logs.go
+  portfwd_test.go
+  portfwd.go
+  root_test.go
+  root.go
+  share.go
+  start_test.go
+  start.go
+  stop_test.go
+  stop.go
+  uninstall.go
+  up_test.go
+  up.go
+  upgrade.go
+docs/
+  public/
+    favicon.png
+    install.sh
+    og-img.png
+  src/
+    components/
+      command-code.astro
+      command-detail.astro
+      commands-section.astro
+      copy-button.astro
+      cta-section.astro
+      feature-row.astro
+      hero-section.astro
+      highlights-section.astro
+      how-step.astro
+      local-domains-section.astro
+      public-urls-section.astro
+      site-footer.astro
+      site-header.astro
+      terminal-demo.astro
+    icons/
+      activity.astro
+      bolt.astro
+      check.astro
+      chevron-down.astro
+      clock.astro
+      copy.astro
+      file-text.astro
+      folder.astro
+      github.astro
+      globe.astro
+      route.astro
+      shield-check.astro
+      stethoscope.astro
+      terminal-prompt.astro
+    layouts/
+      layout.astro
+    pages/
+      abuse.astro
+      index.astro
+    styles/
+      global.css
+  .gitignore
+  astro.config.mjs
+  package.json
+  tsconfig.json
+internal/
+  auth/
+    auth.go
+  cert/
+    ca.go
+    leaf.go
+    paths_test.go
+    trust_darwin_test.go
+    trust_darwin.go
+    trust_linux_test.go
+    trust_linux.go
+    trust_unsupported.go
+  config/
+    config_test.go
+    config.go
+    paths.go
+  daemon/
+    daemon_test.go
+    daemon.go
+    protocol_test.go
+    protocol.go
+    socket_test.go
+    socket.go
+  doctor/
+    doctor_test.go
+    doctor.go
+    trust_darwin.go
+    trust_linux.go
+    trust_unsupported.go
+  httperr/
+    network_test.go
+    network.go
+    response_test.go
+    response.go
+  log/
+    helpers_test.go
+    log_test.go
+    log.go
+  osutil/
+    osutil.go
+  project/
+    project_test.go
+    project.go
+  proxy/
+    handler_test.go
+    handler.go
+    health_test.go
+    health.go
+    pages.go
+    server_lifecycle_test.go
+    server_test.go
+    server.go
+    status_recorder_test.go
+    upstream_down.html
+  setup/
+    setup_test.go
+    setup.go
+  system/
+    elevated_test.go
+    elevated.go
+    hostfile_ops_test.go
+    hostfile_test.go
+    hostfile.go
+    portfwd_darwin_test.go
+    portfwd_darwin.go
+    portfwd_linux_test.go
+    portfwd_linux.go
+    portfwd.go
+  term/
+    step.go
+    styles_test.go
+    styles.go
+  tunnel/
+    client.go
+    pages.go
+    server_down.html
+    subdomain_test.go
+    subdomain.go
+protocol/
+  protocol_test.go
+  protocol.go
+.gitignore
+.goreleaser.yml
+go.mod
+install.sh
+LICENSE
+main.go
+Makefile
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".github/FUNDING.yml">
+github: [kamranahmedse]
+</file>
+
+<file path="cmd/doctor_test.go">
+package cmd
+⋮----
+import (
+	"testing"
+
+	"github.com/kamranahmedse/slim/internal/doctor"
+)
+⋮----
+"testing"
+⋮----
+"github.com/kamranahmedse/slim/internal/doctor"
+⋮----
+func TestPrintReport(t *testing.T)
+⋮----
+// Just verify it doesn't panic
+⋮----
+func TestStatusIcon(t *testing.T)
+⋮----
+// The icon string includes ANSI codes, just check it contains the symbol
+⋮----
+func TestDoctorRunFnInjectable(t *testing.T)
+⋮----
+var called bool
+</file>
+
+<file path="cmd/doctor.go">
+package cmd
+⋮----
+import (
+	"fmt"
+
+	"github.com/kamranahmedse/slim/internal/doctor"
+	"github.com/kamranahmedse/slim/internal/term"
+	"github.com/spf13/cobra"
+)
+⋮----
+"fmt"
+⋮----
+"github.com/kamranahmedse/slim/internal/doctor"
+"github.com/kamranahmedse/slim/internal/term"
+"github.com/spf13/cobra"
+⋮----
+var doctorRunFn = doctor.Run
+⋮----
+var doctorCmd = &cobra.Command{
+	Use:   "doctor",
+	Short: "Diagnose setup issues",
+	Long: `Run diagnostic checks and print a pass/fail/warn checklist.
+
+  slim doctor`,
+	Args: cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		report := doctorRunFn()
+		printReport(report)
+		return nil
+	},
+}
+⋮----
+func printReport(report doctor.Report)
+⋮----
+func statusIcon(s doctor.Status) string
+⋮----
+func init()
+</file>
+
+<file path="cmd/domain.go">
+package cmd
+⋮----
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
+	"time"
+
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/table"
+	"github.com/kamranahmedse/slim/internal/auth"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/log"
+	"github.com/kamranahmedse/slim/internal/term"
+	"github.com/spf13/cobra"
+)
+⋮----
+"bytes"
+"encoding/json"
+"fmt"
+"io"
+"net/http"
+"strings"
+"time"
+⋮----
+"charm.land/lipgloss/v2"
+"charm.land/lipgloss/v2/table"
+"github.com/kamranahmedse/slim/internal/auth"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/log"
+"github.com/kamranahmedse/slim/internal/term"
+"github.com/spf13/cobra"
+⋮----
+type domainEntry struct {
+	ID        string `json:"id"`
+	Domain    string `json:"domain"`
+	Status    string `json:"status"`
+	CreatedAt string `json:"created_at"`
+}
+⋮----
+var domainCmd = &cobra.Command{
+	Use:   "domain",
+	Short: "Manage custom domains",
+}
+⋮----
+var domainAddCmd = &cobra.Command{
+	Use:   "add <domain>",
+	Short: "Add a custom domain",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		domain := args[0]
+
+		info, err := auth.Require()
+		if err != nil {
+			return err
+		}
+
+		var targetIP string
+		err = term.RunSteps([]term.Step{
+			{
+				Name: fmt.Sprintf("Adding domain %s", domain),
+				Run: func() (string, error) {
+					body, err := json.Marshal(map[string]string{"domain": domain})
+					if err != nil {
+						return "", fmt.Errorf("encoding request: %w", err)
+					}
+
+					client := &http.Client{Timeout: 10 * time.Second}
+					req, err := http.NewRequest("POST", config.APIBaseURL()+"/api/domains", bytes.NewReader(body))
+					if err != nil {
+						return "", fmt.Errorf("creating request: %w", err)
+					}
+					req.Header.Set("Authorization", "Bearer "+info.Token)
+					req.Header.Set("Content-Type", "application/json")
+
+					resp, err := client.Do(req)
+					if err != nil {
+						return "", fmt.Errorf("adding domain: %w", err)
+					}
+					defer resp.Body.Close()
+
+					if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+						return "", apiError(resp, "failed to add domain")
+					}
+
+					var result struct {
+						Domain   domainEntry `json:"domain"`
+						TargetIP string      `json:"target_ip"`
+					}
+					if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+						return "", fmt.Errorf("decoding response: %w", err)
+					}
+
+					targetIP = result.TargetIP
+
+					return "done", nil
+				},
+			},
+		})
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("\nAdd the following DNS record to verify ownership:\n\n")
+		fmt.Printf("  Type:  %s\n", term.Bold.Render("A"))
+		fmt.Printf("  Name:  %s\n", term.Bold.Render(domain))
+		fmt.Printf("  Value: %s\n\n", term.Bold.Render(targetIP))
+		fmt.Printf("%s If using Cloudflare, disable the proxy (grey cloud / DNS only).\n", term.Dim.Render("*"))
+		fmt.Printf("%s DNS changes can take a few minutes to propagate.\n\n", term.Dim.Render("*"))
+		fmt.Printf("Then run: %s\n", term.Cyan.Render("slim domain verify "+domain))
+
+		return nil
+	},
+}
+⋮----
+var targetIP string
+⋮----
+var result struct {
+						Domain   domainEntry `json:"domain"`
+						TargetIP string      `json:"target_ip"`
+					}
+⋮----
+var domainListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List custom domains",
+	Args:  cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		info, err := auth.Require()
+		if err != nil {
+			return err
+		}
+
+		var domains []domainEntry
+		err = term.RunSteps([]term.Step{
+			{
+				Name: "Fetching domains",
+				Run: func() (string, error) {
+					domains, err = fetchDomains(info.Token)
+					if err != nil {
+						return "", err
+					}
+					return "done", nil
+				},
+			},
+		})
+		if err != nil {
+			return err
+		}
+
+		if len(domains) == 0 {
+			fmt.Println("No custom domains. Use 'slim domain add <domain>' to add one.")
+			return nil
+		}
+
+		fmt.Println()
+
+		var rows [][]string
+		for _, d := range domains {
+			var status string
+			switch d.Status {
+			case "active":
+				status = term.Green.Render("● active")
+			case "issuing_cert":
+				status = term.Cyan.Render("● generating cert")
+			default:
+				status = term.Yellow.Render("● pending")
+			}
+			added := d.CreatedAt
+			if t, err := time.Parse(time.RFC3339, d.CreatedAt); err == nil {
+				added = log.FormatTimeAgo(t)
+			}
+			rows = append(rows, []string{d.Domain, status, added})
+		}
+
+		t := table.New().
+			Headers("DOMAIN", "STATUS", "ADDED").
+			Rows(rows...).
+			BorderTop(false).
+			BorderBottom(false).
+			BorderLeft(false).
+			BorderRight(false).
+			BorderColumn(false).
+			BorderHeader(false).
+			StyleFunc(func(row, col int) lipgloss.Style {
+				s := lipgloss.NewStyle().PaddingRight(2)
+				if row == table.HeaderRow {
+					s = s.Bold(true).Faint(true)
+				}
+				return s
+			})
+		fmt.Println(t)
+
+		return nil
+	},
+}
+⋮----
+var domains []domainEntry
+⋮----
+var rows [][]string
+⋮----
+var status string
+⋮----
+var domainVerifyCmd = &cobra.Command{
+	Use:   "verify <domain>",
+	Short: "Verify DNS for a custom domain",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		domain := args[0]
+
+		info, err := auth.Require()
+		if err != nil {
+			return err
+		}
+
+		return term.RunSteps([]term.Step{
+			{
+				Name: fmt.Sprintf("Verifying DNS for %s", domain),
+				Run: func() (string, error) {
+					domains, err := fetchDomains(info.Token)
+					if err != nil {
+						return "", err
+					}
+					domainID := findDomainID(domains, domain)
+					if domainID == "" {
+						return "", fmt.Errorf("domain %s not found — use 'slim domain add' first", domain)
+					}
+
+					client := &http.Client{Timeout: 10 * time.Second}
+					req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/domains/%s/verify", config.APIBaseURL(), domainID), nil)
+					if err != nil {
+						return "", fmt.Errorf("creating request: %w", err)
+					}
+					req.Header.Set("Authorization", "Bearer "+info.Token)
+
+					resp, err := client.Do(req)
+					if err != nil {
+						return "", fmt.Errorf("verifying domain: %w", err)
+					}
+					defer resp.Body.Close()
+
+					if resp.StatusCode != http.StatusOK {
+						bodyBytes, _ := io.ReadAll(resp.Body)
+						msg := strings.TrimSpace(string(bodyBytes))
+						if msg == "" {
+							msg = resp.Status
+						}
+						return "", fmt.Errorf("%s", msg)
+					}
+
+					var result struct {
+						Status string `json:"status"`
+					}
+					if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+						return "done", nil
+					}
+
+					switch result.Status {
+					case "active":
+						return "verified", nil
+					case "issuing_cert":
+						return "issuing certificate (this may take a moment)", nil
+					default:
+						return "done", nil
+					}
+				},
+			},
+		})
+	},
+}
+⋮----
+var result struct {
+						Status string `json:"status"`
+					}
+⋮----
+var domainRemoveCmd = &cobra.Command{
+	Use:   "remove <domain>",
+	Short: "Remove a custom domain",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		domain := args[0]
+
+		info, err := auth.Require()
+		if err != nil {
+			return err
+		}
+
+		domains, err := fetchDomains(info.Token)
+		if err != nil {
+			return err
+		}
+
+		domainID := findDomainID(domains, domain)
+		if domainID == "" {
+			return fmt.Errorf("domain %s not found", domain)
+		}
+
+		deleteURL := fmt.Sprintf("%s/api/domains/%s", config.APIBaseURL(), domainID)
+
+		client := &http.Client{Timeout: 10 * time.Second}
+		req, err := http.NewRequest("DELETE", deleteURL, nil)
+		if err != nil {
+			return fmt.Errorf("creating request: %w", err)
+		}
+		req.Header.Set("Authorization", "Bearer "+info.Token)
+
+		resp, err := client.Do(req)
+		if err != nil {
+			return fmt.Errorf("removing domain: %w", err)
+		}
+		resp.Body.Close()
+
+		if resp.StatusCode == http.StatusConflict {
+			fmt.Printf("\n%s has an active tunnel. Removing it will disconnect the tunnel.\n", term.Bold.Render(domain))
+			if !term.ConfirmPrompt("Continue?") {
+				return nil
+			}
+
+			return term.RunSteps([]term.Step{
+				{
+					Name: fmt.Sprintf("Removing domain %s", domain),
+					Run: func() (string, error) {
+						req, err := http.NewRequest("DELETE", deleteURL+"?force=true", nil)
+						if err != nil {
+							return "", fmt.Errorf("creating request: %w", err)
+						}
+						req.Header.Set("Authorization", "Bearer "+info.Token)
+
+						resp, err := client.Do(req)
+						if err != nil {
+							return "", fmt.Errorf("removing domain: %w", err)
+						}
+						defer resp.Body.Close()
+
+						if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+							return "", apiError(resp, "failed to remove domain")
+						}
+
+						return "done", nil
+					},
+				},
+			})
+		}
+
+		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+			return apiError(resp, "failed to remove domain")
+		}
+
+		fmt.Printf("\n%s Removed %s\n", term.CheckMark, domain)
+		return nil
+	},
+}
+⋮----
+func findDomainID(domains []domainEntry, name string) string
+⋮----
+func apiError(resp *http.Response, action string) error
+⋮----
+var errResp struct {
+		Error string `json:"error"`
+	}
+⋮----
+func fetchDomains(token string) ([]domainEntry, error)
+⋮----
+var body struct {
+		Domains []domainEntry `json:"domains"`
+	}
+⋮----
+func init()
+</file>
+
+<file path="cmd/down_test.go">
+package cmd
+⋮----
+import (
+	"testing"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/project"
+)
+⋮----
+"testing"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/project"
+⋮----
+func setupDownTestHooks(t *testing.T) func()
+⋮----
+func TestDownRemovesProjectServices(t *testing.T)
+⋮----
+var gotType daemon.MessageType
+⋮----
+func TestDownShutdownsWhenNoDomains(t *testing.T)
+</file>
+
+<file path="cmd/down.go">
+package cmd
+⋮----
+import (
+	"fmt"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/project"
+	"github.com/kamranahmedse/slim/internal/system"
+	"github.com/spf13/cobra"
+)
+⋮----
+"fmt"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/project"
+"github.com/kamranahmedse/slim/internal/system"
+"github.com/spf13/cobra"
+⋮----
+var (
+	downDiscoverFn      = project.Discover
+	downWithLockFn      = config.WithLock
+	downLoadFn          = config.Load
+	downRemoveHostFn    = system.RemoveHost
+	downDaemonRunningFn = daemon.IsRunning
+	downDaemonSendIPCFn = daemon.SendIPC
+)
+⋮----
+var downConfigPath string
+⋮----
+var downCmd = &cobra.Command{
+	Use:   "down",
+	Short: "Stop project services from .slim.yaml",
+	Long: `Discover .slim.yaml and stop only the services defined in it.
+Other domains not in the project config are left running.
+
+  slim down
+  slim down --config /path/to/.slim.yaml`,
+	Args: cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		var pc *project.ProjectConfig
+		var err error
+
+		if downConfigPath != "" {
+			pc, err = project.Load(downConfigPath)
+		} else {
+			pc, _, err = downDiscoverFn()
+		}
+		if err != nil {
+			return err
+		}
+
+		if err := pc.Validate(); err != nil {
+			return err
+		}
+
+		var remainingDomains int
+		if err := downWithLockFn(func() error {
+			cfg, err := downLoadFn()
+			if err != nil {
+				return err
+			}
+			remove := make(map[string]bool, len(pc.Services))
+			for _, svc := range pc.Services {
+				remove[svc.Domain] = true
+			}
+			filtered := cfg.Domains[:0]
+			for _, d := range cfg.Domains {
+				if !remove[d.Name] {
+					filtered = append(filtered, d)
+				}
+			}
+			cfg.Domains = filtered
+			remainingDomains = len(cfg.Domains)
+			return cfg.Save()
+		}); err != nil {
+			return err
+		}
+
+		for _, svc := range pc.Services {
+			if err := downRemoveHostFn(svc.Domain); err != nil {
+				fmt.Printf("Warning: failed to remove %s from /etc/hosts: %v\n", svc.Domain, err)
+			}
+		}
+
+		if downDaemonRunningFn() {
+			if remainingDomains == 0 {
+				if _, err := downDaemonSendIPCFn(daemon.Request{Type: daemon.MsgShutdown}); err != nil {
+					return fmt.Errorf("stopping daemon: %w", err)
+				}
+			} else {
+				if _, err := downDaemonSendIPCFn(daemon.Request{Type: daemon.MsgReload}); err != nil {
+					return fmt.Errorf("reloading daemon: %w", err)
+				}
+			}
+		}
+
+		fmt.Printf("Stopped %d project service(s).\n", len(pc.Services))
+		return nil
+	},
+}
+⋮----
+var pc *project.ProjectConfig
+var err error
+⋮----
+var remainingDomains int
+⋮----
+func init()
+</file>
+
+<file path="cmd/list.go">
+package cmd
+⋮----
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"time"
+
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/table"
+	"github.com/kamranahmedse/slim/internal/auth"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/proxy"
+	"github.com/kamranahmedse/slim/internal/system"
+	"github.com/kamranahmedse/slim/internal/term"
+	"github.com/spf13/cobra"
+)
+⋮----
+"encoding/json"
+"fmt"
+"net/http"
+"time"
+⋮----
+"charm.land/lipgloss/v2"
+"charm.land/lipgloss/v2/table"
+"github.com/kamranahmedse/slim/internal/auth"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/proxy"
+"github.com/kamranahmedse/slim/internal/system"
+"github.com/kamranahmedse/slim/internal/term"
+"github.com/spf13/cobra"
+⋮----
+var listJSON bool
+⋮----
+type activeTunnel struct {
+	Subdomain    string `json:"subdomain"`
+	URL          string `json:"url"`
+	HasPassword  bool   `json:"has_password"`
+	ConnectedAt  string `json:"connected_at"`
+	ExpiresAt    string `json:"expires_at"`
+	RequestCount uint64 `json:"request_count"`
+}
+⋮----
+func fetchActiveTunnels(token string) []activeTunnel
+⋮----
+var body struct {
+		Tunnels []activeTunnel `json:"tunnels"`
+	}
+⋮----
+var listCmd = &cobra.Command{
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List all domains and tunnels",
+	Args:    cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		cfg, err := config.Load()
+		if err != nil {
+			return err
+		}
+
+		running := daemon.IsRunning()
+		ingressOK := true
+		var pfReloadErr error
+		if running {
+			pf := system.NewPortForwarder()
+			if shouldReloadPortForwarding(pf, true) {
+				if err := pf.EnsureLoaded(); err != nil {
+					pfReloadErr = err
+				}
+			}
+			ingressOK = ingressPortsReachable()
+		}
+
+		type routeEntry struct {
+			Path    string `json:"path"`
+			Port    int    `json:"port"`
+			Healthy *bool  `json:"healthy,omitempty"`
+		}
+
+		type domainEntry struct {
+			Domain  string       `json:"domain"`
+			Port    int          `json:"port"`
+			Healthy *bool        `json:"healthy,omitempty"`
+			Routes  []routeEntry `json:"routes,omitempty"`
+		}
+
+		var domains []domainEntry
+		for _, d := range cfg.Domains {
+			entry := domainEntry{
+				Domain: d.Name,
+				Port:   d.Port,
+			}
+			for _, r := range d.Routes {
+				entry.Routes = append(entry.Routes, routeEntry{Path: r.Path, Port: r.Port})
+			}
+			domains = append(domains, entry)
+		}
+
+		if running && len(domains) > 0 {
+			var allPorts []int
+			for _, d := range cfg.Domains {
+				allPorts = append(allPorts, d.Port)
+				for _, r := range d.Routes {
+					allPorts = append(allPorts, r.Port)
+				}
+			}
+			health := proxy.CheckUpstreams(allPorts)
+			idx := 0
+			for i := range domains {
+				domains[i].Healthy = &health[idx]
+				idx++
+				for j := range domains[i].Routes {
+					domains[i].Routes[j].Healthy = &health[idx]
+					idx++
+				}
+			}
+			if !ingressOK {
+				for i := range domains {
+					down := false
+					domains[i].Healthy = &down
+					for j := range domains[i].Routes {
+						domains[i].Routes[j].Healthy = &down
+					}
+				}
+			}
+		}
+
+		info, _ := auth.LoadAuth()
+		var tunnels []activeTunnel
+		if info != nil {
+			tunnels = fetchActiveTunnels(info.Token)
+		}
+
+		if len(domains) == 0 && len(tunnels) == 0 {
+			fmt.Println("No domains or tunnels. Use 'slim start' or 'slim share' to create one.")
+			return nil
+		}
+
+		if listJSON {
+			data, err := json.MarshalIndent(map[string]any{
+				"domains": domains,
+				"tunnels": tunnels,
+			}, "", "  ")
+			if err != nil {
+				return fmt.Errorf("marshaling JSON: %w", err)
+			}
+			fmt.Println(string(data))
+			return nil
+		}
+
+		if len(domains) > 0 {
+			var rows [][]string
+			for _, e := range domains {
+				status := term.Dim.Render("-")
+				if e.Healthy != nil {
+					if running && !ingressOK {
+						status = term.Red.Render("● ingress down")
+					} else if *e.Healthy {
+						status = term.Green.Render("● reachable")
+					} else {
+						status = term.Red.Render("● unreachable")
+					}
+				}
+				rows = append(rows, []string{e.Domain, fmt.Sprintf("%d", e.Port), status})
+				for _, r := range e.Routes {
+					rStatus := term.Dim.Render("-")
+					if r.Healthy != nil {
+						if running && !ingressOK {
+							rStatus = term.Red.Render("● ingress down")
+						} else if *r.Healthy {
+							rStatus = term.Green.Render("● reachable")
+						} else {
+							rStatus = term.Red.Render("● unreachable")
+						}
+					}
+					rows = append(rows, []string{"  " + r.Path, fmt.Sprintf("%d", r.Port), rStatus})
+				}
+			}
+
+			t := table.New().
+				Headers("DOMAIN", "PORT", "STATUS").
+				Rows(rows...).
+				BorderTop(false).
+				BorderBottom(false).
+				BorderLeft(false).
+				BorderRight(false).
+				BorderColumn(false).
+				BorderHeader(false).
+				StyleFunc(func(row, col int) lipgloss.Style {
+					s := lipgloss.NewStyle().PaddingRight(2)
+					if row == table.HeaderRow {
+						s = s.Bold(true).Faint(true)
+					}
+					return s
+				})
+			fmt.Println(t)
+		}
+
+		if pfReloadErr != nil {
+			fmt.Printf("\n%s %v\n", term.Yellow.Render("Port forwarding reload failed:"), pfReloadErr)
+		}
+
+		if len(tunnels) > 0 {
+			if len(domains) > 0 {
+				fmt.Println()
+			}
+			var rows [][]string
+			for _, t := range tunnels {
+				rows = append(rows, []string{t.Subdomain + ".slim.show", t.URL, fmt.Sprintf("%d", t.RequestCount)})
+			}
+
+			t := table.New().
+				Headers("TUNNEL", "URL", "REQUESTS").
+				Rows(rows...).
+				BorderTop(false).
+				BorderBottom(false).
+				BorderLeft(false).
+				BorderRight(false).
+				BorderColumn(false).
+				BorderHeader(false).
+				StyleFunc(func(row, col int) lipgloss.Style {
+					s := lipgloss.NewStyle().PaddingRight(2)
+					if row == table.HeaderRow {
+						s = s.Bold(true).Faint(true)
+					}
+					return s
+				})
+			fmt.Println(t)
+		}
+
+		if len(domains) > 0 && !running {
+			fmt.Println("\nProxy is not running. Use 'slim start' to start it.")
+		}
+
+		return nil
+	},
+}
+⋮----
+var pfReloadErr error
+⋮----
+type routeEntry struct {
+			Path    string `json:"path"`
+			Port    int    `json:"port"`
+			Healthy *bool  `json:"healthy,omitempty"`
+		}
+⋮----
+type domainEntry struct {
+			Domain  string       `json:"domain"`
+			Port    int          `json:"port"`
+			Healthy *bool        `json:"healthy,omitempty"`
+			Routes  []routeEntry `json:"routes,omitempty"`
+		}
+⋮----
+var domains []domainEntry
+⋮----
+var allPorts []int
+⋮----
+var tunnels []activeTunnel
+⋮----
+var rows [][]string
+⋮----
+func init()
+</file>
+
+<file path="cmd/login.go">
+package cmd
+⋮----
+import (
+	"fmt"
+
+	"github.com/kamranahmedse/slim/internal/auth"
+	"github.com/spf13/cobra"
+)
+⋮----
+"fmt"
+⋮----
+"github.com/kamranahmedse/slim/internal/auth"
+"github.com/spf13/cobra"
+⋮----
+var loginCmd = &cobra.Command{
+	Use:   "login",
+	Short: "Authenticate with your slim account",
+	Args:  cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		existing, _ := auth.LoadAuth()
+
+		info, err := auth.Login()
+		if err != nil {
+			return err
+		}
+
+		if existing != nil && existing.Token == info.Token {
+			fmt.Printf("Already logged in as %s (%s)\n", info.Name, info.Email)
+		} else {
+			fmt.Printf("Logged in as %s (%s)\n", info.Name, info.Email)
+		}
+
+		return nil
+	},
+}
+⋮----
+func init()
+</file>
+
+<file path="cmd/logout.go">
+package cmd
+⋮----
+import (
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/auth"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/spf13/cobra"
+)
+⋮----
+"fmt"
+"net/http"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/auth"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/spf13/cobra"
+⋮----
+var logoutCmd = &cobra.Command{
+	Use:   "logout",
+	Short: "Log out of your slim account",
+	Args:  cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		info, err := auth.LoadAuth()
+		if err != nil {
+			return err
+		}
+
+		if info != nil && info.Token != "" {
+			revokeToken(info.Token)
+		}
+
+		if err := auth.Logout(); err != nil {
+			return err
+		}
+
+		fmt.Println("Logged out.")
+		return nil
+	},
+}
+⋮----
+func revokeToken(token string)
+⋮----
+func init()
+</file>
+
+<file path="cmd/logs_format_test.go">
+package cmd
+⋮----
+import (
+	"strings"
+	"testing"
+)
+⋮----
+"strings"
+"testing"
+⋮----
+func TestFormatLogLineMinimal(t *testing.T)
+⋮----
+func TestFormatLogLineFull(t *testing.T)
+⋮----
+func TestFormatLogLineMalformedPassthrough(t *testing.T)
+</file>
+
+<file path="cmd/logs_test.go">
+package cmd
+⋮----
+import (
+	"strings"
+	"testing"
+)
+⋮----
+"strings"
+"testing"
+⋮----
+func TestValidateLogsFlags(t *testing.T)
+</file>
+
+<file path="cmd/logs.go">
+package cmd
+⋮----
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/term"
+	"github.com/spf13/cobra"
+)
+⋮----
+"bufio"
+"fmt"
+"io"
+"os"
+"strings"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/term"
+"github.com/spf13/cobra"
+⋮----
+var logsFollow bool
+var logsFlush bool
+⋮----
+var logsCmd = &cobra.Command{
+	Use:   "logs [name]",
+	Short: "Show request logs",
+	Long: `Tail the access log. Optionally filter by domain name.
+
+  slim logs             # all domains
+  slim logs myapp       # only myapp.test
+  slim logs -f          # follow (like tail -f)
+  slim logs --flush     # clear log file`,
+	Args: cobra.MaximumNArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		logPath := config.LogPath()
+		if logsFlush {
+			if err := validateLogsFlags(logsFlush, logsFollow, len(args)); err != nil {
+				return err
+			}
+
+			if err := os.Truncate(logPath, 0); err != nil {
+				if os.IsNotExist(err) {
+					fmt.Println("No logs to clear.")
+					return nil
+				}
+				return fmt.Errorf("clearing logs: %w", err)
+			}
+			fmt.Println("Cleared access logs.")
+			return nil
+		}
+
+		f, err := os.Open(logPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Println("No logs yet. Start a domain first with 'slim start'.")
+				return nil
+			}
+			return err
+		}
+		defer f.Close()
+
+		filter := ""
+		if len(args) > 0 {
+			filter = normalizeName(args[0])
+		}
+
+		if logsFollow {
+			_, _ = f.Seek(0, io.SeekEnd)
+		}
+
+		reader := bufio.NewReader(f)
+		for {
+			line, err := reader.ReadString('\n')
+			if err != nil {
+				if err == io.EOF {
+					if !logsFollow {
+						break
+					}
+					time.Sleep(100 * time.Millisecond)
+					continue
+				}
+				return err
+			}
+
+			line = strings.TrimRight(line, "\n")
+			if filter != "" && !strings.Contains(line, filter) {
+				continue
+			}
+
+			fmt.Println(formatLogLine(line))
+		}
+
+		return nil
+	},
+}
+⋮----
+func validateLogsFlags(flush bool, follow bool, argCount int) error
+⋮----
+func formatLogLine(line string) string
+⋮----
+func init()
+</file>
+
+<file path="cmd/portfwd_test.go">
+package cmd
+⋮----
+import (
+	"errors"
+	"net"
+	"testing"
+	"time"
+)
+⋮----
+"errors"
+"net"
+"testing"
+"time"
+⋮----
+type mockCmdPortFwd struct {
+	enabled bool
+	loaded  bool
+}
+⋮----
+func (m *mockCmdPortFwd) Enable() error
+func (m *mockCmdPortFwd) Disable() error
+func (m *mockCmdPortFwd) IsEnabled() bool
+func (m *mockCmdPortFwd) IsLoaded() bool
+func (m *mockCmdPortFwd) EnsureLoaded() error
+⋮----
+func TestIngressPortsReachable(t *testing.T)
+⋮----
+func TestShouldReloadPortForwarding(t *testing.T)
+</file>
+
+<file path="cmd/portfwd.go">
+package cmd
+⋮----
+import (
+	"fmt"
+	"net"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/system"
+)
+⋮----
+"fmt"
+"net"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/system"
+⋮----
+var cmdDialTimeoutFn = net.DialTimeout
+⋮----
+func ingressPortsReachable() bool
+⋮----
+func shouldReloadPortForwarding(pf system.PortForwarder, daemonRunning bool) bool
+</file>
+
+<file path="cmd/root_test.go">
+package cmd
+⋮----
+import "testing"
+⋮----
+func TestNormalizeName(t *testing.T)
+</file>
+
+<file path="cmd/root.go">
+package cmd
+⋮----
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/term"
+	"github.com/spf13/cobra"
+)
+⋮----
+"fmt"
+"os"
+"strings"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/term"
+"github.com/spf13/cobra"
+⋮----
+var Version = "0.0.1"
+⋮----
+var rootCmd = &cobra.Command{
+	Use:   "slim",
+	Short: "Map custom local domains to dev server ports",
+	Long: `slim maps custom local domains to dev server ports with HTTPS
+and WebSocket passthrough for HMR.
+
+  slim start myapp --port 3000       # myapp.test → localhost:3000
+  slim start app.loc --port 3000     # app.loc → localhost:3000
+  slim start api --port 8080         # add another domain
+  slim list                          # see what's running
+  slim stop myapp                    # stop one domain
+  slim stop                          # stop everything`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		cmd.SilenceUsage = true
+	},
+}
+⋮----
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Print the version",
+	Args:  cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Printf("slim %s\n", Version)
+		return nil
+	},
+}
+⋮----
+func Execute() error
+⋮----
+func init()
+⋮----
+func normalizeName(input string) string
+⋮----
+func printServices(domains []config.Domain)
+</file>
+
+<file path="cmd/share.go">
+package cmd
+⋮----
+import (
+	"context"
+	"fmt"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/auth"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/log"
+	"github.com/kamranahmedse/slim/internal/term"
+	"github.com/kamranahmedse/slim/internal/tunnel"
+	"github.com/spf13/cobra"
+)
+⋮----
+"context"
+"fmt"
+"os/signal"
+"strings"
+"syscall"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/auth"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/log"
+"github.com/kamranahmedse/slim/internal/term"
+"github.com/kamranahmedse/slim/internal/tunnel"
+"github.com/spf13/cobra"
+⋮----
+var sharePort int
+var shareName string
+var sharePassword string
+var shareTTL time.Duration
+var shareDomain string
+⋮----
+var shareCmd = &cobra.Command{
+	Use:   "share",
+	Short: "Share a local port via tunnel",
+	Long: `Expose a local dev server to the internet via a slim.show tunnel.
+
+  slim share --port 3000
+  slim share --port 3000 --subdomain cool
+  slim share --port 3000 --password secret
+  slim share --port 3000 --ttl 2h
+  slim share --port 3000 --domain myapp.example.com`,
+	Args: cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		port := sharePort
+		if port < 1 || port > 65535 {
+			return fmt.Errorf("invalid port %d: must be between 1 and 65535", port)
+		}
+
+		if shareName != "" && shareDomain != "" {
+			return fmt.Errorf("cannot use --subdomain and --domain together")
+		}
+
+		if err := tunnel.ValidateSubdomain(shareName); err != nil {
+			return err
+		}
+
+		info, err := auth.Require()
+		if err != nil {
+			return err
+		}
+		token := info.Token
+
+		serverURL := config.TunnelServerURL()
+
+		subdomain := shareName
+
+		password := sharePassword
+
+		ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+		defer stop()
+
+		client := tunnel.NewClient(tunnel.ClientOptions{
+			ServerURL: serverURL,
+			Token:     token,
+			Subdomain: subdomain,
+			Domain:    shareDomain,
+			LocalPort: port,
+			Password:  password,
+			TTL:       shareTTL,
+			OnRequest: func(e tunnel.RequestEvent) {
+				statusStyle := term.StyleForStatus(e.Status)
+				fmt.Printf("%s  %-4s %s  %s  %s\n",
+					term.Dim.Render(time.Now().Format("15:04:05")),
+					e.Method,
+					e.Path,
+					statusStyle.Render(fmt.Sprintf("%d", e.Status)),
+					term.Dim.Render(log.FormatDuration(e.Duration)),
+				)
+			},
+		})
+
+		url, err := client.Connect(ctx)
+		if err != nil {
+			errMsg := err.Error()
+			if strings.Contains(errMsg, "Pro subscription") {
+				var feature string
+				switch {
+				case subdomain != "":
+					feature = "Custom subdomains"
+				case shareDomain != "":
+					feature = "Custom domains"
+				case password != "":
+					feature = "Password protection"
+				default:
+					feature = "This feature"
+				}
+
+				fmt.Printf("\n%s %s requires a Pro subscription.\n", term.CrossMark, feature)
+				fmt.Printf("  Upgrade at: https://app.slim.sh/settings/billing\n\n")
+				fmt.Printf("  Free:\n")
+				fmt.Printf("  %s\n", term.Dim.Render(fmt.Sprintf("slim share --port %d", port)))
+				fmt.Printf("  %s\n\n", term.Dim.Render(fmt.Sprintf("slim share --port %d --ttl 30m", port)))
+				fmt.Printf("  Pro:\n")
+				fmt.Printf("  %s\n", term.Dim.Render(fmt.Sprintf("slim share --port %d --subdomain myapp", port)))
+				fmt.Printf("  %s\n", term.Dim.Render(fmt.Sprintf("slim share --port %d --domain myapp.com", port)))
+				fmt.Printf("  %s\n\n", term.Dim.Render(fmt.Sprintf("slim share --port %d --password secret", port)))
+				return nil
+			}
+			return fmt.Errorf("tunnel connection failed: %w", err)
+		}
+
+		arrow := term.Dim.Render("→")
+		target := term.Dim.Render(fmt.Sprintf("localhost:%d", port))
+
+		fmt.Println()
+		fmt.Printf("%s %s  %s  %s\n", term.CheckMark, term.Green.Render(url), arrow, target)
+		if domainURL := client.DomainURL(); domainURL != "" {
+			fmt.Printf("%s %s  %s  %s\n", term.CheckMark, term.Green.Render(domainURL), arrow, target)
+		}
+		if password != "" {
+			fmt.Printf("Password: %s\n", password)
+		}
+		fmt.Printf("\nPress Ctrl+C to disconnect\n\n")
+
+		<-ctx.Done()
+		client.Close()
+		fmt.Println("\nDisconnected.")
+		return nil
+	},
+}
+⋮----
+var feature string
+⋮----
+func init()
+</file>
+
+<file path="cmd/start_test.go">
+package cmd
+⋮----
+import (
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"strings"
+"testing"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func TestParseRouteFlags(t *testing.T)
+⋮----
+func TestValidateStartWaitFlags(t *testing.T)
+</file>
+
+<file path="cmd/start.go">
+package cmd
+⋮----
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/cert"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/proxy"
+	"github.com/kamranahmedse/slim/internal/setup"
+	"github.com/kamranahmedse/slim/internal/system"
+	"github.com/kamranahmedse/slim/internal/term"
+	"github.com/spf13/cobra"
+)
+⋮----
+"fmt"
+"os"
+"strconv"
+"strings"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/cert"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/proxy"
+"github.com/kamranahmedse/slim/internal/setup"
+"github.com/kamranahmedse/slim/internal/system"
+"github.com/kamranahmedse/slim/internal/term"
+"github.com/spf13/cobra"
+⋮----
+var startPort int
+var startLogMode string
+var startCors bool
+var startWait bool
+var startWaitTimeout time.Duration
+var startRoutes []string
+⋮----
+var startCmd = &cobra.Command{
+	Use:   "start [name] --port [port]",
+	Short: "Start proxying a domain",
+	Long: `Map a local domain to a port and start proxying.
+Runs first-time setup automatically if needed.
+
+  slim start myapp --port 3000        # https://myapp.test → localhost:3000
+  slim start app.loc --port 3000      # https://app.loc → localhost:3000`,
+	Args: cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		name := normalizeName(args[0])
+
+		if err := config.ValidateDomain(name, startPort); err != nil {
+			return err
+		}
+		if strings.HasSuffix(name, ".local") {
+			fmt.Fprintf(os.Stderr, "%s .local is reserved for mDNS and may cause slow DNS resolution on macOS/Linux\n", term.Yellow.Render("Warning:"))
+		}
+		if err := validateStartWaitFlags(cmd.Flags().Changed("timeout"), startWait, startWaitTimeout); err != nil {
+			return err
+		}
+		if startLogMode != "" {
+			if err := config.ValidateLogMode(startLogMode); err != nil {
+				return err
+			}
+		}
+
+		routes, err := parseRouteFlags(startRoutes)
+		if err != nil {
+			return err
+		}
+
+		if err := setup.EnsureFirstRun(); err != nil {
+			return err
+		}
+
+		if err := config.WithLock(func() error {
+			cfg, err := config.Load()
+			if err != nil {
+				return err
+			}
+			if cmd.Flags().Changed("cors") {
+				cfg.Cors = startCors
+			}
+			if startLogMode != "" {
+				cfg.LogMode = strings.ToLower(strings.TrimSpace(startLogMode))
+			}
+			return cfg.SetDomain(name, startPort, routes)
+		}); err != nil {
+			return err
+		}
+
+		if err := system.AddHost(name); err != nil {
+			return fmt.Errorf("updating /etc/hosts: %w", err)
+		}
+
+		if err := cert.EnsureLeafCert(name); err != nil {
+			return fmt.Errorf("generating certificate: %w", err)
+		}
+
+		if !daemon.IsChild() {
+			pf := system.NewPortForwarder()
+			if shouldReloadPortForwarding(pf, daemon.IsRunning()) {
+				if err := pf.EnsureLoaded(); err != nil {
+					return fmt.Errorf("loading port forwarding rules: %w", err)
+				}
+			}
+		}
+
+		if !daemon.IsRunning() {
+			if err := setup.EnsureProxyPortsAvailable(); err != nil {
+				return err
+			}
+			if err := daemon.RunDetached(); err != nil {
+				return fmt.Errorf("starting daemon: %w", err)
+			}
+			if err := daemon.WaitForDaemon(); err != nil {
+				return err
+			}
+		} else {
+			if _, err := daemon.SendIPC(daemon.Request{Type: daemon.MsgReload}); err != nil {
+				return fmt.Errorf("reloading daemon: %w", err)
+			}
+		}
+
+		if !daemon.IsChild() {
+			pf := system.NewPortForwarder()
+			if shouldReloadPortForwarding(pf, true) {
+				if err := pf.EnsureLoaded(); err != nil {
+					return fmt.Errorf("loading port forwarding rules: %w", err)
+				}
+			}
+		}
+
+		if startWait {
+			waitPorts := []int{startPort}
+			for _, r := range routes {
+				waitPorts = append(waitPorts, r.Port)
+			}
+			for _, p := range waitPorts {
+				fmt.Printf("Waiting for localhost:%d (timeout %s)... ", p, startWaitTimeout)
+				if err := proxy.WaitForUpstream(p, startWaitTimeout); err != nil {
+					fmt.Println("timed out")
+					return err
+				}
+				fmt.Println("ready")
+			}
+		}
+
+		printServices([]config.Domain{{Name: name, Port: startPort, Routes: routes}})
+		return nil
+	},
+}
+⋮----
+func parseRouteFlags(flags []string) ([]config.Route, error)
+⋮----
+func validateStartWaitFlags(timeoutChanged bool, wait bool, timeout time.Duration) error
+⋮----
+func init()
+</file>
+
+<file path="cmd/stop_test.go">
+package cmd
+⋮----
+import (
+	"errors"
+	"strings"
+	"testing"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/system"
+)
+⋮----
+"errors"
+"strings"
+"testing"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/system"
+⋮----
+func TestStopOneDomainNotFound(t *testing.T)
+⋮----
+func TestStopOneSendsShutdownWhenLastDomain(t *testing.T)
+⋮----
+var gotType daemon.MessageType
+⋮----
+func TestStopOneSendsReloadWhenDomainsRemain(t *testing.T)
+⋮----
+func TestStopAllNoDomainsNoDaemon(t *testing.T)
+⋮----
+func TestStopAllRemovesHostsAndSendsShutdown(t *testing.T)
+⋮----
+var sendCalls int
+⋮----
+func TestStopAllDaemonShutdownError(t *testing.T)
+⋮----
+func setupStopTestHooks(t *testing.T) func()
+⋮----
+func seedDomains(domains []config.Domain) error
+</file>
+
+<file path="cmd/stop.go">
+package cmd
+⋮----
+import (
+	"fmt"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/system"
+	"github.com/spf13/cobra"
+)
+⋮----
+"fmt"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/system"
+"github.com/spf13/cobra"
+⋮----
+var (
+	configWithLockStopFn = config.WithLock
+	configLoadStopFn     = config.Load
+	systemRemoveHostFn   = system.RemoveHost
+	daemonIsRunningFn    = daemon.IsRunning
+	daemonSendIPCFn      = daemon.SendIPC
+)
+⋮----
+var stopCmd = &cobra.Command{
+	Use:   "stop [name]",
+	Short: "Stop proxying a domain, or stop everything",
+	Long: `Stop proxying a specific domain, or stop all domains and shut down the daemon.
+
+  slim stop myapp    # stop one domain
+  slim stop          # stop everything`,
+	Args: cobra.MaximumNArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return stopAll()
+		}
+		return stopOne(normalizeName(args[0]))
+	},
+}
+⋮----
+func stopOne(name string) error
+⋮----
+var remainingDomains int
+⋮----
+func stopAll() error
+⋮----
+var domains []config.Domain
+⋮----
+func init()
+</file>
+
+<file path="cmd/uninstall.go">
+package cmd
+⋮----
+import (
+	"fmt"
+	"os"
+	"os/exec"
+
+	"github.com/kamranahmedse/slim/internal/cert"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/system"
+	"github.com/kamranahmedse/slim/internal/term"
+	"github.com/spf13/cobra"
+)
+⋮----
+"fmt"
+"os"
+"os/exec"
+⋮----
+"github.com/kamranahmedse/slim/internal/cert"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/system"
+"github.com/kamranahmedse/slim/internal/term"
+"github.com/spf13/cobra"
+⋮----
+var uninstallCmd = &cobra.Command{
+	Use:   "uninstall",
+	Short: "Remove all slim data and configuration",
+	Args:  cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if os.Geteuid() != 0 {
+			exe, err := os.Executable()
+			if err != nil {
+				return fmt.Errorf("failed to find slim binary: %w", err)
+			}
+			sudoCmd := exec.Command("sudo", "--preserve-env=HOME", exe, "uninstall")
+			sudoCmd.Stdin = os.Stdin
+			sudoCmd.Stdout = os.Stdout
+			sudoCmd.Stderr = os.Stderr
+			return sudoCmd.Run()
+		}
+
+		fmt.Println("Uninstalling slim...")
+
+		steps := []term.Step{
+			{
+				Name: "Stopping daemon",
+				Run: func() (string, error) {
+					if !daemon.IsRunning() {
+						return "skipped (not running)", nil
+					}
+					if _, err := daemon.SendIPC(daemon.Request{Type: daemon.MsgShutdown}); err != nil {
+						return fmt.Sprintf("skipped (%v)", err), nil
+					}
+					return "done", nil
+				},
+			},
+			{
+				Name: "Removing CA from trust store",
+				Run: func() (string, error) {
+					if err := cert.UntrustCA(); err != nil {
+						return fmt.Sprintf("skipped (%v)", err), nil
+					}
+					return "done", nil
+				},
+			},
+			{
+				Name: "Removing port forwarding rules",
+				Run: func() (string, error) {
+					pf := system.NewPortForwarder()
+					if err := pf.Disable(); err != nil {
+						return fmt.Sprintf("skipped (%v)", err), nil
+					}
+					return "done", nil
+				},
+			},
+			{
+				Name: "Cleaning /etc/hosts",
+				Run: func() (string, error) {
+					if err := system.RemoveAllHosts(); err != nil {
+						return fmt.Sprintf("skipped (%v)", err), nil
+					}
+					return "done", nil
+				},
+			},
+			{
+				Name: "Removing ~/.slim/",
+				Run: func() (string, error) {
+					os.RemoveAll(config.Dir())
+					return "done", nil
+				},
+			},
+			{
+				Name: "Removing slim binary",
+				Run: func() (string, error) {
+					exe, err := os.Executable()
+					if err != nil {
+						return fmt.Sprintf("skipped (%v)", err), nil
+					}
+					if err := os.Remove(exe); err != nil {
+						return fmt.Sprintf("skipped (%v)", err), nil
+					}
+					return "done", nil
+				},
+			},
+		}
+
+		if err := term.RunSteps(steps); err != nil {
+			return err
+		}
+
+		fmt.Println("\nslim has been completely removed.")
+		return nil
+	},
+}
+⋮----
+func init()
+</file>
+
+<file path="cmd/up_test.go">
+package cmd
+⋮----
+import (
+	"strings"
+	"testing"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/project"
+)
+⋮----
+"strings"
+"testing"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/project"
+⋮----
+func setupUpTestHooks(t *testing.T) func()
+⋮----
+func TestUpStartsDaemonForProjectServices(t *testing.T)
+⋮----
+func TestUpReloadsDaemonWhenRunning(t *testing.T)
+⋮----
+var gotType daemon.MessageType
+⋮----
+func TestUpValidationError(t *testing.T)
+</file>
+
+<file path="cmd/up.go">
+package cmd
+⋮----
+import (
+	"fmt"
+	"strings"
+
+	"github.com/kamranahmedse/slim/internal/cert"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/project"
+	"github.com/kamranahmedse/slim/internal/setup"
+	"github.com/kamranahmedse/slim/internal/system"
+	"github.com/spf13/cobra"
+)
+⋮----
+"fmt"
+"strings"
+⋮----
+"github.com/kamranahmedse/slim/internal/cert"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/project"
+"github.com/kamranahmedse/slim/internal/setup"
+"github.com/kamranahmedse/slim/internal/system"
+"github.com/spf13/cobra"
+⋮----
+var (
+	upDiscoverFn          = project.Discover
+	upEnsureFirstRunFn    = setup.EnsureFirstRun
+	upWithLockFn          = config.WithLock
+	upLoadFn              = config.Load
+	upAddHostFn           = system.AddHost
+	upEnsureLeafCertFn    = cert.EnsureLeafCert
+	upDaemonIsRunningFn   = daemon.IsRunning
+	upDaemonIsChildFn     = daemon.IsChild
+	upNewPortFwdFn        = system.NewPortForwarder
+	upEnsurePortsFn       = setup.EnsureProxyPortsAvailable
+	upDaemonRunDetachedFn = daemon.RunDetached
+	upDaemonWaitFn        = daemon.WaitForDaemon
+	upDaemonSendIPCFn     = daemon.SendIPC
+)
+⋮----
+var upConfigPath string
+⋮----
+var upCmd = &cobra.Command{
+	Use:   "up",
+	Short: "Start all services from .slim.yaml",
+	Long: `Discover .slim.yaml in the current or parent directories,
+then start all services defined in it.
+
+  slim up
+  slim up --config /path/to/.slim.yaml`,
+	Args: cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		var pc *project.ProjectConfig
+		var path string
+		var err error
+
+		if upConfigPath != "" {
+			path = upConfigPath
+			pc, err = project.Load(path)
+		} else {
+			pc, path, err = upDiscoverFn()
+		}
+		if err != nil {
+			return err
+		}
+
+		if err := pc.Validate(); err != nil {
+			return err
+		}
+
+		fmt.Printf("Using %s\n", path)
+
+		if err := upEnsureFirstRunFn(); err != nil {
+			return err
+		}
+
+		if err := upWithLockFn(func() error {
+			cfg, err := upLoadFn()
+			if err != nil {
+				return err
+			}
+			cfg.Cors = pc.Cors
+			if pc.LogMode != "" {
+				cfg.LogMode = strings.ToLower(strings.TrimSpace(pc.LogMode))
+			}
+			for _, svc := range pc.Services {
+				if existing, idx := cfg.FindDomain(svc.Domain); existing != nil {
+					cfg.Domains[idx].Port = svc.Port
+					cfg.Domains[idx].Routes = svc.Routes
+				} else {
+					cfg.Domains = append(cfg.Domains, config.Domain{
+						Name:   svc.Domain,
+						Port:   svc.Port,
+						Routes: svc.Routes,
+					})
+				}
+			}
+			return cfg.Save()
+		}); err != nil {
+			return err
+		}
+
+		for _, svc := range pc.Services {
+			if err := upAddHostFn(svc.Domain); err != nil {
+				return fmt.Errorf("updating /etc/hosts for %s: %w", svc.Domain, err)
+			}
+			if err := upEnsureLeafCertFn(svc.Domain); err != nil {
+				return fmt.Errorf("generating certificate for %s: %w", svc.Domain, err)
+			}
+		}
+
+		if !upDaemonIsChildFn() {
+			pf := upNewPortFwdFn()
+			if shouldReloadPortForwarding(pf, upDaemonIsRunningFn()) {
+				if err := pf.EnsureLoaded(); err != nil {
+					return fmt.Errorf("loading port forwarding rules: %w", err)
+				}
+			}
+		}
+
+		if !upDaemonIsRunningFn() {
+			if err := upEnsurePortsFn(); err != nil {
+				return err
+			}
+			if err := upDaemonRunDetachedFn(); err != nil {
+				return fmt.Errorf("starting daemon: %w", err)
+			}
+			if err := upDaemonWaitFn(); err != nil {
+				return err
+			}
+		} else {
+			if _, err := upDaemonSendIPCFn(daemon.Request{Type: daemon.MsgReload}); err != nil {
+				return fmt.Errorf("reloading daemon: %w", err)
+			}
+		}
+
+		if !upDaemonIsChildFn() {
+			pf := upNewPortFwdFn()
+			if shouldReloadPortForwarding(pf, true) {
+				if err := pf.EnsureLoaded(); err != nil {
+					return fmt.Errorf("loading port forwarding rules: %w", err)
+				}
+			}
+		}
+
+		domains := make([]config.Domain, len(pc.Services))
+		for i, svc := range pc.Services {
+			domains[i] = config.Domain{Name: svc.Domain, Port: svc.Port, Routes: svc.Routes}
+		}
+		printServices(domains)
+
+		return nil
+	},
+}
+⋮----
+var pc *project.ProjectConfig
+var path string
+var err error
+⋮----
+func init()
+</file>
+
+<file path="cmd/upgrade.go">
+package cmd
+⋮----
+import (
+	"archive/tar"
+	"compress/gzip"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
+	"strings"
+
+	"github.com/kamranahmedse/slim/internal/term"
+	"github.com/spf13/cobra"
+)
+⋮----
+"archive/tar"
+"compress/gzip"
+"crypto/sha256"
+"encoding/hex"
+"fmt"
+"io"
+"net/http"
+"os"
+"os/exec"
+"path/filepath"
+"runtime"
+"strings"
+⋮----
+"github.com/kamranahmedse/slim/internal/term"
+"github.com/spf13/cobra"
+⋮----
+var upgradeCmd = &cobra.Command{
+	Use:     "upgrade",
+	Aliases: []string{"update"},
+	Short:   "Upgrade slim to the latest version",
+	Args:  cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		repo := "kamranahmedse/slim"
+
+		tag, err := latestTag(repo)
+		if err != nil {
+			return fmt.Errorf("failed to check latest version: %w", err)
+		}
+		latest := strings.TrimPrefix(tag, "v")
+
+		if latest == Version {
+			fmt.Printf("\nAlready up to date (%s)\n\n", Version)
+			return nil
+		}
+		fmt.Printf("\nUpdating %s → %s\n\n", Version, latest)
+
+		exe, err := os.Executable()
+		if err != nil {
+			return fmt.Errorf("failed to locate current binary: %w", err)
+		}
+		exe, err = filepath.EvalSymlinks(exe)
+		if err != nil {
+			return fmt.Errorf("failed to resolve binary path: %w", err)
+		}
+
+		tmpDir, err := os.MkdirTemp("", "slim-upgrade-*")
+		if err != nil {
+			return fmt.Errorf("failed to create temp directory: %w", err)
+		}
+		defer os.RemoveAll(tmpDir)
+
+		filename := fmt.Sprintf("slim_%s_%s_%s.tar.gz", latest, runtime.GOOS, runtime.GOARCH)
+		archiveURL := fmt.Sprintf("https://github.com/%s/releases/download/%s/%s", repo, tag, filename)
+		checksumURL := fmt.Sprintf("https://github.com/%s/releases/download/%s/checksums.txt", repo, tag)
+		archivePath := filepath.Join(tmpDir, filename)
+		binaryPath := filepath.Join(tmpDir, "slim")
+
+		err = term.RunSteps([]term.Step{
+			{
+				Name: "Downloading archive",
+				Run: func() (string, error) {
+					return "done", downloadFile(archiveURL, archivePath)
+				},
+			},
+			{
+				Name: "Verifying checksum",
+				Run: func() (string, error) {
+					return "ok", verifyChecksum(checksumURL, archivePath, filename)
+				},
+			},
+			{
+				Name: "Extracting",
+				Run: func() (string, error) {
+					return "done", extractBinary(archivePath, binaryPath)
+				},
+			},
+			{
+				Name:        "Replacing binary",
+				Interactive: true,
+				Run: func() (string, error) {
+					return "done", replaceBinary(binaryPath, exe)
+				},
+			},
+		})
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("\nUpgraded to %s\n", latest)
+		return nil
+	},
+}
+⋮----
+func init()
+⋮----
+func latestTag(repo string) (string, error)
+⋮----
+func downloadFile(url, dest string) error
+⋮----
+func verifyChecksum(checksumURL, filePath, filename string) error
+⋮----
+var expectedHash string
+⋮----
+func extractBinary(archivePath, destPath string) error
+⋮----
+func replaceBinary(srcPath, dstPath string) error
+⋮----
+func replaceBinarySudo(srcPath, dstPath string) error
+</file>
+
+<file path="docs/public/install.sh">
+#!/bin/sh
+set -e
+
+REPO="kamranahmedse/slim"
+INSTALL_DIR="/usr/local/bin"
+
+log() {
+  printf "%s\n" "$1"
+}
+
+log "Step 1/7: Detecting platform..."
+
+# Detect OS
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+case "$OS" in
+  darwin) OS="darwin" ;;
+  linux)  OS="linux" ;;
+  *)
+    echo "Unsupported OS: $OS"
+    exit 1
+    ;;
+esac
+
+# Detect architecture
+ARCH=$(uname -m)
+case "$ARCH" in
+  x86_64|amd64)  ARCH="amd64" ;;
+  arm64|aarch64) ARCH="arm64" ;;
+  *)
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
+
+log "Step 2/7: Resolving latest release..."
+
+# Get latest version
+TAG=$(curl -fsLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest" | sed -n 's|.*/tag/||p')
+if [ -z "$TAG" ]; then
+  echo "Failed to fetch latest version"
+  exit 1
+fi
+
+VERSION="${TAG#v}"
+FILENAME="slim_${VERSION}_${OS}_${ARCH}.tar.gz"
+URL="https://github.com/$REPO/releases/download/${TAG}/${FILENAME}"
+CHECKSUM_URL="https://github.com/$REPO/releases/download/${TAG}/checksums.txt"
+
+log "Installing slim ${VERSION} (${OS}/${ARCH})..."
+
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+
+log "Step 3/7: Downloading archive..."
+curl -fL --retry 3 --connect-timeout 15 --progress-bar "$URL" -o "$TMP/$FILENAME"
+
+log "Step 4/7: Downloading checksums..."
+curl -fsSL --retry 3 --connect-timeout 15 "$CHECKSUM_URL" -o "$TMP/checksums.txt"
+
+# Verify checksum
+log "Step 5/7: Verifying checksum..."
+if [ "$OS" = "darwin" ]; then
+  (cd "$TMP" && grep "$FILENAME" checksums.txt | shasum -a 256 -c --quiet)
+elif command -v sha256sum >/dev/null 2>&1; then
+  (cd "$TMP" && grep "$FILENAME" checksums.txt | sha256sum -c --quiet)
+else
+  echo "Warning: cannot verify checksum (sha256sum/shasum not found)"
+fi
+
+log "Step 6/7: Extracting archive..."
+tar -xzf "$TMP/$FILENAME" -C "$TMP"
+
+if [ -w "$INSTALL_DIR" ]; then
+  log "Step 7/7: Installing binary to $INSTALL_DIR..."
+  install -m 0755 "$TMP/slim" "$INSTALL_DIR/slim"
+else
+  log "Step 7/7: Installing binary to $INSTALL_DIR (sudo password may be required)..."
+  sudo -v
+  sudo install -m 0755 "$TMP/slim" "$INSTALL_DIR/slim"
+fi
+
+log "Installed slim to $INSTALL_DIR/slim"
+"$INSTALL_DIR/slim" version
+</file>
+
+<file path="docs/src/components/command-code.astro">
+---
+const props = Astro.props;
+const { code, lang } = props;
+
+const commandBins = new Set(['slim', 'curl', 'sh']);
+const flagPattern = /^--?[a-z0-9][\w-]*$/i;
+const valuePattern = /^\d+([a-z]+)?$/i;
+const urlPattern = /^https?:\/\/\S+$/i;
+const separatorTokens = new Set(['|', '||', '&&', ';']);
+
+const escapeHtml = (value) =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+const highlightCommand = (commandLine) => {
+  const segments = commandLine.split(/(\s+)/);
+  let previousWasFlag = false;
+  let expectExecutable = true;
+
+  return segments
+    .map((segment) => {
+      if (!segment) {
+        return '';
+      }
+
+      if (/^\s+$/.test(segment)) {
+        return segment;
+      }
+
+      const text = escapeHtml(segment);
+
+      if (separatorTokens.has(segment)) {
+        previousWasFlag = false;
+        expectExecutable = true;
+        return `<span class="token-muted">${text}</span>`;
+      }
+
+      if (flagPattern.test(segment)) {
+        previousWasFlag = true;
+        expectExecutable = false;
+        return `<span class="token-flag">${text}</span>`;
+      }
+
+      if (previousWasFlag) {
+        previousWasFlag = false;
+        expectExecutable = false;
+        if (urlPattern.test(segment)) {
+          return `<span class="token-url">${text}</span>`;
+        }
+        return `<span class="token-value">${text}</span>`;
+      }
+
+      if (expectExecutable || commandBins.has(segment)) {
+        expectExecutable = false;
+        return `<span class="token-bin">${text}</span>`;
+      }
+
+      if (urlPattern.test(segment)) {
+        return `<span class="token-url">${text}</span>`;
+      }
+
+      if (valuePattern.test(segment)) {
+        return `<span class="token-value">${text}</span>`;
+      }
+
+      return `<span class="token-text">${text}</span>`;
+    })
+    .join('');
+};
+
+const highlightYamlLine = (line) => {
+  if (!line.trim()) {
+    return '';
+  }
+
+  if (line.trimStart().startsWith('#')) {
+    return `<span class="token-comment">${escapeHtml(line)}</span>`;
+  }
+
+  const leading = line.match(/^(\s*)/)[1];
+  const rest = line.slice(leading.length);
+
+  // List item: "- key: value" or "- value"
+  const listMatch = rest.match(/^(-\s+)(.*)$/);
+  if (listMatch) {
+    const dash = listMatch[1];
+    const after = listMatch[2];
+    const kvMatch = after.match(/^([a-zA-Z_][\w-]*)(:\s*)(.+)$/);
+    if (kvMatch) {
+      return `${escapeHtml(leading)}<span class="token-muted">${escapeHtml(dash)}</span><span class="token-yaml-key">${escapeHtml(kvMatch[1])}</span><span class="token-muted">${escapeHtml(kvMatch[2])}</span><span class="token-yaml-value">${escapeHtml(kvMatch[3])}</span>`;
+    }
+    return `${escapeHtml(leading)}<span class="token-muted">${escapeHtml(dash)}</span><span class="token-yaml-value">${escapeHtml(after)}</span>`;
+  }
+
+  // Key: value
+  const kvMatch = rest.match(/^([a-zA-Z_][\w-]*)(:\s*)(.+)$/);
+  if (kvMatch) {
+    return `${escapeHtml(leading)}<span class="token-yaml-key">${escapeHtml(kvMatch[1])}</span><span class="token-muted">${escapeHtml(kvMatch[2])}</span><span class="token-yaml-value">${escapeHtml(kvMatch[3])}</span>`;
+  }
+
+  // Key: (no value, section heading)
+  const sectionMatch = rest.match(/^([a-zA-Z_][\w-]*)(:\s*)$/);
+  if (sectionMatch) {
+    return `${escapeHtml(leading)}<span class="token-yaml-key">${escapeHtml(sectionMatch[1])}</span><span class="token-muted">${escapeHtml(sectionMatch[2])}</span>`;
+  }
+
+  return `<span class="token-text">${escapeHtml(line)}</span>`;
+};
+
+const isYaml = lang === 'yaml';
+
+const detectAutoYaml = (lines) => {
+  if (isYaml) { return true; }
+  let hasShell = false;
+  let hasYaml = false;
+  for (const l of lines) {
+    const trimmed = l.trim();
+    if (trimmed.startsWith('$ ')) { hasShell = true; }
+    if (/^[a-zA-Z_][\w-]*:/.test(trimmed) && !trimmed.startsWith('#') && !trimmed.startsWith('$')) { hasYaml = true; }
+  }
+  return hasYaml && !hasShell;
+};
+
+const lines = code.split('\n');
+const autoYaml = detectAutoYaml(lines);
+
+const highlightLine = (line) => {
+  if (!line.trim()) {
+    return '';
+  }
+
+  if (autoYaml) {
+    return highlightYamlLine(line);
+  }
+
+  if (line.startsWith('#')) {
+    return `<span class="token-comment">${escapeHtml(line)}</span>`;
+  }
+
+  if (line.startsWith('$ ')) {
+    const content = line.slice(2);
+    return `<span class="token-prompt">$</span> ${highlightCommand(content)}`;
+  }
+
+  return `<span class="token-text">${escapeHtml(line)}</span>`;
+};
+
+const highlightedCode = lines.map(highlightLine).join('\n');
+---
+
+<div class="command-code-wrapper">
+  <pre><code set:html={highlightedCode} /></pre>
+</div>
+
+<style>
+  .command-code-wrapper pre {
+    background: #0a0a0a !important;
+    color: #e5e5e5;
+    margin: 0;
+    padding: 14px 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: auto;
+    border-radius: 0;
+  }
+
+  .command-code-wrapper code {
+    background: none !important;
+    padding: 0;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .command-code-wrapper :global(.token-comment) {
+    color: #525252;
+  }
+
+  .command-code-wrapper :global(.token-prompt) {
+    color: #34d399;
+  }
+
+  .command-code-wrapper :global(.token-bin) {
+    color: #7dd3fc;
+  }
+
+  .command-code-wrapper :global(.token-flag) {
+    color: #60a5fa;
+  }
+
+  .command-code-wrapper :global(.token-value) {
+    color: #fbbf24;
+  }
+
+  .command-code-wrapper :global(.token-url) {
+    color: #34d399;
+  }
+
+  .command-code-wrapper :global(.token-muted) {
+    color: #737373;
+  }
+
+  .command-code-wrapper :global(.token-text) {
+    color: #e5e5e5;
+  }
+
+  .command-code-wrapper :global(.token-yaml-key) {
+    color: #7dd3fc;
+  }
+
+  .command-code-wrapper :global(.token-yaml-value) {
+    color: #fbbf24;
+  }
+</style>
+</file>
+
+<file path="docs/src/components/command-detail.astro">
+---
+import ChevronDown from '../icons/chevron-down.astro';
+import CommandCode from './command-code.astro';
+
+const props = Astro.props;
+const { name, description, code, open = false } = props;
+---
+
+<details class="group border border-border rounded-lg overflow-hidden" open={open || undefined}>
+  <summary class="flex items-center justify-between px-3.5 py-2.5 cursor-pointer list-none transition-colors hover:bg-surface border-b border-transparent group-open:border-border">
+    <div class="flex items-center gap-2.5 max-sm:flex-col max-sm:items-start max-sm:gap-[3px]">
+      <code class="font-mono text-[13px] font-medium bg-[hsl(0_0%_100%/8%)] px-[7px] py-0.5 rounded">{name}</code>
+      <span class="text-[13px] text-text-tertiary">{description}</span>
+    </div>
+    <ChevronDown class="chevron text-text-tertiary transition-transform duration-200 shrink-0" />
+  </summary>
+  <div>
+    <CommandCode code={code} />
+  </div>
+</details>
+
+<style>
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::marker {
+    display: none;
+    content: '';
+  }
+
+  details[open] :global(.chevron) {
+    transform: rotate(180deg);
+  }
+</style>
+</file>
+
+<file path="docs/src/components/commands-section.astro">
+---
+import CommandDetail from './command-detail.astro';
+
+const startCode = `# Map your Next.js app
+$ slim start myapp --port 3000
+
+# Add your API server
+$ slim start api -p 8080
+
+# Use a custom TLD
+$ slim start app.loc -p 4000
+
+# Route /api requests to a different port
+$ slim start myapp -p 3000 --route /api=8080
+
+# Enable access logging
+$ slim start dashboard -p 5173 --log-mode full
+
+# Wait for upstream to be ready
+$ slim start myapp -p 3000 --wait --timeout 30s`;
+
+const listCode = `# Show all domains with health status
+$ slim list
+
+# Output as JSON
+$ slim list --json`;
+
+const logsCode = `# Tail all access logs
+$ slim logs
+
+# Follow logs for a specific domain
+$ slim logs -f myapp
+
+# Clear all logs
+$ slim logs --flush`;
+
+const stopCode = `# Stop a specific domain
+$ slim stop myapp
+
+# Stop all domains and shutdown daemon
+$ slim stop`;
+
+const upCode = `# Start all services from .slim.yaml
+$ slim up
+
+# Or specify a config path
+$ slim up --config /path/to/.slim.yaml`;
+
+const downCode = `# Stop all project services
+$ slim down
+
+# Or specify a config path
+$ slim down --config /path/to/.slim.yaml`;
+
+const doctorCode = `# Check your local setup
+$ slim doctor`;
+
+const uninstallCode = `# Removes everything: CA, certs, hosts entries,
+# port-forward rules, and config
+$ slim uninstall`;
+---
+
+<section class="py-11" id="commands">
+  <div class="max-w-[var(--max-width)] mx-auto px-[var(--padding-x)]">
+    <p class="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary mb-3">Reference</p>
+    <h2 class="font-heading text-[22px] font-medium tracking-[-0.02em] mb-1.5 text-text max-sm:text-xl">Commands</h2>
+    <p class="text-text-tertiary text-sm mb-4 leading-[1.5]">
+      Everything is one <code class="bg-[hsl(0_0%_100%/8%)] px-[5px] py-px rounded-[3px] text-[12.5px] text-text-secondary">slim</code> command away.
+    </p>
+    <div class="flex flex-col gap-1.5">
+      <CommandDetail name="slim start <name>" description="Map a domain to a port" code={startCode} open />
+      <CommandDetail name="slim list" description="See what's running" code={listCode} />
+      <CommandDetail name="slim logs" description="View access logs" code={logsCode} />
+      <CommandDetail name="slim up" description="Start all services from .slim.yaml" code={upCode} />
+      <CommandDetail name="slim down" description="Stop project services" code={downCode} />
+      <CommandDetail name="slim stop" description="Stop proxying" code={stopCode} />
+      <CommandDetail name="slim doctor" description="Diagnose setup issues" code={doctorCode} />
+      <CommandDetail name="slim uninstall" description="Remove everything" code={uninstallCode} />
+    </div>
+  </div>
+</section>
+</file>
+
+<file path="docs/src/components/copy-button.astro">
+---
+import CopyIcon from '../icons/copy.astro';
+import CheckIcon from '../icons/check.astro';
+
+const props = Astro.props;
+const { text } = props;
+---
+
+<button
+  class="copy-btn shrink-0 bg-[#262626] border-none rounded-[6px] px-2.5 py-[5px] cursor-pointer text-[#a3a3a3] flex items-center gap-[5px] font-mono text-[11.5px] transition-colors hover:bg-[#333] hover:text-[#d4d4d4] [&.copied]:text-[#34d399]"
+  type="button"
+  aria-label="Copy to clipboard"
+  data-copy-text={text}
+>
+  <CopyIcon class="copy-icon [.copied_&]:hidden" />
+  <CheckIcon class="check-icon hidden [.copied_&]:inline" />
+  <span class="copy-label [.copied_&]:hidden">Copy</span>
+  <span class="copied-label hidden [.copied_&]:inline">Copied!</span>
+</button>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    if (btn.getAttribute('data-copy-bound') === 'true') {
+      return;
+    }
+
+    btn.setAttribute('data-copy-bound', 'true');
+    btn.addEventListener('click', function () {
+      const text = btn.getAttribute('data-copy-text');
+      if (!text || !navigator.clipboard) {
+        return;
+      }
+
+      navigator.clipboard.writeText(text).then(function () {
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  });
+</script>
+</file>
+
+<file path="docs/src/components/cta-section.astro">
+---
+import CopyButton from './copy-button.astro';
+
+const installCmd = 'curl -sL https://slim.sh/install.sh | sh';
+---
+
+<section class="relative py-14 overflow-hidden">
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_100%,_hsl(210_40%_14%)_0%,_transparent_60%)] pointer-events-none" aria-hidden="true"></div>
+  <div class="max-w-(--max-width) mx-auto px-(--padding-x) text-center relative">
+    <h2 class="font-heading text-[26px] font-medium tracking-[-0.02em] text-text mb-2 max-sm:text-xl">Get started in seconds</h2>
+    <p class="text-text-tertiary text-sm mb-6 leading-[1.5]">
+      Install Slim and set up your first .test domain in under a minute.
+    </p>
+    <div class="inline-flex items-center gap-3 bg-code-bg rounded-lg px-4 py-2.5 overflow-x-auto">
+      <code class="font-mono text-[12.5px] text-[#a3a3a3] whitespace-nowrap">
+        <span class="text-[#10b981] mr-1.5">$</span> <span class="text-[#7dd3fc]">curl</span> <span class="text-[#60a5fa]">-sL</span> <span class="text-[#34d399]">https://slim.sh/install.sh</span> | <span class="text-[#7dd3fc]">sh</span>
+      </code>
+      <CopyButton text={installCmd} />
+    </div>
+    <p class="text-[12.5px] text-text-tertiary mt-3">
+      <a href="https://github.com/kamranahmedse/slim" class="text-primary no-underline hover:underline underline-offset-2 transition-colors">View on GitHub</a>
+      <span class="mx-2 text-border">&middot;</span>
+      <a href="https://github.com/kamranahmedse/slim#build-from-source" class="text-text-tertiary underline underline-offset-2 transition-colors hover:text-text-secondary">Build from source</a>
+    </p>
+  </div>
+</section>
+</file>
+
+<file path="docs/src/components/feature-row.astro">
+---
+const props = Astro.props;
+const { title, description, tint = '#232323' } = props;
+---
+
+<div class="rounded-xl p-4 border border-border transition-shadow hover:shadow-[0_2px_8px_rgba(0,0,0,0.2)]" style={`background: ${tint}`}>
+  <div class="mb-4 [&>svg]:size-5">
+    <slot />
+  </div>
+  <strong class="text-[13.5px] font-semibold text-text block">{title}</strong>
+  <p class="text-[13px] text-text-tertiary mt-1 leading-[1.45]">{description}</p>
+</div>
+</file>
+
+<file path="docs/src/components/hero-section.astro">
+---
+import CopyButton from './copy-button.astro';
+
+const installCmd = 'curl -sL https://slim.sh/install.sh | sh';
+---
+
+<section class="relative py-20 text-left max-sm:py-12 overflow-hidden" id="install">
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,_hsl(210_40%_14%)_0%,_transparent_60%)] pointer-events-none" aria-hidden="true"></div>
+
+  <div class="max-w-(--max-width) mx-auto px-(--padding-x) text-center relative">
+    <div class="inline-flex items-center gap-2 rounded-full bg-[hsl(0_0%_100%/6%)] px-3.5 py-1.5 text-[11.5px] font-medium text-text-secondary mb-6">
+      <span class="size-1.5 rounded-full bg-primary"></span>
+      Free Forever &nbsp; · &nbsp; Built with Go
+    </div>
+
+    <h1 class="font-heading text-[44px] font-medium leading-[1.12] tracking-[-0.03em] text-text max-sm:text-[28px]">
+      Give your localhost a<br /><span class="text-[#34d399]">local</span> or <span class="text-[#a78bfa]">public</span> URL
+    </h1>
+    <p class="text-[15px] leading-[1.6] text-text-secondary mt-6 mb-8 max-w-115 max-sm:text-sm mx-auto">
+      Turn <code class="bg-[hsl(0_0%_100%/8%)] px-1.5 py-0.5 rounded text-[13px] text-text">localhost:3000</code> into <code class="bg-[hsl(0_0%_100%/8%)] px-1.5 py-0.5 rounded text-[13px] text-text">https://app.test</code> with path routing, HTTPS, HMR support, or get a public url without deployment.
+    </p>
+
+    <div class="flex gap-0 mb-0">
+      <button
+        class="hero-tab rounded-t-lg px-4 py-2 text-[13px] font-medium transition-colors bg-code-bg text-white"
+        data-hero-tab="local"
+        type="button"
+      >Local Domains</button>
+      <button
+        class="hero-tab rounded-t-lg px-4 py-2 text-[13px] font-medium transition-colors bg-[#232323] text-text-tertiary hover:text-text-secondary"
+        data-hero-tab="share"
+        type="button"
+      >Internet Sharing</button>
+    </div>
+
+    <div class="rounded-b-[10px] rounded-tr-[10px] bg-code-bg text-left overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+      <div class="flex gap-1.5 border-b border-[#1a1a1a] px-3.5 py-2.5">
+        <span class="size-2.5 rounded-full bg-[#ff5f57]"></span>
+        <span class="size-2.5 rounded-full bg-[#febc2e]"></span>
+        <span class="size-2.5 rounded-full bg-[#28c840]"></span>
+      </div>
+
+      <div class="hero-panel" data-hero-panel="local">
+        <div class="px-4 pt-4 pb-5 font-mono text-[13px] leading-[1.7] text-code-text max-sm:text-[11.5px]">
+          <div class="flex gap-2">
+            <span class="text-[#10b981] select-none">$</span>
+            <span><span class="text-[#7dd3fc]">slim</span> start web <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">3000</span></span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://web.test</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:3000</span>
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <span class="text-[#10b981] select-none">$</span>
+            <span><span class="text-[#7dd3fc]">slim</span> start myapp <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">3000</span> <span class="text-[#60a5fa]">--route</span> <span class="text-[#fbbf24]">/api=8080</span></span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://myapp.test</span> &nbsp;&nbsp;&nbsp;<span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:3000</span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#737373]">&nbsp;</span> <span class="text-[#fbbf24]">https://myapp.test/api</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:8080</span>
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <span class="text-[#10b981] select-none">$</span>
+            <span><span class="text-[#7dd3fc]">slim</span> start app.loc <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">4000</span></span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://app.loc</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:4000</span>
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <span class="text-[#10b981] select-none">$</span>
+            <span><span class="text-[#7dd3fc]">slim</span> up <span class="text-[#525252]">&nbsp;# .slim.yaml</span></span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://myapp.test</span> &nbsp;&nbsp;&nbsp;<span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:3000</span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#737373]">&nbsp;</span> <span class="text-[#fbbf24]">https://myapp.test/api</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:8080</span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://dashboard.test</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:5173</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-panel hidden" data-hero-panel="share">
+        <div class="px-4 pt-4 pb-5 font-mono text-[13px] leading-[1.7] text-code-text max-sm:text-[11.5px]">
+          <div class="flex gap-2">
+            <span class="text-[#10b981] select-none">$</span>
+            <span><span class="text-[#7dd3fc]">slim</span> share <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">3000</span></span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://r4nd0m.slim.show</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:3000</span>
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <span class="text-[#10b981] select-none">$</span>
+            <span><span class="text-[#7dd3fc]">slim</span> share <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">3000</span> <span class="text-[#60a5fa]">--subdomain</span> <span class="text-[#fbbf24]">demo</span></span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://demo.slim.show</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:3000</span>
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <span class="text-[#10b981] select-none">$</span>
+            <span><span class="text-[#7dd3fc]">slim</span> share <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">8080</span> <span class="text-[#60a5fa]">--password</span> <span class="text-[#60a5fa]">--ttl</span> <span class="text-[#fbbf24]">30m</span></span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://a1b2c3.slim.show</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:8080</span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#737373]">&nbsp;</span> <span class="text-[#60a5fa]">password protected</span> <span class="text-[#525252]">&middot;</span> <span class="text-[#fbbf24]">expires in 30m</span>
+          </div>
+
+          <div class="flex gap-2 mt-3">
+            <span class="text-[#10b981] select-none">$</span>
+            <span><span class="text-[#7dd3fc]">slim</span> share <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">4321</span> <span class="text-[#60a5fa]">--subdomain</span> <span class="text-[#fbbf24]">staging</span> <span class="text-[#60a5fa]">--ttl</span> <span class="text-[#fbbf24]">2h</span></span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://staging.slim.show</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:4321</span>
+          </div>
+          <div class="pl-4 whitespace-nowrap">
+            <span class="text-[#737373]">&nbsp;</span> <span class="text-[#fbbf24]">expires in 2h</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-left mt-7">
+      <p class="text-[13px] text-text font-medium mb-2">Install with one command</p>
+      <div class="bg-code-bg rounded-lg px-4 py-2.5 flex items-center gap-3 overflow-x-auto">
+        <code class="font-mono text-[12.5px] text-[#a3a3a3] whitespace-nowrap flex-1">
+          <span class="text-[#10b981] mr-1.5">$</span> <span class="text-[#7dd3fc]">curl</span> <span class="text-[#60a5fa]">-sL</span> <span class="text-[#34d399]">https://slim.sh/install.sh</span> | <span class="text-[#7dd3fc]">sh</span>
+        </code>
+        <CopyButton text={installCmd} />
+      </div>
+      <p class="text-[12.5px] text-text-tertiary mt-2 leading-normal">
+        Or <a href="https://github.com/kamranahmedse/slim#build-from-source" class="text-text-tertiary underline underline-offset-2 transition-colors hover:text-text-secondary">build from source</a>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('.hero-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var target = tab.getAttribute('data-hero-tab');
+
+      document.querySelectorAll('.hero-tab').forEach(function (t) {
+        t.classList.remove('bg-code-bg', 'text-white', 'hover:text-white');
+        t.classList.add('bg-[#232323]', 'text-text-tertiary');
+      });
+      tab.classList.remove('bg-[#232323]', 'text-text-tertiary');
+      tab.classList.add('bg-code-bg', 'text-white', 'hover:text-white');
+
+      document.querySelectorAll('.hero-panel').forEach(function (p) {
+        p.classList.add('hidden');
+      });
+      var panel = document.querySelector('.hero-panel[data-hero-panel="' + target + '"]');
+      if (panel) {
+        panel.classList.remove('hidden');
+      }
+    });
+  });
+</script>
+</file>
+
+<file path="docs/src/components/highlights-section.astro">
+---
+import FeatureRow from './feature-row.astro';
+import HowStep from './how-step.astro';
+import ShieldCheck from '../icons/shield-check.astro';
+import Bolt from '../icons/bolt.astro';
+import Globe from '../icons/globe.astro';
+import FileText from '../icons/file-text.astro';
+import Activity from '../icons/activity.astro';
+import TerminalPrompt from '../icons/terminal-prompt.astro';
+import Route from '../icons/route.astro';
+import Folder from '../icons/folder.astro';
+---
+
+<section class="py-11" id="highlights">
+  <div class="max-w-[var(--max-width)] mx-auto px-[var(--padding-x)]">
+    <p class="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary mb-3">Highlights</p>
+    <h2 class="font-heading text-[22px] font-medium tracking-[-0.02em] mb-1.5 text-text max-sm:text-xl">Features</h2>
+    <p class="text-text-tertiary text-sm mb-5 leading-[1.5]">
+      Everything you need for local development, built into a single binary.
+    </p>
+    <div class="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
+      <FeatureRow title="Automatic HTTPS" description="Trusted certificates, green lock, no warnings." tint="#232323">
+        <ShieldCheck />
+      </FeatureRow>
+      <FeatureRow title="WebSocket & HMR" description="Next.js, Vite, and others work out of the box." tint="#232323">
+        <Bolt />
+      </FeatureRow>
+      <FeatureRow title="Custom TLDs" description="Use .test, .loc, .dev, or any TLD you want." tint="#232323">
+        <Globe />
+      </FeatureRow>
+      <FeatureRow title="Access Logging" description="Full, minimal, or off. Tail and filter by domain." tint="#232323">
+        <FileText />
+      </FeatureRow>
+      <FeatureRow title="Health Monitoring" description="See which upstreams are reachable at a glance." tint="#232323">
+        <Activity />
+      </FeatureRow>
+      <FeatureRow title="Path Routing" description="Route different URL paths to different upstream ports." tint="#232323">
+        <Route />
+      </FeatureRow>
+      <FeatureRow title="Project Config" description="Share your dev setup with teammates via .slim.yaml." tint="#232323">
+        <Folder />
+      </FeatureRow>
+      <FeatureRow title="Zero Config" description="First run handles CA, trust, and port forwarding." tint="#232323">
+        <TerminalPrompt />
+      </FeatureRow>
+    </div>
+  </div>
+</section>
+
+<section class="py-11">
+  <div class="max-w-[var(--max-width)] mx-auto px-[var(--padding-x)]">
+    <p class="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary mb-3">Under the Hood</p>
+    <h2 class="font-heading text-[22px] font-medium tracking-[-0.02em] mb-1.5 text-text max-sm:text-xl">How it works</h2>
+    <p class="text-text-tertiary text-sm mb-4 leading-[1.5]">
+      A single Go binary that handles everything under the hood.
+    </p>
+    <div class="flex flex-col">
+      <HowStep number="1">
+        <strong class="text-[13.5px] font-semibold text-text">Creates a local development CA</strong>
+        <span class="text-[13.5px] text-text-tertiary ml-0.5 max-sm:block max-sm:ml-0 max-sm:mt-0.5">so your local domains work over HTTPS without browser warnings.</span>
+      </HowStep>
+      <HowStep number="2">
+        <strong class="text-[13.5px] font-semibold text-text">Issues per-domain certificates</strong>
+        <span class="text-[13.5px] text-text-tertiary ml-0.5 max-sm:block max-sm:ml-0 max-sm:mt-0.5">on the fly, signed by that CA for each mapped domain.</span>
+      </HowStep>
+      <HowStep number="3">
+        <strong class="text-[13.5px] font-semibold text-text">Updates <code class="bg-[hsl(0_0%_100%/8%)] px-[5px] py-px rounded-[3px] text-xs font-medium">/etc/hosts</code></strong>
+        <span class="text-[13.5px] text-text-tertiary ml-0.5 max-sm:block max-sm:ml-0 max-sm:mt-0.5">automatically, pointing your domains to <code class="bg-[hsl(0_0%_100%/8%)] px-[5px] py-px rounded-[3px] text-xs">127.0.0.1</code>.</span>
+      </HowStep>
+      <HowStep number="4">
+        <strong class="text-[13.5px] font-semibold text-text">Forwards ports 80/443</strong>
+        <span class="text-[13.5px] text-text-tertiary ml-0.5 max-sm:block max-sm:ml-0 max-sm:mt-0.5">so the proxy listens on standard ports without needing root.</span>
+      </HowStep>
+      <HowStep number="5">
+        <strong class="text-[13.5px] font-semibold text-text">Reverse proxies requests</strong>
+        <span class="text-[13.5px] text-text-tertiary ml-0.5 max-sm:block max-sm:ml-0 max-sm:mt-0.5">with HTTP/2, WebSocket upgrades, and CORS headers.</span>
+      </HowStep>
+    </div>
+  </div>
+</section>
+</file>
+
+<file path="docs/src/components/how-step.astro">
+---
+const props = Astro.props;
+const { number } = props;
+---
+
+<div class="flex items-center gap-3 py-2.5 border-b border-border last:border-b-0">
+  <span class="font-mono text-[10.5px] font-bold text-white bg-primary size-5 rounded-full inline-flex items-center justify-center shrink-0">
+    {number}
+  </span>
+  <div>
+    <slot />
+  </div>
+</div>
+</file>
+
+<file path="docs/src/components/local-domains-section.astro">
+---
+import CommandCode from './command-code.astro';
+
+const yamlExample = `services:
+  - domain: myapp
+    port: 3000
+    routes:
+      - path: /api
+        port: 8080
+  - domain: dashboard
+    port: 5173
+  - domain: app.loc
+    port: 4000
+log_mode: minimal`;
+
+const upDownCode = `# Start all services defined in .slim.yaml
+$ slim up
+
+# Stop all project services
+$ slim down`;
+---
+
+<section class="py-11" id="local-domains">
+  <div class="max-w-[var(--max-width)] mx-auto px-[var(--padding-x)]">
+    <p class="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary mb-3">Local Development</p>
+    <h2 class="font-heading text-[22px] font-medium tracking-[-0.02em] mb-1.5 text-text max-sm:text-xl">Local Domains with HTTPS</h2>
+    <p class="text-text-tertiary text-sm mb-5 leading-[1.5]">
+      Map localhost ports to pretty <code class="bg-[hsl(0_0%_100%/8%)] px-[5px] py-px rounded-[3px] text-[12.5px] text-text-secondary">.test</code> domains or any custom TLD with trusted certificates and zero config.
+    </p>
+
+    <div class="flex gap-0 border-b border-border mb-0">
+      <button
+        class="local-tab px-4 py-2 text-[13px] font-medium transition-colors border-b-2 border-text text-text"
+        data-local-tab="without-config"
+        type="button"
+      >Without Config</button>
+      <button
+        class="local-tab px-4 py-2 text-[13px] font-medium transition-colors border-b-2 border-transparent text-text-tertiary hover:text-text-secondary"
+        data-local-tab="with-config"
+        type="button"
+      >With Config</button>
+    </div>
+
+    <div class="local-panel pt-5" data-local-panel="without-config">
+      <div class="flex flex-col gap-5">
+        <div>
+          <p class="text-[13.5px] font-medium text-text mb-2">Map your application</p>
+          <div class="rounded-[10px] bg-code-bg text-left overflow-hidden">
+            <div class="px-4 pt-3 pb-3.5 font-mono text-[13px] leading-[1.7] text-code-text max-sm:text-[11.5px]">
+              <div class="flex gap-2">
+                <span class="text-[#10b981] select-none">$</span>
+                <span><span class="text-[#7dd3fc]">slim</span> start web <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">3000</span></span>
+              </div>
+              <div class="pl-4 whitespace-nowrap">
+                <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://web.test</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:3000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-[13.5px] font-medium text-text mb-2">Route /api to a different port</p>
+          <div class="rounded-[10px] bg-code-bg text-left overflow-hidden">
+            <div class="px-4 pt-3 pb-3.5 font-mono text-[13px] leading-[1.7] text-code-text max-sm:text-[11.5px]">
+              <div class="flex gap-2">
+                <span class="text-[#10b981] select-none">$</span>
+                <span><span class="text-[#7dd3fc]">slim</span> start myapp <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">3000</span> <span class="text-[#60a5fa]">--route</span> <span class="text-[#fbbf24]">/api=8080</span></span>
+              </div>
+              <div class="pl-4 whitespace-nowrap">
+                <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://myapp.test</span> &nbsp;&nbsp;&nbsp;<span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:3000</span>
+              </div>
+              <div class="pl-4 whitespace-nowrap">
+                <span class="text-[#737373]">&nbsp;</span> <span class="text-[#fbbf24]">https://myapp.test/api</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:8080</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p class="text-[13.5px] font-medium text-text mb-2">Use any TLD</p>
+          <div class="rounded-[10px] bg-code-bg text-left overflow-hidden">
+            <div class="px-4 pt-3 pb-3.5 font-mono text-[13px] leading-[1.7] text-code-text max-sm:text-[11.5px]">
+              <div class="flex gap-2">
+                <span class="text-[#10b981] select-none">$</span>
+                <span><span class="text-[#7dd3fc]">slim</span> start app.loc <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">4000</span></span>
+              </div>
+              <div class="pl-4 whitespace-nowrap">
+                <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://app.loc</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:4000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="local-panel hidden pt-5" data-local-panel="with-config">
+      <p class="text-text-tertiary text-sm mb-4 leading-[1.5]">
+        Share your local dev setup with teammates using a <code class="bg-[hsl(0_0%_100%/8%)] px-[5px] py-px rounded-[3px] text-[12.5px] text-text-secondary">.slim.yaml</code> file.
+      </p>
+      <div class="rounded-lg border border-border overflow-hidden">
+        <CommandCode code={yamlExample} />
+      </div>
+      <p class="text-text-tertiary text-sm mt-4 leading-[1.5]">
+        Run <code class="bg-[hsl(0_0%_100%/8%)] px-[5px] py-px rounded-[3px] text-[12.5px] text-text-secondary">slim up</code> to start every service in one shot, and <code class="bg-[hsl(0_0%_100%/8%)] px-[5px] py-px rounded-[3px] text-[12.5px] text-text-secondary">slim down</code> to tear them all down.
+      </p>
+      <div class="rounded-lg border border-border overflow-hidden mt-4">
+        <CommandCode code={upDownCode} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('.local-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var target = tab.getAttribute('data-local-tab');
+
+      document.querySelectorAll('.local-tab').forEach(function (t) {
+        t.classList.remove('border-text', 'text-text');
+        t.classList.add('border-transparent', 'text-text-tertiary');
+      });
+      tab.classList.remove('border-transparent', 'text-text-tertiary');
+      tab.classList.add('border-text', 'text-text');
+
+      document.querySelectorAll('.local-panel').forEach(function (p) {
+        p.classList.add('hidden');
+      });
+      var panel = document.querySelector('.local-panel[data-local-panel="' + target + '"]');
+      if (panel) {
+        panel.classList.remove('hidden');
+      }
+    });
+  });
+</script>
+</file>
+
+<file path="docs/src/components/public-urls-section.astro">
+---
+import FeatureRow from './feature-row.astro';
+import Globe from '../icons/globe.astro';
+import ShieldCheck from '../icons/shield-check.astro';
+import Clock from '../icons/clock.astro';
+import Activity from '../icons/activity.astro';
+---
+
+<section class="py-11" id="sharing">
+  <div class="max-w-[var(--max-width)] mx-auto px-[var(--padding-x)]">
+    <p class="text-[11px] font-semibold uppercase tracking-[0.1em] text-primary mb-3">Sharing</p>
+    <h2 class="font-heading text-[22px] font-medium tracking-[-0.02em] mb-1.5 text-text max-sm:text-xl">Internet Sharing</h2>
+    <p class="text-text-tertiary text-sm mb-5 leading-[1.5]">
+      Give your local server a public URL with one command. Custom subdomains, password protection, and auto-expiry built in.
+    </p>
+
+    <div class="rounded-[10px] bg-code-bg text-left overflow-hidden">
+      <div class="flex gap-1.5 border-b border-[#1a1a1a] px-3.5 py-2.5">
+        <span class="size-2.5 rounded-full bg-[#ff5f57]"></span>
+        <span class="size-2.5 rounded-full bg-[#febc2e]"></span>
+        <span class="size-2.5 rounded-full bg-[#28c840]"></span>
+      </div>
+      <div class="px-4 pt-3 pb-3.5 font-mono text-[13px] leading-[1.7] text-code-text max-sm:text-[11.5px]">
+        <div class="flex gap-2">
+          <span class="text-[#10b981] select-none">$</span>
+          <span><span class="text-[#7dd3fc]">slim</span> login</span>
+        </div>
+        <div class="pl-4 whitespace-nowrap">
+          <span class="text-[#34d399]">&#10003;</span> <span class="text-[#737373]">Authenticated</span>
+        </div>
+
+        <div class="flex gap-2 mt-3">
+          <span class="text-[#10b981] select-none">$</span>
+          <span><span class="text-[#7dd3fc]">slim</span> share <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">3000</span> <span class="text-[#60a5fa]">--subdomain</span> <span class="text-[#fbbf24]">demo</span></span>
+        </div>
+        <div class="pl-4 whitespace-nowrap">
+          <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://demo.slim.show</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:3000</span>
+        </div>
+
+        <div class="flex gap-2 mt-3">
+          <span class="text-[#10b981] select-none">$</span>
+          <span><span class="text-[#7dd3fc]">slim</span> share <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">8080</span> <span class="text-[#60a5fa]">--password</span> <span class="text-[#60a5fa]">--ttl</span> <span class="text-[#fbbf24]">30m</span></span>
+        </div>
+        <div class="pl-4 whitespace-nowrap">
+          <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://a1b2c3.slim.show</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:8080</span>
+        </div>
+        <div class="pl-4 whitespace-nowrap">
+          <span class="text-[#737373]">&nbsp;</span> <span class="text-[#60a5fa]">password protected</span> <span class="text-[#525252]">&middot;</span> <span class="text-[#fbbf24]">expires in 30m</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 mt-5 max-sm:grid-cols-1">
+      <FeatureRow title="Vanity Subdomains" description="Choose your own subdomain on slim.show." tint="#232323">
+        <Globe />
+      </FeatureRow>
+      <FeatureRow title="Password Protected" description="Add authentication to your public URL." tint="#232323">
+        <ShieldCheck />
+      </FeatureRow>
+      <FeatureRow title="Auto-Expiring" description="Set a TTL so tunnels close automatically." tint="#232323">
+        <Clock />
+      </FeatureRow>
+      <FeatureRow title="Live Request Logs" description="Watch requests flow through in real-time." tint="#232323">
+        <Activity />
+      </FeatureRow>
+    </div>
+  </div>
+</section>
+</file>
+
+<file path="docs/src/components/site-footer.astro">
+---
+---
+
+<footer class="py-5 border-t border-border">
+  <div class="max-w-(--max-width) mx-auto px-(--padding-x)">
+    <div class="flex items-center justify-center gap-2.5 text-[12.5px] text-text-tertiary">
+      <span>Built by <a href="https://x.com/kamrify" target="_blank" rel="noopener noreferrer" class="text-text-tertiary underline underline-offset-2 transition-colors hover:text-text">Kamran Ahmed</a></span>
+    </div>
+  </div>
+</footer>
+</file>
+
+<file path="docs/src/components/site-header.astro">
+---
+import GitHubIcon from '../icons/github.astro';
+
+const loginUrl = import.meta.env.DEV ? 'http://localhost:5173' : 'https://app.slim.sh';
+---
+
+<header class="sticky top-0 z-[100] bg-[#1a1a1a]/90 backdrop-blur-[12px] border-b border-border py-3">
+  <div class="max-w-(--max-width) mx-auto px-(--padding-x) flex items-center justify-between">
+    <a href="/" class="font-body text-lg font-semibold text-text no-underline inline-flex items-center gap-[5px] hover:no-underline">Slim</a>
+    <nav class="flex items-center gap-5">
+      <a href="#highlights" class="text-[13px] text-text-tertiary no-underline transition-colors hover:text-text hover:no-underline max-sm:hidden">Features</a>
+      <a href="#commands" class="text-[13px] text-text-tertiary no-underline transition-colors hover:text-text hover:no-underline max-sm:hidden">Commands</a>
+      <a href="#install" class="text-[13px] text-text-tertiary no-underline transition-colors hover:text-text hover:no-underline max-sm:hidden">Install</a>
+      <a
+        href="https://github.com/kamranahmedse/slim"
+        class="inline-flex items-center gap-1 text-text-tertiary transition-colors hover:text-text hover:no-underline"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub"
+      >
+        <GitHubIcon />
+      </a>
+      <a
+        href={loginUrl}
+        class="text-[13px] font-medium text-text-secondary no-underline bg-surface rounded-md px-3 py-1 transition-colors hover:text-text hover:no-underline"
+      >
+        Login
+      </a>
+    </nav>
+  </div>
+</header>
+</file>
+
+<file path="docs/src/components/terminal-demo.astro">
+---
+---
+
+<div class="rounded-[10px] bg-[#0a0a0a] text-left overflow-hidden">
+  <div class="flex gap-1.5 border-b border-[#1a1a1a] px-3.5 py-2.5">
+    <span class="size-2.5 rounded-full bg-[#ff5f57]"></span>
+    <span class="size-2.5 rounded-full bg-[#febc2e]"></span>
+    <span class="size-2.5 rounded-full bg-[#28c840]"></span>
+  </div>
+  <div class="px-[18px] pt-4 pb-[18px] font-mono text-[13px] leading-[1.7] text-code-text max-sm:text-[11.5px]">
+    <div class="flex gap-2">
+      <span class="text-[#10b981] select-none">$</span>
+      <span><span class="text-[#7dd3fc]">slim</span> start web <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">3000</span></span>
+    </div>
+    <div class="pl-4 whitespace-nowrap">
+      <span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://web.test</span> <span class="text-[#525252]">&rarr;</span> <span class="text-[#737373]">localhost:3000</span>
+    </div>
+    <div class="flex gap-2 mt-2.5">
+      <span class="text-[#10b981] select-none">$</span>
+      <span><span class="text-[#7dd3fc]">slim</span> start myapp <span class="text-[#60a5fa]">--port</span> <span class="text-[#fbbf24]">3000</span> <span class="text-[#60a5fa]">--route</span> <span class="text-[#fbbf24]">/api=8080</span></span>
+    </div>
+    <div class="pl-4 grid grid-cols-[auto_auto_auto] gap-x-2 whitespace-nowrap w-fit">
+      <div><span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://myapp.test</span></div>
+      <div><span class="text-[#525252]">&rarr;</span></div>
+      <div><span class="text-[#737373]">localhost:3000</span></div>
+      <div>&nbsp;&nbsp;<span class="text-[#34d399] font-medium">https://myapp.test/api</span></div>
+      <div><span class="text-[#525252]">&rarr;</span></div>
+      <div><span class="text-[#737373]">localhost:8080</span></div>
+    </div>
+    <div class="flex gap-2 mt-2.5">
+      <span class="text-[#10b981] select-none">$</span>
+      <span><span class="text-[#7dd3fc]">slim</span> up</span> <span class="text-[#525252]">&nbsp;# .slim.yaml</span>
+    </div>
+    <div class="pl-4 grid grid-cols-[auto_auto_auto] gap-x-2 whitespace-nowrap w-fit">
+      <div><span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://myapp.test</span></div>
+      <div><span class="text-[#525252]">&rarr;</span></div>
+      <div><span class="text-[#737373]">localhost:3000</span></div>
+      <div>&nbsp;&nbsp;<span class="text-[#34d399] font-medium">https://myapp.test/api</span></div>
+      <div><span class="text-[#525252]">&rarr;</span></div>
+      <div><span class="text-[#737373]">localhost:8080</span></div>
+      <div><span class="text-[#34d399]">&#10003;</span> <span class="text-[#34d399] font-medium">https://dashboard.test</span></div>
+      <div><span class="text-[#525252]">&rarr;</span></div>
+      <div><span class="text-[#737373]">localhost:5173</span></div>
+    </div>
+  </div>
+</div>
+</file>
+
+<file path="docs/src/icons/activity.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = '#f59e0b', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+</file>
+
+<file path="docs/src/icons/bolt.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = '#3b82f6', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+</file>
+
+<file path="docs/src/icons/check.astro">
+---
+const props = Astro.props;
+const { width = '13', height = '13', class: className = '', stroke = 'currentColor', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><polyline points="20 6 9 17 4 12"/></svg>
+</file>
+
+<file path="docs/src/icons/chevron-down.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = 'currentColor', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><polyline points="6 9 12 15 18 9"/></svg>
+</file>
+
+<file path="docs/src/icons/clock.astro">
+---
+const props = Astro.props;
+const { width = 16, height = 16, class: className = '', stroke = 'currentColor' } = props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width={width}
+  height={height}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke={stroke}
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class={className}
+>
+  <circle cx="12" cy="12" r="10"></circle>
+  <polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+</file>
+
+<file path="docs/src/icons/copy.astro">
+---
+const props = Astro.props;
+const { width = '13', height = '13', class: className = '', stroke = 'currentColor', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+</file>
+
+<file path="docs/src/icons/file-text.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = '#06b6d4', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+</file>
+
+<file path="docs/src/icons/folder.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = '#f97316', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+</file>
+
+<file path="docs/src/icons/github.astro">
+---
+const props = Astro.props;
+const { width = '18', height = '18', class: className = '', stroke = 'none', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="currentColor" stroke={stroke} class={className} {...rest}><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+</file>
+
+<file path="docs/src/icons/globe.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = '#ec4899', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+</file>
+
+<file path="docs/src/icons/route.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = '#3b82f6', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+</file>
+
+<file path="docs/src/icons/shield-check.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = '#10b981', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+</file>
+
+<file path="docs/src/icons/stethoscope.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = '#14b8a6', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
+</file>
+
+<file path="docs/src/icons/terminal-prompt.astro">
+---
+const props = Astro.props;
+const { width = '16', height = '16', class: className = '', stroke = '#3b82f6', ...rest } = props;
+---
+
+<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24" fill="none" stroke={stroke} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} {...rest}><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+</file>
+
+<file path="docs/src/layouts/layout.astro">
+---
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '@fontsource/ibm-plex-serif/400.css';
+import '@fontsource/ibm-plex-serif/500.css';
+import '@fontsource/ibm-plex-serif/600.css';
+import '@fontsource/ibm-plex-serif/700.css';
+import '../styles/global.css';
+
+import geistUrl from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import geistMonoUrl from '@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2?url';
+import plexSerifUrl from '@fontsource/ibm-plex-serif/files/ibm-plex-serif-latin-500-normal.woff2?url';
+
+const props = Astro.props;
+const {
+  title = 'Slim - Local HTTPS Domains, Tunnels & Dev Environment Toolkit',
+  description = 'Slim maps localhost to pretty .test domains with automatic HTTPS, SSL certificates, WebSocket & HMR support, path routing, and public URL tunnels via slim.show. Free, zero-config CLI built with Go for macOS and Linux.',
+} = props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" href={geistUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={geistMonoUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={plexSerifUrl} as="font" type="font/woff2" crossorigin />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content="local https, localhost https, local domains, .test domains, ssl localhost, dev environment, localhost tunnel, share localhost, public url, ngrok alternative, local development, reverse proxy, websocket proxy, hmr proxy, path routing, dev toolkit, slim cli, slim.sh, macOS development, linux development" />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={new URL('/og-img.png', Astro.site).href} />
+    <meta property="og:image:width" content="2400" />
+    <meta property="og:image:height" content="1260" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:site_name" content="Slim" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL('/og-img.png', Astro.site).href} />
+
+    <link rel="icon" href="/favicon.png" type="image/png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-34BX59VD6M"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-34BX59VD6M');
+    </script>
+  </head>
+  <body>
+    <div class="pointer-events-none fixed inset-y-0 left-1/2 -translate-x-1/2 z-[101] w-full max-w-[calc(var(--max-width)+var(--padding-x)*2)] border-x border-border" aria-hidden="true"></div>
+    <slot />
+  </body>
+</html>
+</file>
+
+<file path="docs/src/pages/abuse.astro">
+---
+import SiteHeader from '../components/site-header.astro';
+import SiteFooter from '../components/site-footer.astro';
+import Layout from '../layouts/layout.astro';
+---
+
+<Layout title="Report Abuse — Slim" description="Report abuse or misuse of slim.show tunnels.">
+  <SiteHeader />
+  <main class="max-w-(--max-width) mx-auto px-(--padding-x) py-16 min-h-[70vh]">
+    <div class="max-w-xl mx-auto">
+      <h1 class="text-2xl font-bold text-text mb-2">Report Abuse</h1>
+      <p class="text-text-secondary text-[15px] leading-relaxed mb-8">
+        If you've encountered a <strong>slim.show</strong> tunnel being used for phishing, malware distribution, or any other malicious activity, please report it below. We take abuse seriously and will investigate promptly.
+      </p>
+
+      <div class="space-y-6">
+        <section>
+          <h2 class="text-base font-semibold text-text mb-2">Email</h2>
+          <p class="text-text-secondary text-sm leading-relaxed">
+            Send abuse reports to <a href="mailto:abuse@slim.sh" class="text-text underline underline-offset-2 hover:text-white">abuse@slim.sh</a> with the following details:
+          </p>
+          <ul class="mt-3 space-y-1.5 text-sm text-text-secondary list-disc pl-5">
+            <li>The full URL (e.g. <code class="text-text-tertiary bg-surface px-1.5 py-0.5 rounded text-xs">https://example.slim.show</code>)</li>
+            <li>Description of the abusive content or behavior</li>
+            <li>Screenshots if available</li>
+            <li>Date and time you encountered it</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-base font-semibold text-text mb-2">What we do</h2>
+          <ul class="space-y-1.5 text-sm text-text-secondary list-disc pl-5">
+            <li>Investigate all reports within 24 hours</li>
+            <li>Immediately terminate tunnels confirmed to be abusive</li>
+            <li>Ban accounts engaged in malicious activity</li>
+            <li>Cooperate with law enforcement when required</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-base font-semibold text-text mb-2">What is slim.show?</h2>
+          <p class="text-text-secondary text-sm leading-relaxed">
+            <strong class="text-text">slim.show</strong> is a tunnel service by <a href="https://slim.sh" class="text-text underline underline-offset-2 hover:text-white">slim</a> that lets developers share their local development servers via temporary public URLs. Each <code class="text-text-tertiary bg-surface px-1.5 py-0.5 rounded text-xs">*.slim.show</code> subdomain is a user-generated tunnel that exists only while the developer's session is active.
+          </p>
+        </section>
+      </div>
+    </div>
+  </main>
+  <SiteFooter />
+</Layout>
+</file>
+
+<file path="docs/src/pages/index.astro">
+---
+import CommandsSection from '../components/commands-section.astro';
+import HeroSection from '../components/hero-section.astro';
+import HighlightsSection from '../components/highlights-section.astro';
+import LocalDomainsSection from '../components/local-domains-section.astro';
+import PublicUrlsSection from '../components/public-urls-section.astro';
+import CtaSection from '../components/cta-section.astro';
+import SiteFooter from '../components/site-footer.astro';
+import SiteHeader from '../components/site-header.astro';
+import Layout from '../layouts/layout.astro';
+---
+
+<Layout>
+  <SiteHeader />
+  <main class="home">
+    <HeroSection />
+    <LocalDomainsSection />
+    <PublicUrlsSection />
+    <CommandsSection />
+    <HighlightsSection />
+    <CtaSection />
+  </main>
+  <SiteFooter />
+</Layout>
+</file>
+
+<file path="docs/src/styles/global.css">
+@theme {
+⋮----
+@layer base {
+⋮----
+*,
+⋮----
+:root {
+⋮----
+html {
+⋮----
+body {
+⋮----
+code,
+⋮----
+a {
+⋮----
+a:hover {
+⋮----
+img {
+⋮----
+main.home section {
+⋮----
+main.home section::before {
+⋮----
+main.home section#install::before {
+</file>
+
+<file path="docs/.gitignore">
+node_modules/
+dist/
+.astro/
+.DS_Store
+</file>
+
+<file path="docs/astro.config.mjs">
+
+</file>
+
+<file path="docs/package.json">
+{
+  "name": "slim-website",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.0.0",
+    "@fontsource-variable/geist-mono": "^5.0.0",
+    "@fontsource/ibm-plex-serif": "^5.2.7",
+    "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.1",
+    "tailwindcss": "^4.2.1"
+  }
+}
+</file>
+
+<file path="docs/tsconfig.json">
+{
+  "extends": "astro/tsconfigs/strict"
+}
+</file>
+
+<file path="internal/auth/auth.go">
+package auth
+⋮----
+import (
+	"crypto/rand"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
+	"os/exec"
+	"runtime"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/httperr"
+)
+⋮----
+"crypto/rand"
+"encoding/hex"
+"encoding/json"
+"fmt"
+"net/http"
+"os"
+"os/exec"
+"runtime"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/httperr"
+⋮----
+type Info struct {
+	Token string `json:"token"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+⋮----
+func Login() (*Info, error)
+⋮----
+func validateToken(token string) bool
+⋮----
+func startOAuthLogin() (*Info, error)
+⋮----
+var cliResp struct {
+		Code string `json:"code"`
+		URL  string `json:"url"`
+	}
+⋮----
+func pollForCompletion(code string) (*Info, error)
+⋮----
+var lastPollErr error
+⋮----
+var result struct {
+			Status string `json:"status"`
+			Token  string `json:"token"`
+			User   struct {
+				Name  string `json:"name"`
+				Email string `json:"email"`
+			} `json:"user"`
+		}
+⋮----
+func Require() (*Info, error)
+⋮----
+func LoadAuth() (*Info, error)
+⋮----
+var info Info
+⋮----
+func Logout() error
+⋮----
+func LoadOrCreateToken() (string, error)
+⋮----
+func saveAuth(auth Info) error
+⋮----
+func openBrowser(url string) error
+</file>
+
+<file path="internal/cert/ca.go">
+package cert
+⋮----
+import (
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"fmt"
+	"math/big"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"crypto/rand"
+"crypto/rsa"
+"crypto/x509"
+"crypto/x509/pkix"
+"encoding/pem"
+"fmt"
+"math/big"
+"os"
+"path/filepath"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func CADir() string
+⋮----
+func CACertPath() string
+⋮----
+func CAKeyPath() string
+⋮----
+func CAExists() bool
+⋮----
+func GenerateCA() error
+⋮----
+func LoadCA() (*x509.Certificate, *rsa.PrivateKey, error)
+</file>
+
+<file path="internal/cert/leaf.go">
+package cert
+⋮----
+import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"fmt"
+	"math/big"
+	"net"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"crypto/ecdsa"
+"crypto/elliptic"
+"crypto/rand"
+"crypto/tls"
+"crypto/x509"
+"crypto/x509/pkix"
+"encoding/pem"
+"fmt"
+"math/big"
+"net"
+"os"
+"path/filepath"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func CertsDir() string
+⋮----
+func LeafCertPath(name string) string
+⋮----
+func LeafKeyPath(name string) string
+⋮----
+func LeafExists(name string) bool
+⋮----
+func GenerateLeafCert(name string) error
+⋮----
+NotAfter:    time.Now().Add(825 * 24 * time.Hour), // ~2 years, under Apple's limit
+⋮----
+func LoadLeafTLS(name string) (*tls.Certificate, error)
+⋮----
+func EnsureLeafCert(name string) error
+⋮----
+func leafNeedsRenewal(name string) bool
+</file>
+
+<file path="internal/cert/paths_test.go">
+package cert
+⋮----
+import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"fmt"
+	"math/big"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"crypto/ecdsa"
+"crypto/elliptic"
+"crypto/rand"
+"crypto/rsa"
+"crypto/x509"
+"crypto/x509/pkix"
+"encoding/pem"
+"fmt"
+"math/big"
+"os"
+"path/filepath"
+"testing"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func TestCAAndLeafPathHelpers(t *testing.T)
+⋮----
+func TestCAExistsAndLeafExists(t *testing.T)
+⋮----
+func TestGenerateCAAndLoadCA(t *testing.T)
+⋮----
+func TestEnsureLeafCertAndLoadLeafTLS(t *testing.T)
+⋮----
+func TestLeafNeedsRenewal(t *testing.T)
+⋮----
+func initCertTestConfig(t *testing.T) string
+⋮----
+func writeLeafCertPEM(name string, keyType string, notAfter time.Time) error
+⋮----
+var (
+		publicKey  any
+		privateKey any
+	)
+</file>
+
+<file path="internal/cert/trust_darwin_test.go">
+//go:build darwin
+⋮----
+package cert
+⋮----
+import (
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"os"
+"os/exec"
+"path/filepath"
+"strings"
+"testing"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func TestTrustCAUsesExpectedSecurityCommand(t *testing.T)
+⋮----
+var got [][]string
+⋮----
+func TestTrustCAErrorIncludesCommandOutput(t *testing.T)
+⋮----
+func TestUntrustCAUsesExpectedSecurityCommand(t *testing.T)
+⋮----
+func TestUntrustCAErrorIncludesCommandOutput(t *testing.T)
+⋮----
+func snapshotTrustDarwinExecHook() func()
+⋮----
+func initTrustDarwinConfig(t *testing.T)
+⋮----
+func createDummyCACert(t *testing.T)
+</file>
+
+<file path="internal/cert/trust_darwin.go">
+//go:build darwin
+⋮----
+package cert
+⋮----
+import (
+	"fmt"
+	"os"
+	"os/exec"
+	"strings"
+)
+⋮----
+"fmt"
+"os"
+"os/exec"
+"strings"
+⋮----
+var execCommandDarwinFn = exec.Command
+⋮----
+func TrustCA() error
+⋮----
+func UntrustCA() error
+</file>
+
+<file path="internal/cert/trust_linux_test.go">
+//go:build linux
+⋮----
+package cert
+⋮----
+import (
+	"errors"
+	"reflect"
+	"testing"
+)
+⋮----
+"errors"
+"reflect"
+"testing"
+⋮----
+func TestTrustCAUsesUpdateCACertificates(t *testing.T)
+⋮----
+var anchorPath string
+var anchorContent []byte
+⋮----
+var commands [][]string
+⋮----
+func TestTrustCAUsesUpdateCATrust(t *testing.T)
+⋮----
+func TestTrustCAFailsWhenNoSupportedTool(t *testing.T)
+⋮----
+func TestUntrustCADeletesAnchorsAndUpdatesStore(t *testing.T)
+⋮----
+var removed []string
+⋮----
+func TestUntrustCAPropagatesRemoveError(t *testing.T)
+⋮----
+func snapshotTrustLinuxTestHooks() func()
+</file>
+
+<file path="internal/cert/trust_linux.go">
+//go:build linux
+⋮----
+package cert
+⋮----
+import (
+	"errors"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
+	"github.com/kamranahmedse/slim/internal/osutil"
+)
+⋮----
+"errors"
+"fmt"
+"os"
+"os/exec"
+"path/filepath"
+"strings"
+⋮----
+"github.com/kamranahmedse/slim/internal/osutil"
+⋮----
+const (
+	debianAnchorPath = "/usr/local/share/ca-certificates/slim.crt"
+	rhelAnchorPath   = "/etc/pki/ca-trust/source/anchors/slim.crt"
+	archAnchorPath   = "/etc/ca-certificates/trust-source/anchors/slim.crt"
+)
+⋮----
+var (
+	readCertFileFn          = os.ReadFile
+	commandExistsFn         = osutil.CommandExists
+	writeAnchorFileFn       = writeAnchorFile
+	runPrivilegedTrustFn    = osutil.RunPrivileged
+	removeAnchorFileFn      = removeFilePrivileged
+	detectTrustAnchorPathFn = detectTrustAnchorPath
+)
+⋮----
+func TrustCA() error
+⋮----
+func UntrustCA() error
+⋮----
+func detectTrustAnchorPath() string
+⋮----
+func dirExists(path string) bool
+⋮----
+func writeAnchorFile(path string, content []byte) error
+⋮----
+func removeFilePrivileged(path string) error
+</file>
+
+<file path="internal/cert/trust_unsupported.go">
+//go:build !darwin && !linux
+⋮----
+package cert
+⋮----
+import "errors"
+⋮----
+func TrustCA() error
+⋮----
+func UntrustCA() error
+</file>
+
+<file path="internal/config/config_test.go">
+package config
+⋮----
+import (
+	"strings"
+	"testing"
+)
+⋮----
+"strings"
+"testing"
+⋮----
+func TestNormalizeDomain(t *testing.T)
+⋮----
+func TestLoadMigratesBareDomainNames(t *testing.T)
+⋮----
+func TestValidateDomain(t *testing.T)
+⋮----
+func TestConfigLifecycle(t *testing.T)
+⋮----
+func TestValidateRoute(t *testing.T)
+⋮----
+func TestMatchRoute(t *testing.T)
+⋮----
+func TestSetDomainWithRoutes(t *testing.T)
+⋮----
+func TestLogMode(t *testing.T)
+</file>
+
+<file path="internal/config/config.go">
+package config
+⋮----
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+	"syscall"
+
+	"gopkg.in/yaml.v3"
+)
+⋮----
+"fmt"
+"os"
+"path/filepath"
+"regexp"
+"strings"
+"syscall"
+⋮----
+"gopkg.in/yaml.v3"
+⋮----
+var validLabel = regexp.MustCompile(`^[a-z0-9]([a-z0-9-]*[a-z0-9])?$`)
+⋮----
+const (
+	LogModeFull    = "full"
+	LogModeMinimal = "minimal"
+	LogModeOff     = "off"
+)
+⋮----
+type Route struct {
+	Path string `yaml:"path"`
+	Port int    `yaml:"port"`
+}
+⋮----
+type Domain struct {
+	Name   string  `yaml:"name"`
+	Port   int     `yaml:"port"`
+	Routes []Route `yaml:"routes,omitempty"`
+}
+⋮----
+type Config struct {
+	Domains []Domain `yaml:"domains"`
+	LogMode string   `yaml:"log_mode,omitempty"`
+	Cors    bool     `yaml:"cors,omitempty"`
+}
+⋮----
+func NormalizeDomain(name string) string
+⋮----
+func ValidateRoute(path string, port int) error
+⋮----
+func (d *Domain) MatchRoute(reqPath string) int
+⋮----
+func ValidateDomain(name string, port int) error
+⋮----
+func ValidateLogMode(mode string) error
+⋮----
+func normalizeLogMode(mode string) string
+⋮----
+func (c *Config) EffectiveLogMode() string
+⋮----
+func Load() (*Config, error)
+⋮----
+var cfg Config
+⋮----
+func (c *Config) Save() error
+⋮----
+func (c *Config) FindDomain(name string) (*Domain, int)
+⋮----
+func (c *Config) SetDomain(name string, port int, routes []Route) error
+⋮----
+func (c *Config) RemoveDomain(name string) error
+⋮----
+func WithLock(fn func() error) error
+</file>
+
+<file path="internal/config/paths.go">
+package config
+⋮----
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+)
+⋮----
+"fmt"
+"os"
+"path/filepath"
+⋮----
+const (
+	ProxyHTTPPort  = 10080
+	ProxyHTTPSPort = 10443
+
+	defaultAPIBase      = "https://app.slim.sh"
+	defaultTunnelServer = "wss://app.slim.sh/tunnel"
+)
+⋮----
+func APIBaseURL() string
+⋮----
+func TunnelServerURL() string
+⋮----
+var baseDir string
+⋮----
+func Init() error
+⋮----
+func Dir() string
+⋮----
+func Path() string
+⋮----
+func LogPath() string
+⋮----
+func SocketPath() string
+⋮----
+func PidPath() string
+⋮----
+func TunnelTokenPath() string
+⋮----
+func AuthPath() string
+⋮----
+func PFTokenPath() string
+</file>
+
+<file path="internal/daemon/daemon_test.go">
+package daemon
+⋮----
+import (
+	"encoding/json"
+	"net"
+	"os"
+	"testing"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/proxy"
+)
+⋮----
+"encoding/json"
+"net"
+"os"
+"testing"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/proxy"
+⋮----
+func TestHandleIPCUnknownMessage(t *testing.T)
+⋮----
+func TestHandleStatusIncludesDomainHealth(t *testing.T)
+⋮----
+var status StatusData
+⋮----
+func TestIsRunningFalseForStaleSocketPath(t *testing.T)
+⋮----
+func initDaemonStateTestConfig(t *testing.T)
+</file>
+
+<file path="internal/daemon/daemon.go">
+package daemon
+⋮----
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"os"
+	"os/signal"
+	"strconv"
+	"strings"
+	"sync"
+	"syscall"
+	"time"
+
+	godaemon "github.com/sevlyar/go-daemon"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/log"
+	"github.com/kamranahmedse/slim/internal/proxy"
+)
+⋮----
+"context"
+"encoding/json"
+"fmt"
+"os"
+"os/signal"
+"strconv"
+"strings"
+"sync"
+"syscall"
+"time"
+⋮----
+godaemon "github.com/sevlyar/go-daemon"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/log"
+"github.com/kamranahmedse/slim/internal/proxy"
+⋮----
+func IsChild() bool
+⋮----
+func IsRunning() bool
+⋮----
+func RunDetached() error
+⋮----
+func WaitForDaemon() error
+⋮----
+func run() error
+⋮----
+var cleanupOnce sync.Once
+⋮----
+func handleIPC(req Request, srv *proxy.Server) Response
+⋮----
+func handleStatus() Response
+⋮----
+var allPorts []int
+⋮----
+func handleReload(srv *proxy.Server) Response
+</file>
+
+<file path="internal/daemon/protocol_test.go">
+package daemon
+⋮----
+import (
+	"encoding/json"
+	"testing"
+)
+⋮----
+"encoding/json"
+"testing"
+⋮----
+func TestProtocolRoundTripJSON(t *testing.T)
+⋮----
+var got Request
+⋮----
+func TestStatusDataJSONTags(t *testing.T)
+⋮----
+var decoded map[string]any
+</file>
+
+<file path="internal/daemon/protocol.go">
+package daemon
+⋮----
+import "encoding/json"
+⋮----
+type MessageType string
+⋮----
+const (
+	MsgShutdown MessageType = "shutdown"
+	MsgStatus   MessageType = "status"
+	MsgReload   MessageType = "reload"
+)
+⋮----
+type Request struct {
+	Type MessageType     `json:"type"`
+	Data json.RawMessage `json:"data,omitempty"`
+}
+⋮----
+type Response struct {
+	OK    bool            `json:"ok"`
+	Error string          `json:"error,omitempty"`
+	Data  json.RawMessage `json:"data,omitempty"`
+}
+⋮----
+type StatusData struct {
+	Running bool         `json:"running"`
+	PID     int          `json:"pid"`
+	Domains []DomainInfo `json:"domains"`
+}
+⋮----
+type RouteInfo struct {
+	Path    string `json:"path"`
+	Port    int    `json:"port"`
+	Healthy bool   `json:"healthy"`
+}
+⋮----
+type DomainInfo struct {
+	Name    string      `json:"name"`
+	Port    int         `json:"port"`
+	Healthy bool        `json:"healthy"`
+	Routes  []RouteInfo `json:"routes,omitempty"`
+}
+</file>
+
+<file path="internal/daemon/socket_test.go">
+package daemon
+⋮----
+import (
+	"encoding/json"
+	"net"
+	"os"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"encoding/json"
+"net"
+"os"
+"strings"
+"testing"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func TestIPCServerRoundTrip(t *testing.T)
+⋮----
+func TestIPCServerReturnsErrorOnInvalidJSON(t *testing.T)
+⋮----
+var resp Response
+⋮----
+func TestSendIPCWhenDaemonNotRunning(t *testing.T)
+⋮----
+func TestIPCServerCloseRemovesSocket(t *testing.T)
+⋮----
+func initDaemonTestConfig(t *testing.T)
+</file>
+
+<file path="internal/daemon/socket.go">
+package daemon
+⋮----
+import (
+	"encoding/json"
+	"fmt"
+	"net"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/httperr"
+)
+⋮----
+"encoding/json"
+"fmt"
+"net"
+"os"
+"path/filepath"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/httperr"
+⋮----
+type IPCServer struct {
+	listener net.Listener
+	handler  func(Request) Response
+}
+⋮----
+func NewIPCServer(handler func(Request) Response) (*IPCServer, error)
+⋮----
+func (s *IPCServer) Serve()
+⋮----
+func (s *IPCServer) handleConn(conn net.Conn)
+⋮----
+var req Request
+⋮----
+func (s *IPCServer) Close()
+⋮----
+func SendIPC(req Request) (*Response, error)
+⋮----
+var resp Response
+</file>
+
+<file path="internal/doctor/doctor_test.go">
+package doctor
+⋮----
+import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"errors"
+	"math/big"
+	"net"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/system"
+)
+⋮----
+"crypto/ecdsa"
+"crypto/elliptic"
+"crypto/rand"
+"crypto/x509"
+"crypto/x509/pkix"
+"encoding/pem"
+"errors"
+"math/big"
+"net"
+"os"
+"path/filepath"
+"testing"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/system"
+⋮----
+func setupDoctorTest(t *testing.T) func()
+⋮----
+type mockPortFwd struct {
+	enabled bool
+	loaded  bool
+}
+⋮----
+func (m *mockPortFwd) Enable() error
+func (m *mockPortFwd) Disable() error
+func (m *mockPortFwd) IsEnabled() bool
+func (m *mockPortFwd) IsLoaded() bool
+func (m *mockPortFwd) EnsureLoaded() error
+⋮----
+func TestCheckPortForwarding(t *testing.T)
+⋮----
+func TestCheckHostsFile(t *testing.T)
+⋮----
+func TestCheckDaemon(t *testing.T)
+⋮----
+func TestCheckCACert(t *testing.T)
+⋮----
+func TestCheckLeafCert(t *testing.T)
+⋮----
+func TestRun(t *testing.T)
+⋮----
+func generateTestCertPEM(t *testing.T, notAfter time.Time) []byte
+⋮----
+func TestCheckCACertWriteAndRead(t *testing.T)
+</file>
+
+<file path="internal/doctor/doctor.go">
+package doctor
+⋮----
+import (
+	"crypto/x509"
+	"encoding/pem"
+	"fmt"
+	"net"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/cert"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/daemon"
+	"github.com/kamranahmedse/slim/internal/system"
+)
+⋮----
+"crypto/x509"
+"encoding/pem"
+"fmt"
+"net"
+"os"
+"strings"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/cert"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/daemon"
+"github.com/kamranahmedse/slim/internal/system"
+⋮----
+type Status int
+⋮----
+const (
+	Pass Status = iota
+	Warn
+	Fail
+)
+⋮----
+type CheckResult struct {
+	Name    string
+	Status  Status
+	Message string
+}
+⋮----
+type Report struct {
+	Results []CheckResult
+}
+⋮----
+var (
+	readFileFn        = os.ReadFile
+	daemonIsRunningFn = daemon.IsRunning
+	daemonSendIPCFn   = daemon.SendIPC
+	newPortFwdFn      = system.NewPortForwarder
+	configLoadFn      = config.Load
+	dialTimeoutFn     = net.DialTimeout
+)
+⋮----
+func Run() Report
+⋮----
+var results []CheckResult
+⋮----
+func checkCACert() CheckResult
+⋮----
+func checkCATrust() CheckResult
+⋮----
+func checkPortForwarding() CheckResult
+⋮----
+func missingIngressPorts() []string
+⋮----
+var missing []string
+⋮----
+func checkHostsFile(domain string) CheckResult
+⋮----
+func checkDaemon() CheckResult
+⋮----
+func checkLeafCert(domain string) CheckResult
+</file>
+
+<file path="internal/doctor/trust_darwin.go">
+//go:build darwin
+⋮----
+package doctor
+⋮----
+import (
+	"os/exec"
+
+	"github.com/kamranahmedse/slim/internal/cert"
+)
+⋮----
+"os/exec"
+⋮----
+"github.com/kamranahmedse/slim/internal/cert"
+⋮----
+var execCommandFn = exec.Command
+⋮----
+func verifyCAIsTrusted() CheckResult
+</file>
+
+<file path="internal/doctor/trust_linux.go">
+//go:build linux
+⋮----
+package doctor
+⋮----
+import (
+	"os"
+	"path/filepath"
+
+	"github.com/kamranahmedse/slim/internal/cert"
+)
+⋮----
+"os"
+"path/filepath"
+⋮----
+"github.com/kamranahmedse/slim/internal/cert"
+⋮----
+var caDirs = []string{
+	"/usr/local/share/ca-certificates",
+	"/etc/pki/ca-trust/source/anchors",
+	"/etc/ca-certificates/trust-source/anchors",
+}
+⋮----
+func verifyCAIsTrusted() CheckResult
+</file>
+
+<file path="internal/doctor/trust_unsupported.go">
+//go:build !darwin && !linux
+⋮----
+package doctor
+⋮----
+func verifyCAIsTrusted() CheckResult
+</file>
+
+<file path="internal/httperr/network_test.go">
+package httperr
+⋮----
+import (
+	"errors"
+	"fmt"
+	"net"
+	"strings"
+	"testing"
+)
+⋮----
+"errors"
+"fmt"
+"net"
+"strings"
+"testing"
+⋮----
+func TestNetworkHint_DNS(t *testing.T)
+⋮----
+type timeoutErr struct{}
+⋮----
+func (timeoutErr) Error() string
+func (timeoutErr) Timeout() bool
+func (timeoutErr) Temporary() bool
+⋮----
+func TestNetworkHint_Timeout(t *testing.T)
+⋮----
+func TestNetworkHint_ConnectionRefused(t *testing.T)
+⋮----
+func TestNetworkHint_Unreachable(t *testing.T)
+⋮----
+func TestNetworkHint_GenericError(t *testing.T)
+⋮----
+func TestNetworkHint_Nil(t *testing.T)
+⋮----
+func TestWrap_NetworkError(t *testing.T)
+⋮----
+func TestWrap_NonNetworkError(t *testing.T)
+⋮----
+func TestWrap_Nil(t *testing.T)
+</file>
+
+<file path="internal/httperr/network.go">
+package httperr
+⋮----
+import (
+	"errors"
+	"fmt"
+	"net"
+	"strings"
+)
+⋮----
+"errors"
+"fmt"
+"net"
+"strings"
+⋮----
+func NetworkHint(err error) string
+⋮----
+var dnsErr *net.DNSError
+⋮----
+var netErr net.Error
+⋮----
+func Wrap(context string, err error) error
+</file>
+
+<file path="internal/httperr/response_test.go">
+package httperr
+⋮----
+import (
+	"io"
+	"net/http"
+	"strings"
+	"testing"
+)
+⋮----
+"io"
+"net/http"
+"strings"
+"testing"
+⋮----
+func TestFromResponse_JSONErrorField(t *testing.T)
+⋮----
+func TestFromResponse_JSONMessageField(t *testing.T)
+⋮----
+func TestFromResponse_StatusHint(t *testing.T)
+⋮----
+func TestFromResponse_JSONErrorTakesPrecedence(t *testing.T)
+⋮----
+func TestStatusHint_5xxFallback(t *testing.T)
+⋮----
+func TestStatusHint_4xxNoHint(t *testing.T)
+</file>
+
+<file path="internal/httperr/response.go">
+package httperr
+⋮----
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+⋮----
+"encoding/json"
+"fmt"
+"io"
+"net/http"
+⋮----
+func FromResponse(resp *http.Response) error
+⋮----
+var apiErr struct {
+		Error   string `json:"error"`
+		Message string `json:"message"`
+	}
+⋮----
+func StatusHint(code int) string
+</file>
+
+<file path="internal/log/helpers_test.go">
+package log
+⋮----
+import (
+	"testing"
+	"time"
+)
+⋮----
+"testing"
+"time"
+⋮----
+func TestFormatDuration(t *testing.T)
+</file>
+
+<file path="internal/log/log_test.go">
+package log
+⋮----
+import (
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+	"time"
+)
+⋮----
+"os"
+"path/filepath"
+"strings"
+"testing"
+"time"
+⋮----
+func TestRequestWritesFullMode(t *testing.T)
+⋮----
+func TestRequestWritesMinimalMode(t *testing.T)
+⋮----
+func TestRequestOffModeWritesNothing(t *testing.T)
+⋮----
+func TestSetOutputReconfigureFlushesPreviousWriter(t *testing.T)
+</file>
+
+<file path="internal/log/log.go">
+package log
+⋮----
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"sync"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/term"
+)
+⋮----
+"bufio"
+"fmt"
+"os"
+"sync"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/term"
+⋮----
+const maxLogSize = 10 << 20 // 10 MB
+⋮----
+const (
+	logModeFull    = "full"
+	logModeMinimal = "minimal"
+	logModeOff     = "off"
+
+	logBufferSize  = 4096
+	logFlushPeriod = 250 * time.Millisecond
+)
+⋮----
+var (
+	logMode    = logModeFull
+	logCh      chan string
+	stopWriter chan struct{}
+	writerWG   sync.WaitGroup
+	mu         sync.RWMutex
+)
+⋮----
+func SetOutput(path string, mode string) error
+⋮----
+func Close()
+⋮----
+func Request(domain string, method string, path string, upstream int, status int, duration time.Duration)
+⋮----
+func Info(format string, args ...interface
+⋮----
+func Error(format string, args ...interface
+⋮----
+func FormatDuration(d time.Duration) string
+⋮----
+func FormatTimeAgo(t time.Time) string
+⋮----
+func normalizeMode(mode string) string
+⋮----
+func writerLoop(file *os.File, entries <-chan string, stop <-chan struct
+⋮----
+func shutdownWriterLocked()
+</file>
+
+<file path="internal/osutil/osutil.go">
+package osutil
+⋮----
+import (
+	"os"
+	"os/exec"
+)
+⋮----
+"os"
+"os/exec"
+⋮----
+func RunPrivileged(name string, args ...string) ([]byte, error)
+⋮----
+func CommandExists(name string) bool
+</file>
+
+<file path="internal/project/project_test.go">
+package project
+⋮----
+import (
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"os"
+"path/filepath"
+"strings"
+"testing"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func TestFind(t *testing.T)
+⋮----
+// Place .slim.yaml in tmpDir, search from subDir
+⋮----
+func TestFindNotFound(t *testing.T)
+⋮----
+func TestLoadAndValidate(t *testing.T)
+⋮----
+func TestLoadNormalizesBareDomains(t *testing.T)
+⋮----
+func TestValidateDuplicate(t *testing.T)
+⋮----
+func TestValidateEmptyServices(t *testing.T)
+⋮----
+func TestValidateInvalidRoute(t *testing.T)
+⋮----
+func TestDiscover(t *testing.T)
+</file>
+
+<file path="internal/project/project.go">
+package project
+⋮----
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"gopkg.in/yaml.v3"
+)
+⋮----
+"fmt"
+"os"
+"path/filepath"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"gopkg.in/yaml.v3"
+⋮----
+const FileName = ".slim.yaml"
+⋮----
+var (
+	getwdFn = os.Getwd
+	statFn  = os.Stat
+)
+⋮----
+type Service struct {
+	Domain string         `yaml:"domain"`
+	Port   int            `yaml:"port"`
+	Routes []config.Route `yaml:"routes,omitempty"`
+}
+⋮----
+type ProjectConfig struct {
+	Services []Service `yaml:"services"`
+	LogMode  string    `yaml:"log_mode,omitempty"`
+	Cors     bool      `yaml:"cors,omitempty"`
+}
+⋮----
+func Find() (string, error)
+⋮----
+func Load(path string) (*ProjectConfig, error)
+⋮----
+var pc ProjectConfig
+⋮----
+func Discover() (*ProjectConfig, string, error)
+⋮----
+func (pc *ProjectConfig) Validate() error
+</file>
+
+<file path="internal/proxy/handler_test.go">
+package proxy
+⋮----
+import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"strings"
+	"testing"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"fmt"
+"net/http"
+"net/http/httptest"
+"net/url"
+"strings"
+"testing"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func TestBuildHandlerRoutesKnownDomain(t *testing.T)
+⋮----
+func TestBuildHandlerRoutesCustomTLD(t *testing.T)
+⋮----
+func TestBuildHandlerUnknownDomainReturnsNotFound(t *testing.T)
+⋮----
+func TestBuildHandlerUpstreamDownReturnsBadGateway(t *testing.T)
+⋮----
+func TestDomainRouterMatch(t *testing.T)
+⋮----
+func TestPathRouteStripsPrefix(t *testing.T)
+⋮----
+func TestCORSHeadersNotAddedByDefault(t *testing.T)
+⋮----
+func TestCORSEnabledStripsUpstreamHeaders(t *testing.T)
+⋮----
+func TestCORSEnabledHandlesPreflight(t *testing.T)
+⋮----
+func mustPortFromURL(t *testing.T, raw string) int
+⋮----
+var port int
+</file>
+
+<file path="internal/proxy/handler.go">
+package proxy
+⋮----
+import (
+	"bufio"
+	"fmt"
+	"net"
+	"net/http"
+	"net/http/httputil"
+	"net/url"
+	"strings"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/log"
+)
+⋮----
+"bufio"
+"fmt"
+"net"
+"net/http"
+"net/http/httputil"
+"net/url"
+"strings"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/log"
+⋮----
+type pathRoute struct {
+	prefix  string
+	port    int
+	handler http.Handler
+}
+⋮----
+type domainRouter struct {
+	defaultPort    int
+	defaultHandler http.Handler
+	pathRoutes     []pathRoute // sorted by prefix length descending
+}
+⋮----
+pathRoutes     []pathRoute // sorted by prefix length descending
+⋮----
+func (dr *domainRouter) match(reqPath string) (int, http.Handler)
+⋮----
+func buildHandler(s *Server) http.Handler
+⋮----
+func setCORSHeaders(w http.ResponseWriter, origin string)
+⋮----
+func newDomainProxy(port int, transport *http.Transport, cors bool) *httputil.ReverseProxy
+⋮----
+func stripCORSHeaders(resp *http.Response) error
+⋮----
+func normalizeHost(host string) string
+⋮----
+type statusRecorder struct {
+	http.ResponseWriter
+	status  int
+	written bool
+}
+⋮----
+func (r *statusRecorder) WriteHeader(code int)
+⋮----
+func (r *statusRecorder) Flush()
+⋮----
+func (r *statusRecorder) Hijack() (net.Conn, *bufio.ReadWriter, error)
+</file>
+
+<file path="internal/proxy/health_test.go">
+package proxy
+⋮----
+import (
+	"net"
+	"strconv"
+	"testing"
+	"time"
+)
+⋮----
+"net"
+"strconv"
+"testing"
+"time"
+⋮----
+func TestWaitForUpstreamReadyImmediately(t *testing.T)
+⋮----
+func TestWaitForUpstreamBecomesReady(t *testing.T)
+⋮----
+func TestWaitForUpstreamTimeout(t *testing.T)
+⋮----
+func TestWaitForUpstreamInvalidTimeout(t *testing.T)
+</file>
+
+<file path="internal/proxy/health.go">
+package proxy
+⋮----
+import (
+	"fmt"
+	"net"
+	"sync"
+	"time"
+)
+⋮----
+"fmt"
+"net"
+"sync"
+"time"
+⋮----
+const upstreamPollInterval = 200 * time.Millisecond
+⋮----
+func CheckUpstream(port int) bool
+⋮----
+func CheckUpstreams(ports []int) []bool
+⋮----
+var wg sync.WaitGroup
+⋮----
+func WaitForUpstream(port int, timeout time.Duration) error
+</file>
+
+<file path="internal/proxy/pages.go">
+package proxy
+⋮----
+import (
+	_ "embed"
+	"html/template"
+)
+⋮----
+_ "embed"
+"html/template"
+⋮----
+//go:embed upstream_down.html
+var upstreamDownHTML string
+⋮----
+var upstreamDownTmpl = template.Must(template.New("upstream_down").Parse(upstreamDownHTML))
+⋮----
+type upstreamDownData struct {
+	Host string
+	Port int
+}
+</file>
+
+<file path="internal/proxy/server_lifecycle_test.go">
+package proxy
+⋮----
+import (
+	"crypto/tls"
+	"errors"
+	"fmt"
+	"net"
+	"strings"
+	"testing"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"crypto/tls"
+"errors"
+"fmt"
+"net"
+"strings"
+"testing"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func TestApplyConfigBuildsRoutesAndDefaults(t *testing.T)
+⋮----
+func TestApplyConfigPropagatesEnsureError(t *testing.T)
+⋮----
+func TestApplyConfigPropagatesLoadError(t *testing.T)
+⋮----
+func TestReloadConfigLoadsFromDisk(t *testing.T)
+⋮----
+func TestStartFailsWhenHTTPPortUnavailable(t *testing.T)
+⋮----
+func TestStartFailsWhenHTTPSPortUnavailableAndClosesHTTPListener(t *testing.T)
+⋮----
+// HTTP listener should be closed after HTTPS bind failure.
+⋮----
+func snapshotProxyCertHooks() func()
+⋮----
+func initProxyTestConfig(t *testing.T)
+</file>
+
+<file path="internal/proxy/server_test.go">
+package proxy
+⋮----
+import (
+	"crypto/tls"
+	"errors"
+	"net"
+	"strings"
+	"sync"
+	"sync/atomic"
+	"testing"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"crypto/tls"
+"errors"
+"net"
+"strings"
+"sync"
+"sync/atomic"
+"testing"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+func TestGetCertificateRejectsUnknownSNI(t *testing.T)
+⋮----
+func TestGetCertificateUsesDefaultDomainWhenSNIEmpty(t *testing.T)
+⋮----
+func TestGetCertificateUsesSingleflightOnCacheMiss(t *testing.T)
+⋮----
+var ensureCalls int32
+var loadCalls int32
+⋮----
+const workers = 20
+var wg sync.WaitGroup
+⋮----
+func freeTCPPort(t *testing.T) int
+</file>
+
+<file path="internal/proxy/server.go">
+package proxy
+⋮----
+import (
+	"context"
+	"crypto/tls"
+	"fmt"
+	"net"
+	"net/http"
+	"sort"
+	"sync"
+	"time"
+
+	"github.com/kamranahmedse/slim/internal/cert"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/log"
+	"golang.org/x/net/http2"
+	"golang.org/x/sync/singleflight"
+)
+⋮----
+"context"
+"crypto/tls"
+"fmt"
+"net"
+"net/http"
+"sort"
+"sync"
+"time"
+⋮----
+"github.com/kamranahmedse/slim/internal/cert"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/log"
+"golang.org/x/net/http2"
+"golang.org/x/sync/singleflight"
+⋮----
+var (
+	HTTPAddr  = fmt.Sprintf(":%d", config.ProxyHTTPPort)
+⋮----
+type Server struct {
+	cfg           *config.Config
+	cfgMu         sync.RWMutex
+	routes        map[string]*domainRouter
+	knownDomains  map[string]struct{}
+⋮----
+func NewServer(cfg *config.Config) *Server
+⋮----
+func (s *Server) getCertificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error)
+⋮----
+var name string
+⋮----
+func (s *Server) Start() error
+⋮----
+var retErr error
+⋮----
+func (s *Server) Shutdown(ctx context.Context) error
+⋮----
+var firstErr error
+⋮----
+func (s *Server) ReloadConfig() (*config.Config, error)
+⋮----
+func (s *Server) applyConfig(cfg *config.Config) error
+⋮----
+func (s *Server) cachedCertificate(name string) *tls.Certificate
+⋮----
+func (s *Server) isKnownDomain(name string) bool
+⋮----
+func (s *Server) defaultConfiguredDomain() string
+⋮----
+func newUpstreamTransport() *http.Transport
+</file>
+
+<file path="internal/proxy/status_recorder_test.go">
+package proxy
+⋮----
+import (
+	"bufio"
+	"net"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+)
+⋮----
+"bufio"
+"net"
+"net/http"
+"net/http/httptest"
+"strings"
+"testing"
+⋮----
+type basicResponseWriter struct {
+	header http.Header
+	status int
+}
+⋮----
+func (w *basicResponseWriter) Header() http.Header
+⋮----
+func (w *basicResponseWriter) Write(p []byte) (int, error)
+⋮----
+func (w *basicResponseWriter) WriteHeader(statusCode int)
+⋮----
+type flushHijackWriter struct {
+	*basicResponseWriter
+	flushed bool
+}
+⋮----
+func (w *flushHijackWriter) Flush()
+⋮----
+func (w *flushHijackWriter) Hijack() (net.Conn, *bufio.ReadWriter, error)
+⋮----
+func TestStatusRecorderWriteHeaderKeepsFirstStatus(t *testing.T)
+⋮----
+func TestStatusRecorderFlushDelegatesWhenSupported(t *testing.T)
+⋮----
+func TestStatusRecorderFlushNoopWhenUnsupported(t *testing.T)
+⋮----
+// Should not panic when flusher is unsupported.
+⋮----
+func TestStatusRecorderHijackUnsupported(t *testing.T)
+⋮----
+func TestStatusRecorderHijackSupported(t *testing.T)
+⋮----
+func TestStatusRecorderWorksWithHTTPRecorder(t *testing.T)
+</file>
+
+<file path="internal/proxy/upstream_down.html">
+<!DOCTYPE html>
+<html>
+<head><title>slim - Waiting for server</title>
+<meta http-equiv="refresh" content="2">
+<style>
+  body { font-family: -apple-system, system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #0a0a0a; color: #e5e5e5; }
+  .container { text-align: center; max-width: 480px; }
+  h1 { font-size: 1.5rem; font-weight: 600; }
+  p { color: #888; line-height: 1.6; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid #333; border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="spinner"></div>
+  <h1>Waiting for {{.Host}}</h1>
+  <p>The dev server on port {{.Port}} doesn't seem to be running.<br>
+  Start your server and this page will auto-refresh.</p>
+  <p style="font-size: 0.85em; color: #555">Expecting a server on localhost:{{.Port}}</p>
+</div>
+</body>
+</html>
+</file>
+
+<file path="internal/setup/setup_test.go">
+package setup
+⋮----
+import (
+	"net"
+	"strings"
+	"testing"
+)
+⋮----
+"net"
+"strings"
+"testing"
+⋮----
+func TestEnsureProxyPortsAvailableFailsWhenInUse(t *testing.T)
+⋮----
+func TestEnsurePortAvailableSuccess(t *testing.T)
+</file>
+
+<file path="internal/setup/setup.go">
+package setup
+⋮----
+import (
+	"fmt"
+	"net"
+
+	"github.com/kamranahmedse/slim/internal/cert"
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/system"
+	"github.com/kamranahmedse/slim/internal/term"
+)
+⋮----
+"fmt"
+"net"
+⋮----
+"github.com/kamranahmedse/slim/internal/cert"
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/system"
+"github.com/kamranahmedse/slim/internal/term"
+⋮----
+func EnsureFirstRun() error
+⋮----
+func EnsureProxyPortsAvailable() error
+⋮----
+func ensurePortAvailable(addr string) error
+</file>
+
+<file path="internal/system/elevated_test.go">
+package system
+⋮----
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
+⋮----
+"os"
+"path/filepath"
+"testing"
+⋮----
+func TestWriteFileElevatedDirectWriteSuccess(t *testing.T)
+⋮----
+func TestWriteFileElevatedReturnsNonPermissionError(t *testing.T)
+</file>
+
+<file path="internal/system/elevated.go">
+package system
+⋮----
+import (
+	"os"
+	"os/exec"
+	"strings"
+)
+⋮----
+"os"
+"os/exec"
+"strings"
+⋮----
+func writeFileElevated(path string, content string) error
+</file>
+
+<file path="internal/system/hostfile_ops_test.go">
+package system
+⋮----
+import (
+	"errors"
+	"strings"
+	"testing"
+)
+⋮----
+"errors"
+"strings"
+"testing"
+⋮----
+func TestAddHostAppendsMarkedEntry(t *testing.T)
+⋮----
+var wrotePath, wroteContent string
+⋮----
+func TestAddHostNoopWhenEntryAlreadyExists(t *testing.T)
+⋮----
+func TestRemoveHostRemovesOnlyMarkedMatchingEntry(t *testing.T)
+⋮----
+var wrote string
+⋮----
+func TestRemoveAllHostsRemovesAllMarkedEntries(t *testing.T)
+⋮----
+func TestHostMutatorsPropagateReadErrors(t *testing.T)
+⋮----
+func snapshotHostFileHooks() func()
+</file>
+
+<file path="internal/system/hostfile_test.go">
+package system
+⋮----
+import "testing"
+⋮----
+func TestLineHasHost(t *testing.T)
+⋮----
+func TestHasMarkedEntry(t *testing.T)
+</file>
+
+<file path="internal/system/hostfile.go">
+package system
+⋮----
+import (
+	"fmt"
+	"os"
+	"strings"
+)
+⋮----
+"fmt"
+"os"
+"strings"
+⋮----
+const hostsPath = "/etc/hosts"
+const marker = "# slim"
+⋮----
+var (
+	readFileHostFn          = os.ReadFile
+	writeFileElevatedHostFn = writeFileElevated
+)
+⋮----
+func AddHost(name string) error
+⋮----
+func RemoveHost(name string) error
+⋮----
+var filtered []string
+⋮----
+func RemoveAllHosts() error
+⋮----
+func HasMarkedEntry(content, hostname string) bool
+⋮----
+func lineHasHost(line, hostname string) bool
+</file>
+
+<file path="internal/system/portfwd_darwin_test.go">
+//go:build darwin
+⋮----
+package system
+⋮----
+import "testing"
+⋮----
+func TestIsPFAlreadyEnabledOutput(t *testing.T)
+⋮----
+func TestIsPFEnabledInfoOutput(t *testing.T)
+⋮----
+func TestParsePFEnableToken(t *testing.T)
+⋮----
+func TestHasPFReferenceToken(t *testing.T)
+</file>
+
+<file path="internal/system/portfwd_darwin.go">
+//go:build darwin
+⋮----
+package system
+⋮----
+import (
+	"fmt"
+	"os"
+	"os/exec"
+	"strings"
+
+	"github.com/kamranahmedse/slim/internal/config"
+)
+⋮----
+"fmt"
+"os"
+"os/exec"
+"strings"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+⋮----
+const anchorName = "com.slim"
+const anchorFile = "/etc/pf.anchors/com.slim"
+⋮----
+var pfRules = fmt.Sprintf("rdr pass on lo0 inet proto tcp from any to 127.0.0.1 port 80 -> 127.0.0.1 port %d\nrdr pass on lo0 inet proto tcp from any to 127.0.0.1 port 443 -> 127.0.0.1 port %d\n",
+	config.ProxyHTTPPort, config.ProxyHTTPSPort)
+⋮----
+var (
+	readPFTokenFn   = os.ReadFile
+	writePFTokenFn  = os.WriteFile
+	removePFTokenFn = os.Remove
+)
+⋮----
+type darwinPortFwd struct{}
+⋮----
+func NewPortForwarder() PortForwarder
+⋮----
+func (d *darwinPortFwd) Enable() error
+⋮----
+var updated []string
+⋮----
+func (d *darwinPortFwd) EnsureLoaded() error
+⋮----
+// Reuse full enable flow so missing anchor wiring in pf.conf is repaired,
+// not just reloaded.
+⋮----
+func (d *darwinPortFwd) Disable() error
+⋮----
+func (d *darwinPortFwd) IsEnabled() bool
+⋮----
+func (d *darwinPortFwd) IsLoaded() bool
+⋮----
+func isPFAlreadyEnabledOutput(out string) bool
+⋮----
+func isPFEnabledInfoOutput(out string) bool
+⋮----
+func ensurePFEnabled() error
+⋮----
+func ensurePFEnabledWithReference() error
+⋮----
+func parsePFEnableToken(out string) string
+⋮----
+func isPFReferenceTokenActive(token string) bool
+⋮----
+func hasPFReferenceToken(out string, token string) bool
+⋮----
+func readPFReferenceToken() (string, error)
+⋮----
+func releasePFReferenceToken() error
+</file>
+
+<file path="internal/system/portfwd_linux_test.go">
+//go:build linux
+⋮----
+package system
+⋮----
+import (
+	"errors"
+	"os/exec"
+	"reflect"
+	"strings"
+	"testing"
+)
+⋮----
+"errors"
+"os/exec"
+"reflect"
+"strings"
+"testing"
+⋮----
+func TestLinuxPortForwardEnableTwiceInstallsOutputJumpOnce(t *testing.T)
+⋮----
+func TestLinuxPortForwardDisableRemovesRules(t *testing.T)
+⋮----
+func TestLinuxPortForwardEnableFailsWhenIptablesMissing(t *testing.T)
+⋮----
+func TestLinuxPortForwardIsEnabledCheck(t *testing.T)
+⋮----
+type iptablesMock struct {
+	commands    [][]string
+	chainExists bool
+	outputJump  bool
+}
+⋮----
+func (m *iptablesMock) run(name string, args ...string) ([]byte, error)
+⋮----
+func (m *iptablesMock) countCommand(action string, chain string) int
+⋮----
+func matchPrefix(args []string, action string, chain string) bool
+⋮----
+func snapshotLinuxPortFwdHooks() func()
+</file>
+
+<file path="internal/system/portfwd_linux.go">
+//go:build linux
+⋮----
+package system
+⋮----
+import (
+	"errors"
+	"fmt"
+	"os/exec"
+	"strings"
+
+	"github.com/kamranahmedse/slim/internal/config"
+	"github.com/kamranahmedse/slim/internal/osutil"
+)
+⋮----
+"errors"
+"fmt"
+"os/exec"
+"strings"
+⋮----
+"github.com/kamranahmedse/slim/internal/config"
+"github.com/kamranahmedse/slim/internal/osutil"
+⋮----
+type linuxPortFwd struct{}
+⋮----
+const linuxChainName = "SLIM"
+⋮----
+var (
+	commandExistsLinuxFn = osutil.CommandExists
+	runPrivilegedLinuxFn = osutil.RunPrivileged
+	execCommandLinuxFn   = exec.Command
+)
+⋮----
+func NewPortForwarder() PortForwarder
+⋮----
+func (l *linuxPortFwd) Enable() error
+⋮----
+func (l *linuxPortFwd) EnsureLoaded() error
+⋮----
+func (l *linuxPortFwd) Disable() error
+⋮----
+func (l *linuxPortFwd) IsLoaded() bool
+⋮----
+func (l *linuxPortFwd) IsEnabled() bool
+⋮----
+func (l *linuxPortFwd) ensureChain() error
+⋮----
+func (l *linuxPortFwd) ensureRedirectRule(fromPort int, toPort int) error
+⋮----
+func (l *linuxPortFwd) ruleExists(chain string, ruleArgs ...string) (bool, error)
+⋮----
+func iptablesChainAlreadyExists(output []byte) bool
+⋮----
+func iptablesChainMissing(output []byte) bool
+</file>
+
+<file path="internal/system/portfwd.go">
+package system
+⋮----
+type PortForwarder interface {
+	Enable() error
+	Disable() error
+	IsEnabled() bool
+	IsLoaded() bool
+	EnsureLoaded() error
+}
+</file>
+
+<file path="internal/term/step.go">
+package term
+⋮----
+import (
+	"fmt"
+	"strings"
+
+	"github.com/charmbracelet/huh/spinner"
+)
+⋮----
+"fmt"
+"strings"
+⋮----
+"github.com/charmbracelet/huh/spinner"
+⋮----
+type Step struct {
+	Name        string
+	Run         func() (string, error)
+	Interactive bool
+}
+⋮----
+func RunSteps(steps []Step) error
+⋮----
+func runStep(s Step) error
+⋮----
+var result string
+var runErr error
+</file>
+
+<file path="internal/term/styles_test.go">
+package term
+⋮----
+import (
+	"testing"
+
+	"charm.land/lipgloss/v2"
+)
+⋮----
+"testing"
+⋮----
+"charm.land/lipgloss/v2"
+⋮----
+func TestStyleForStatus(t *testing.T)
+</file>
+
+<file path="internal/term/styles.go">
+package term
+⋮----
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+
+	"charm.land/lipgloss/v2"
+)
+⋮----
+"bufio"
+"fmt"
+"os"
+"strings"
+⋮----
+"charm.land/lipgloss/v2"
+⋮----
+var (
+	Green   = lipgloss.NewStyle().Foreground(lipgloss.ANSIColor(2))
+⋮----
+func ConfirmPrompt(msg string) bool
+⋮----
+func StyleForStatus(code int) lipgloss.Style
+</file>
+
+<file path="internal/tunnel/client.go">
+package tunnel
+⋮----
+import (
+	"bytes"
+	"context"
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
+	"sync"
+	"time"
+
+	"github.com/coder/websocket"
+	"github.com/coder/websocket/wsjson"
+	"github.com/kamranahmedse/slim/internal/httperr"
+	"github.com/kamranahmedse/slim/internal/log"
+	proto "github.com/kamranahmedse/slim/protocol"
+)
+⋮----
+"bytes"
+"context"
+"fmt"
+"io"
+"net/http"
+"strings"
+"sync"
+"time"
+⋮----
+"github.com/coder/websocket"
+"github.com/coder/websocket/wsjson"
+"github.com/kamranahmedse/slim/internal/httperr"
+"github.com/kamranahmedse/slim/internal/log"
+proto "github.com/kamranahmedse/slim/protocol"
+⋮----
+type RequestEvent struct {
+	Method   string
+	Path     string
+	Status   int
+	Duration time.Duration
+}
+⋮----
+type ClientOptions struct {
+	ServerURL string
+	Token     string
+	Subdomain string
+	Domain    string
+	LocalPort int
+	Password  string
+	TTL       time.Duration
+	OnRequest func(RequestEvent)
+}
+⋮----
+type Client struct {
+	opts      ClientOptions
+	domainURL string
+	conn      *websocket.Conn
+}
+⋮----
+func NewClient(opts ClientOptions) *Client
+⋮----
+func (c *Client) Connect(ctx context.Context) (string, error)
+⋮----
+func (c *Client) Close()
+⋮----
+func (c *Client) dial(ctx context.Context) (*websocket.Conn, string, error)
+⋮----
+var resp proto.RegistrationResponse
+⋮----
+func (c *Client) DomainURL() string
+⋮----
+func (c *Client) readLoop(ctx context.Context, conn *websocket.Conn)
+⋮----
+func (c *Client) errorResponse(port int, err error) *http.Response
+⋮----
+var buf bytes.Buffer
+⋮----
+func (c *Client) readMessages(ctx context.Context, conn *websocket.Conn) error
+⋮----
+var wsMu sync.Mutex
+⋮----
+func (c *Client) handleRequest(ctx context.Context, conn *websocket.Conn, wsMu *sync.Mutex, httpClient *http.Client, requestID uint32, req *http.Request)
+</file>
+
+<file path="internal/tunnel/pages.go">
+package tunnel
+⋮----
+import (
+	_ "embed"
+	"html/template"
+)
+⋮----
+_ "embed"
+"html/template"
+⋮----
+//go:embed server_down.html
+var serverDownHTML string
+⋮----
+var serverDownTmpl = template.Must(template.New("server_down").Parse(serverDownHTML))
+⋮----
+type serverDownData struct {
+	Port  int
+	Error string
+}
+</file>
+
+<file path="internal/tunnel/server_down.html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Server Unavailable — slim</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1a1a1a;color:hsl(0 0% 100%/85%)}
+.container{text-align:center;padding:2rem;max-width:420px}
+.status{font-size:5rem;font-weight:700;letter-spacing:-2px;color:hsl(0 0% 100%/10%);line-height:1}
+h1{font-size:1.25rem;font-weight:600;margin:.75rem 0 .5rem;color:#fff;text-wrap:balance}
+p{font-size:.9rem;color:hsl(0 0% 100%/55%);line-height:1.5;text-wrap:balance}
+details{margin-top:1.25rem;text-align:left}
+summary{font-size:.8rem;color:hsl(0 0% 100%/40%);cursor:pointer;text-align:center;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▶ ";font-size:.6rem;vertical-align:1px}
+details[open] summary::before{content:"▼ "}
+.detail-box{margin-top:.5rem;padding:.75rem 1rem;background:#232323;border:1px solid hsl(0 0% 100%/8%);border-radius:6px;font-size:.8rem;color:hsl(0 0% 100%/55%);line-height:1.5}
+.footer{position:fixed;bottom:1.5rem;text-align:center;font-size:.75rem;color:hsl(0 0% 100%/40%)}
+.footer a{color:hsl(0 0% 100%/40%);text-decoration:none}
+.footer a:hover{color:hsl(0 0% 100%/55%);text-decoration:underline}
+.footer span{margin:0 .35rem}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="status">502</div>
+<h1>Server Unavailable</h1>
+<p>The local development server behind this tunnel is not responding. Please try again later.</p>
+<details>
+<summary>More details</summary>
+<div class="detail-box">The local server on port {{.Port}} is not responding.{{if .Error}} {{.Error}}{{end}}</div>
+</details>
+</div>
+<div class="footer">
+Served via <a href="https://slim.sh">slim</a> tunnel
+<span>&middot;</span>
+<a href="https://slim.sh/abuse">Report abuse</a>
+</div>
+</body>
+</html>
+</file>
+
+<file path="internal/tunnel/subdomain_test.go">
+package tunnel
+⋮----
+import "testing"
+⋮----
+func TestValidateSubdomain(t *testing.T)
+</file>
+
+<file path="internal/tunnel/subdomain.go">
+package tunnel
+⋮----
+import (
+	"fmt"
+	"strings"
+)
+⋮----
+"fmt"
+"strings"
+⋮----
+var blockedSubdomains = []string{
+	"paypal",
+	"apple",
+	"google",
+	"microsoft",
+	"facebook",
+	"instagram",
+	"amazon",
+	"netflix",
+	"spotify",
+	"twitter",
+	"linkedin",
+	"github",
+	"dropbox",
+	"icloud",
+	"chase",
+	"wellsfargo",
+	"bankofamerica",
+	"citibank",
+	"coinbase",
+	"binance",
+	"stripe",
+	"venmo",
+	"cashapp",
+	"zelle",
+	"metamask",
+	"outlook",
+	"hotmail",
+	"yahoo",
+	"whatsapp",
+	"telegram",
+	"signal",
+	"discord",
+	"slack",
+	"zoom",
+	"docusign",
+	"adobe",
+	"salesforce",
+	"shopify",
+	"ebay",
+	"walmart",
+	"usps",
+	"fedex",
+	"ups",
+	"dhl",
+}
+⋮----
+func ValidateSubdomain(subdomain string) error
+</file>
+
+<file path="protocol/protocol_test.go">
+package protocol
+⋮----
+import (
+	"net/http"
+	"strings"
+	"testing"
+)
+⋮----
+"net/http"
+"strings"
+"testing"
+⋮----
+func TestFrameEncodeDecode(t *testing.T)
+⋮----
+var requestID uint32 = 42
+⋮----
+func TestFrameDecodeError(t *testing.T)
+⋮----
+func TestFrameDecodeEmptyPayload(t *testing.T)
+⋮----
+func TestSerializeDeserializeRequest(t *testing.T)
+⋮----
+func TestSerializeDeserializeResponse(t *testing.T)
+</file>
+
+<file path="protocol/protocol.go">
+package protocol
+⋮----
+import (
+	"bufio"
+	"bytes"
+	"encoding/binary"
+	"fmt"
+	"net/http"
+	"net/http/httputil"
+)
+⋮----
+"bufio"
+"bytes"
+"encoding/binary"
+"fmt"
+"net/http"
+"net/http/httputil"
+⋮----
+type RegistrationRequest struct {
+	Token     string `json:"token"`
+	Subdomain string `json:"subdomain"`
+	Domain    string `json:"domain,omitempty"`
+	Password  string `json:"password,omitempty"`
+	TTL       string `json:"ttl,omitempty"`
+}
+⋮----
+type RegistrationResponse struct {
+	OK        bool   `json:"ok"`
+	URL       string `json:"url"`
+	Subdomain string `json:"subdomain"`
+	Domain    string `json:"domain,omitempty"`
+	Error     string `json:"error,omitempty"`
+}
+⋮----
+func EncodeFrame(requestID uint32, data []byte) []byte
+⋮----
+func DecodeFrame(frame []byte) (uint32, []byte, error)
+⋮----
+func SerializeRequest(r *http.Request) ([]byte, error)
+⋮----
+func DeserializeRequest(data []byte) (*http.Request, error)
+⋮----
+func SerializeResponse(resp *http.Response) ([]byte, error)
+⋮----
+func DeserializeResponse(data []byte) (*http.Response, error)
+</file>
+
+<file path=".goreleaser.yml">
+version: 2
+
+builds:
+  - main: .
+    binary: slim
+    ldflags:
+      - -s -w -X github.com/kamranahmedse/slim/cmd.Version={{.Version}}
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - format: tar.gz
+    name_template: "slim_{{.Version}}_{{.Os}}_{{.Arch}}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+
+release:
+  github:
+    owner: kamranahmedse
+    name: slim
+</file>
+
+<file path="go.mod">
+module github.com/kamranahmedse/slim
+
+go 1.25.0
+
+require (
+	charm.land/lipgloss/v2 v2.0.0
+	github.com/charmbracelet/huh/spinner v0.0.0-20260223110133-9dc45e34a40b
+	github.com/coder/websocket v1.8.14
+	github.com/sevlyar/go-daemon v0.1.6
+	github.com/spf13/cobra v1.10.2
+	golang.org/x/net v0.51.0
+	golang.org/x/sync v0.19.0
+	gopkg.in/yaml.v3 v3.0.1
+)
+
+require (
+	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
+	github.com/charmbracelet/bubbles v1.0.0 // indirect
+	github.com/charmbracelet/bubbletea v1.3.10 // indirect
+	github.com/charmbracelet/colorprofile v0.4.2 // indirect
+	github.com/charmbracelet/lipgloss v1.1.0 // indirect
+	github.com/charmbracelet/ultraviolet v0.0.0-20251205161215-1948445e3318 // indirect
+	github.com/charmbracelet/x/ansi v0.11.6 // indirect
+	github.com/charmbracelet/x/cellbuf v0.0.15 // indirect
+	github.com/charmbracelet/x/term v0.2.2 // indirect
+	github.com/charmbracelet/x/termios v0.1.1 // indirect
+	github.com/charmbracelet/x/windows v0.2.2 // indirect
+	github.com/clipperhouse/displaywidth v0.11.0 // indirect
+	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
+	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
+	github.com/lucasb-eyer/go-colorful v1.3.0 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mattn/go-localereader v0.0.1 // indirect
+	github.com/mattn/go-runewidth v0.0.19 // indirect
+	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect
+	github.com/muesli/cancelreader v0.2.2 // indirect
+	github.com/muesli/termenv v0.16.0 // indirect
+	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/spf13/pflag v1.0.10 // indirect
+	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+)
+</file>
+
+<file path="install.sh">
+#!/bin/sh
+set -e
+
+REPO="kamranahmedse/slim"
+INSTALL_DIR="/usr/local/bin"
+
+log() {
+  printf "%s\n" "$1"
+}
+
+log "Step 1/7: Detecting platform..."
+
+# Detect OS
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+case "$OS" in
+  darwin) OS="darwin" ;;
+  linux)  OS="linux" ;;
+  *)
+    echo "Unsupported OS: $OS"
+    exit 1
+    ;;
+esac
+
+# Detect architecture
+ARCH=$(uname -m)
+case "$ARCH" in
+  x86_64|amd64)  ARCH="amd64" ;;
+  arm64|aarch64) ARCH="arm64" ;;
+  *)
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
+
+log "Step 2/7: Resolving latest release..."
+
+# Get latest version
+TAG=$(curl -fsLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest" | sed -n 's|.*/tag/||p')
+if [ -z "$TAG" ]; then
+  echo "Failed to fetch latest version"
+  exit 1
+fi
+
+VERSION="${TAG#v}"
+FILENAME="slim_${VERSION}_${OS}_${ARCH}.tar.gz"
+URL="https://github.com/$REPO/releases/download/${TAG}/${FILENAME}"
+CHECKSUM_URL="https://github.com/$REPO/releases/download/${TAG}/checksums.txt"
+
+log "Installing slim ${VERSION} (${OS}/${ARCH})..."
+
+TMP=$(mktemp -d)
+trap 'rm -rf "$TMP"' EXIT
+
+log "Step 3/7: Downloading archive..."
+curl -fL --retry 3 --connect-timeout 15 --progress-bar "$URL" -o "$TMP/$FILENAME"
+
+log "Step 4/7: Downloading checksums..."
+curl -fsSL --retry 3 --connect-timeout 15 "$CHECKSUM_URL" -o "$TMP/checksums.txt"
+
+# Verify checksum
+log "Step 5/7: Verifying checksum..."
+if [ "$OS" = "darwin" ]; then
+  (cd "$TMP" && grep "$FILENAME" checksums.txt | shasum -a 256 -c --quiet)
+elif command -v sha256sum >/dev/null 2>&1; then
+  (cd "$TMP" && grep "$FILENAME" checksums.txt | sha256sum -c --quiet)
+else
+  echo "Warning: cannot verify checksum (sha256sum/shasum not found)"
+fi
+
+log "Step 6/7: Extracting archive..."
+tar -xzf "$TMP/$FILENAME" -C "$TMP"
+
+if [ -w "$INSTALL_DIR" ]; then
+  log "Step 7/7: Installing binary to $INSTALL_DIR..."
+  install -m 0755 "$TMP/slim" "$INSTALL_DIR/slim"
+else
+  log "Step 7/7: Installing binary to $INSTALL_DIR (sudo password may be required)..."
+  sudo -v
+  sudo install -m 0755 "$TMP/slim" "$INSTALL_DIR/slim"
+fi
+
+log "Installed slim to $INSTALL_DIR/slim"
+"$INSTALL_DIR/slim" version
+</file>
+
+<file path="main.go">
+package main
+⋮----
+import (
+	"os"
+
+	"github.com/kamranahmedse/slim/cmd"
+)
+⋮----
+"os"
+⋮----
+"github.com/kamranahmedse/slim/cmd"
+⋮----
+func main()
+</file>
+
+<file path=".github/ISSUE_TEMPLATE/bug_report.yml">
+name: Bug Report
+description: Report a bug or unexpected behavior
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Run `slim up ...`
+        2. Open browser to ...
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Slim Version
+      description: Output of `slim version`.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      options:
+        - macOS
+        - Linux
+        - Windows
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: Your `.slim.yaml` (redact any sensitive values).
+      render: yaml
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Any relevant log output.
+      render: text
+</file>
+
+<file path=".github/ISSUE_TEMPLATE/config.yml">
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/kamranahmedse/slim#readme
+    about: Check the docs before opening an issue
+</file>
+
+<file path=".github/ISSUE_TEMPLATE/feature_request.yml">
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this solve? What's the use case?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How do you think this should work?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any other approaches you've considered or workarounds you're using.
+</file>
+
+<file path=".github/PULL_REQUEST_TEMPLATE.md">
+## What does this PR do?
+
+<!-- A brief description of the change -->
+
+## How to test?
+
+<!-- Steps to verify the change works -->
+
+## Checklist
+
+- [ ] `go build ./...` passes
+- [ ] `go test ./...` passes
+- [ ] `go vet ./...` passes
+</file>
+
+<file path="LICENSE">
+PolyForm Shield License 1.0.0
+
+Copyright (c) 2026 Kamran Ahmed
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to use,
+copy, modify, and distribute the Software, subject to the following conditions:
+
+1. You may not use the Software to provide a product or service that competes
+   with the Software or any product or service offered by the Licensor that
+   includes the Software.
+
+2. You may not remove or obscure any licensing, copyright, or other notices
+   included in the Software.
+
+3. If you distribute the Software or any derivative works, you must include a
+   copy of this license.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+For more information, see https://polyformproject.org/licenses/shield/1.0.0
+</file>
+
+<file path=".github/workflows/release.yml">
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+</file>
+
+<file path=".github/workflows/ci.yml">
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - run: go build ./...
+
+      - run: go test ./...
+
+      - run: go vet ./...
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          install-mode: goinstall
+</file>
+
+<file path="README.md">
+<h1 align="center">⚡️ Slim</h1>
+
+<p align="center">
+  Simple command to get clean HTTPS local domains for your projects
+</p>
+
+<p align="center">
+  <a href="https://slim.sh"><img src="https://img.shields.io/badge/website-slim.sh-0f172a?style=flat-square" alt="Website"></a>
+  <img src="https://img.shields.io/badge/go-1.25%2B-00ADD8?style=flat-square&logo=go&logoColor=white" alt="Go 1.25+">
+  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux-111827?style=flat-square" alt="Platform">
+</p>
+
+```
+myapp.test        → localhost:3000
+myapp.test/api    → localhost:8080
+dashboard.test    → localhost:5173
+app.loc           → localhost:4000
+```
+
+## Install
+
+```bash
+curl -sL https://slim.sh/install.sh | sh
+```
+
+or build from source
+
+```bash
+git clone https://github.com/kamranahmedse/slim.git
+cd slim
+make build
+make install
+```
+
+Requires Go 1.25 or later.
+
+## Quick Start
+
+Create a custom HTTPs Domain for local development using `slim start`
+
+```bash
+slim start myapp --port 3000
+# https://myapp.test → localhost:3000
+```
+
+To share your local project on a public URL
+
+```bash
+slim share --port 3000
+# https://cheeky-panda.slim.show
+```
+
+## Local Usage
+
+> Start or stop a local service using `slim start` or `slim stop`
+
+```bash
+slim start myapp --port 3000
+slim start api --port 8080
+slim stop myapp                  # stop one domain
+slim stop                        # stop all domains
+```
+
+> If you don't specify the TLD, you get a `.test` domain. Specify a full domain to use any TLD:
+
+```bash
+slim start app.loc --port 3000   # https://app.loc → localhost:3000
+slim start my.demo --port 4000   # https://my.demo → localhost:4000
+```
+
+> **Note:** Avoid `.local` — it's reserved for mDNS and can cause slow DNS resolution on macOS/Linux.
+
+> Route different URL paths to different upstream ports on a single domain:
+
+```bash
+slim start myapp --port 3000 --route /api=8080 --route /ws=9000
+```
+
+> Define all services for a project in a `.slim.yaml` file at the project root:
+
+```yaml
+services:
+  - domain: myapp
+    port: 3000
+    routes:
+      - path: /api
+        port: 8080
+  - domain: dashboard
+    port: 5173
+  - domain: app.loc
+    port: 4000
+log_mode: minimal  # full | minimal | off
+cors: true         # enable CORS headers on proxied responses
+```
+
+```bash
+slim up                              # start all services
+slim up --config /path/to/.slim.yaml # specify a config path
+slim down                            # stop all project services
+```
+
+## Internet Sharing
+
+> Expose a local server to the internet with a public `slim.show` URL. Requires `slim login` first.
+
+```bash
+slim share --port 3000                              # random subdomain
+slim share --port 3000 --subdomain demo             # https://demo.slim.show
+slim share --port 3000 --password secret            # password protected
+slim share --port 3000 --ttl 30m                    # auto-expires after 30 minutes
+slim share --port 3000 --domain myapp.example.com   # custom domain
+```
+
+
+## Logs and Diagnostics
+
+```bash
+slim list                # inspect running domains
+slim list --json
+
+slim logs                # view access logs
+slim logs --follow myapp # tail logs for a domain
+slim logs --flush        # clear log file
+
+slim doctor              # run diagnostic checks
+```
+
+```
+$ slim doctor
+  ✓  CA certificate        valid, expires 2035-02-28
+  ✓  CA trust              trusted by OS
+  ✓  Port forwarding       active (80→10080, 443→10443)
+  ✓  Hosts: myapp.test    present in /etc/hosts
+  !  Daemon                not running
+  ✓  Cert: myapp.test     valid, expires 2027-06-03
+```
+
+## Updating
+
+Run `slim update` to update to latest version.
+
+## Uninstall
+
+> Remove everything: CA, certs, hosts entries, port-forward rules, config
+
+```bash
+slim uninstall
+```
+
+## License
+
+[PolyForm Shield 1.0.0](./LICENSE) © [Kamran Ahmed](https://x.com/kamrify)
+</file>
+
+<file path=".gitignore">
+slim
+*.exe
+.DS_Store
+node_modules/
+
+# Astro docs app artifacts
+docs/node_modules/
+docs/.astro/
+docs/dist/
+</file>
+
+<file path="Makefile">
+BINARY := slim
+VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+
+.PHONY: build install clean test
+
+build:
+	go build -ldflags "-s -w -X github.com/kamranahmedse/slim/cmd.Version=$(VERSION)" -o $(BINARY) .
+	cp install.sh docs/public/install.sh
+
+install: build
+	mv $(BINARY) /usr/local/bin/
+
+clean:
+	rm -f $(BINARY)
+
+test:
+	go test ./...
+</file>
+
+</files>

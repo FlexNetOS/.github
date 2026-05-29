@@ -87,3 +87,53 @@
   status: materialized
   purpose: Python package/tool runner for caller repos while CPython hermetic path is built.
   latest_stable_policy: Track latest stable release source/binary with checksum.
+
+- name: rust
+  path: tools/rust
+  url: https://github.com/rust-lang/rust
+  branch: master
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Shared Rust compiler/toolchain for LifeOS, Tauri, ruOS, and other Rust-bearing FlexNetOS repos.
+  latest_stable_policy: Track latest stable Rust; do not pin the ecosystem to stale compiler requirements.
+
+- name: vite
+  path: tools/frontend/vite
+  url: https://github.com/vitejs/vite
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Shared frontend build tool for LifeOS and other FlexNetOS UI surfaces.
+  latest_stable_policy: Track latest stable Vite and current stable Node/Bun runtime support.
+
+- name: vue
+  path: tools/frontend/vue
+  url: https://github.com/vuejs/core
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Shared frontend framework source/pin for LifeOS and other Vue-based FlexNetOS UI surfaces.
+  latest_stable_policy: Track latest stable Vue 3 release line unless a product repo explicitly records an upgrade blocker.
+
+- name: tauri
+  path: tools/frontend/tauri
+  url: https://github.com/tauri-apps/tauri
+  branch: dev
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Shared desktop app runtime/tooling source for LifeOS and other Tauri-based FlexNetOS surfaces.
+  latest_stable_policy: Track latest stable Tauri 2 release line; keep Rust/Node frontend wrappers current.
+
+- name: bitwarden-cli
+  path: tools/bitwarden-clients
+  url: https://github.com/bitwarden/clients
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Source pin for the Bitwarden CLI used to read Bitwarden/Vaultwarden vault items before syncing selected values into GitHub Actions secrets.
+  latest_stable_policy: Track latest stable Bitwarden CLI; prefer repo-local wrapper once the binary/source path is materialized.

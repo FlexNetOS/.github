@@ -11,13 +11,17 @@ set -euo pipefail
 RUNNER_HOME="${RUNNER_HOME:-$HOME/_work/repos/actions-runner}"
 VERSION="${RUNNER_VERSION:-}"
 ARCH="${RUNNER_ARCH:-x64}"
+DRY_RUN="${DRY_RUN:-1}"
+CONFIRM="${CONFIRM:-0}"
 
 usage() {
   cat <<'EOF'
-Usage: runner/install.sh [--version X.Y.Z] [--home /path]
+Usage: runner/install.sh [--version X.Y.Z] [--home /path] [--dry-run|--execute]
 
   --version X.Y.Z   Runner version (default: latest stable from GitHub API)
   --home PATH       Install path (default: $HOME/_work/repos/actions-runner)
+  --dry-run         Print intended actions only (default)
+  --execute         Download/extract/install dependencies; requires CONFIRM=1
 
 Idempotent — safe to re-run. Bumps the version in place if --version differs
 from what's installed.
@@ -28,6 +32,8 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --version) VERSION="$2"; shift 2 ;;
     --home)    RUNNER_HOME="$2"; shift 2 ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    --execute) DRY_RUN=0; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown arg: $1" >&2; usage; exit 2 ;;
   esac
@@ -45,6 +51,22 @@ fi
 
 ARCHIVE="actions-runner-linux-${ARCH}-${VERSION}.tar.gz"
 URL="https://github.com/actions/runner/releases/download/v${VERSION}/${ARCHIVE}"
+
+if [[ "$DRY_RUN" != "1" && "$CONFIRM" != "1" ]]; then
+  echo "ERROR: refusing to mutate host without CONFIRM=1" >&2
+  echo "Try: CONFIRM=1 DRY_RUN=0 runner/install.sh --execute ..." >&2
+  exit 2
+fi
+
+if [[ "$DRY_RUN" == "1" ]]; then
+  echo "DRY-RUN: would install/upgrade GitHub Actions runner"
+  echo "  version: $VERSION"
+  echo "  arch: $ARCH"
+  echo "  home: $RUNNER_HOME"
+  echo "  url: $URL"
+  echo "No files were changed. Re-run with CONFIRM=1 DRY_RUN=0 --execute to apply."
+  exit 0
+fi
 
 # Skip if already installed at the requested version
 if [[ -f "$RUNNER_HOME/config.sh" ]]; then

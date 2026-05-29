@@ -3,6 +3,12 @@
 # yet present in .gitmodules. Idempotent. Safe to re-run.
 #
 # Requires: git, python3, gh (only if --create-missing is used).
+# 404 handling:
+#   - Tagged entries (# depends-on: USER.TODO#5) that 404: WARN + skip, exit 0.
+#     These are known-pending forks; the fork is a deliberate human step.
+#   - Untagged entries that 404: ERROR + exit 1. Requires operator action.
+#
+# Requires: git, python3, gh (for URL probing and --create-missing).
 
 set -euo pipefail
 
@@ -40,6 +46,17 @@ command -v python3 >/dev/null 2>&1 || { echo "ERROR: python3 not found" >&2; exi
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
+# Precompute set of paths tagged with `# depends-on: USER.TODO#5`.
+# These are known-pending forks; a 404 on them is expected and not an error.
+TAGGED_PATHS=$(awk '
+  /^- path:/ { name=$0; sub(/^- path:[ \t]*/, "", name); sub(/[ \t]*$/, "", name) }
+  /depends-on: USER\.TODO#5/ && name != "" { print name }
+' "$MANIFEST")
+
+is_tagged() {
+  echo "$TAGGED_PATHS" | grep -qxF "$1"
+}
+
 count=$(python3 scripts/manifest-query.py "$MANIFEST" --count)
 added=0
 skipped=0
@@ -59,13 +76,24 @@ while IFS=$'\t' read -r path url branch partial; do
     continue
   fi
 
-  # Probe the URL exists (best effort — does not block if gh is missing).
-  if [[ "$CREATE_MISSING" -eq 1 ]] && command -v gh >/dev/null 2>&1; then
-    if ! gh repo view "${url#https://github.com/}" >/dev/null 2>&1; then
-      echo "INFO: $url 404s; attempting gh repo create…"
-      gh repo create "${url#https://github.com/}" --public --description "FlexNetOS umbrella submodule" || {
-        echo "ERROR: failed to create $url" >&2; errored=$((errored + 1)); continue;
-      }
+  # Probe the URL when gh is available.
+  if command -v gh >/dev/null 2>&1; then
+    repo_slug="${url#https://github.com/}"
+    if ! gh repo view "$repo_slug" >/dev/null 2>&1; then
+      if [[ "$CREATE_MISSING" -eq 1 ]] && [[ "$repo_slug" == FlexNetOS/* ]]; then
+        echo "INFO: $url not found; attempting gh repo create…"
+        gh repo create "$repo_slug" --public --description "FlexNetOS umbrella submodule" || {
+          echo "ERROR: failed to create $url" >&2; errored=$((errored + 1)); continue;
+        }
+      elif is_tagged "$path"; then
+        echo "WARN: $url not found (tagged depends-on: USER.TODO#5 — fork pending, skipping)"
+        skipped=$((skipped + 1))
+        continue
+      else
+        echo "ERROR: $url not found and not tagged depends-on: USER.TODO#5 — operator action required" >&2
+        errored=$((errored + 1))
+        continue
+      fi
     fi
   fi
 
@@ -91,5 +119,5 @@ while IFS=$'\t' read -r path url branch partial; do
 done < <(python3 scripts/manifest-query.py "$MANIFEST" --fields path,url,branch,partial_clone)
 
 echo
-echo "Summary: $added added · $skipped already-present · $errored errored · $count total"
+echo "Summary: $added added · $skipped already-present/skipped · $errored errored · $count total"
 exit $errored

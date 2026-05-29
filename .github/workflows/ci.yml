@@ -5,9 +5,13 @@ name: ci
 
 on:
   push:
-    branches: [main]
+    # Run on feature/stack branches too so stacked PRs get a base check before
+    # their eventual merge target is main.
+    branches: ['**']
   pull_request:
-    branches: [main]
+    # Stacked PRs often target another feature branch. Validate every PR base,
+    # not just PRs whose immediate base is main.
+    branches: ['**']
   workflow_dispatch:
 
 # Block default permissions; callers re-grant minimally.

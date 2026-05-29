@@ -1,0 +1,55 @@
+{
+  "title": "Deep autoresearch + deepinit + TDD workflow on my-github umbrella",
+  "description": "Run deepinit to create AGENTS.md hierarchy, set up autoresearch mission with make verify as evaluator, apply TDD workflow to any gaps found.",
+  "stories": [
+    {
+      "id": "US-001",
+      "title": "deepinit: Create root AGENTS.md for my-github umbrella",
+      "passes": true,
+      "acceptanceCriteria": [
+        "AGENTS.md exists at /home/drdave/workspace/my-github/AGENTS.md (root level)",
+        "AGENTS.md contains accurate Purpose, Key Files table, Subdirectories table, For AI Agents section",
+        "All major top-level dirs (.claude/, .github/, data/, docs/, repos/, scripts/, tools/) listed in the Subdirectories table",
+        "make verify runs without errors after AGENTS.md is written"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "deepinit: Create AGENTS.md for key subdirectories",
+      "passes": true,
+      "acceptanceCriteria": [
+        "AGENTS.md exists in .claude/ with description of skills, settings, hooks",
+        "AGENTS.md exists in .github/ describing workflows, templates, community health files",
+        "AGENTS.md exists in scripts/ describing each script's purpose",
+        "AGENTS.md exists in tools/ describing pinned tool wrappers",
+        "AGENTS.md exists in data/brain-data/research/ describing the research dossier format",
+        "Each subdirectory AGENTS.md has correct <!-- Parent: --> tag pointing to its parent AGENTS.md"
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "autoresearch: Set up mission and run make verify evaluator",
+      "passes": true,
+      "acceptanceCriteria": [
+        "Mission file exists at .omc/autoresearch/codebase-health/mission.md describing the goal",
+        "Evaluator defined: runs make verify and captures exit code + output",
+        "First iteration evaluation JSON exists at .omc/autoresearch/codebase-health/runs/run-001/evaluations/iteration-0001.json",
+        "Evaluation JSON has boolean pass field and captures make verify exit code",
+        "make verify passes (exit 0) at time of evaluation — all actionlint, markdown, manifest, tool-assets checks pass"
+      ]
+    },
+    {
+      "id": "US-004",
+      "title": "TDD: Fix any make verify failures found during autoresearch",
+      "passes": true,
+      "acceptanceCriteria": [
+        "make verify exits 0 with no errors",
+        "make verify.actionlint exits 0 (all workflows valid)",
+        "make verify.markdown exits 0 (no markdown errors)",
+        "make verify.manifest exits 0 (28 manifest entries parse)",
+        "make verify.tools exits 0 (tool assets valid)",
+        "If new AGENTS.md files were added in US-001/002, make verify.markdown still passes (no markdown lint failures in new files)"
+      ]
+    }
+  ]
+}

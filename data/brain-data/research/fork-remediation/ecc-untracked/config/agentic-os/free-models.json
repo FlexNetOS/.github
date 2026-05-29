@@ -1,0 +1,105 @@
+{
+  "_doc": "Curated free-tier model catalog routed via freellmapi (https://github.com/FlexNetOS/freellmapi). The proxy auto-fails-over across providers; this list documents what to expect. Update when freellmapi adds providers.",
+  "version": 1,
+  "lastReviewed": "2026-05-21",
+  "providers": [
+    {
+      "id": "google",
+      "name": "Google AI Studio",
+      "modelIds": ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.5-pro-preview"],
+      "contextWindow": 1048576,
+      "dailyTokenBudget": 1000000,
+      "auth": "api_key"
+    },
+    {
+      "id": "groq",
+      "name": "Groq",
+      "modelIds": ["llama-3.3-70b-versatile", "llama-4-scout-17b", "qwen-3-32b", "gpt-oss-20b"],
+      "contextWindow": 131072,
+      "dailyRequestBudget": 14400,
+      "auth": "api_key"
+    },
+    {
+      "id": "cerebras",
+      "name": "Cerebras",
+      "modelIds": ["qwen-3-235b-instruct"],
+      "contextWindow": 32768,
+      "dailyTokenBudget": 1000000,
+      "auth": "api_key"
+    },
+    {
+      "id": "sambanova",
+      "name": "SambaNova Cloud",
+      "modelIds": ["DeepSeek-V3.1", "Meta-Llama-4-Maverick", "Llama-3.3-70B-Instruct", "gemma-3-27b-it"],
+      "contextWindow": 16384,
+      "dailyRequestBudget": 50,
+      "auth": "api_key"
+    },
+    {
+      "id": "mistral",
+      "name": "Mistral La Plateforme",
+      "modelIds": ["mistral-large-3", "mistral-medium-3.5", "codestral-2412", "devstral-small"],
+      "contextWindow": 128000,
+      "monthlyRequestBudget": 1000000,
+      "auth": "api_key"
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter Free Tier",
+      "modelIds": [
+        "google/gemini-2.0-flash-exp:free",
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "nvidia/llama-3.1-nemotron-70b-instruct:free",
+        "qwen/qwen-2.5-coder-32b-instruct:free",
+        "deepseek/deepseek-chat:free",
+        "google/gemma-2-9b-it:free",
+        "mistralai/mistral-7b-instruct:free",
+        "openchat/openchat-7b:free"
+      ],
+      "contextWindow": 128000,
+      "dailyRequestBudget": 50,
+      "auth": "api_key",
+      "note": "Free models marked with ':free' suffix. Quota shared across all :free models per account."
+    },
+    {
+      "id": "github-models",
+      "name": "GitHub Models",
+      "modelIds": ["gpt-4.1", "gpt-4o", "phi-4", "Llama-3.3-70B-Instruct"],
+      "contextWindow": 128000,
+      "dailyRequestBudget": 150,
+      "auth": "pat",
+      "note": "Requires GitHub PAT with `models:read` scope."
+    },
+    {
+      "id": "cohere",
+      "name": "Cohere",
+      "modelIds": ["command-r-plus-08-2024", "command-r-08-2024"],
+      "contextWindow": 128000,
+      "monthlyRequestBudget": 1000,
+      "auth": "api_key",
+      "note": "Trial keys only — production keys have a different policy."
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare Workers AI",
+      "modelIds": ["@cf/moonshot/kimi-k2", "@cf/openchat/openchat-3.5-0106", "@cf/qwen/qwen-2.5-coder-32b"],
+      "contextWindow": 32768,
+      "dailyNeuronBudget": 10000,
+      "auth": "api_key"
+    },
+    {
+      "id": "zai",
+      "name": "Z.ai (Zhipu)",
+      "modelIds": ["glm-4.5-flash", "glm-4.7-air"],
+      "contextWindow": 128000,
+      "dailyRequestBudget": 100,
+      "auth": "api_key"
+    }
+  ],
+  "routingHints": {
+    "code": ["openrouter/qwen-2.5-coder-32b-instruct:free", "mistral/codestral-2412", "cloudflare/@cf/qwen/qwen-2.5-coder-32b"],
+    "long-context": ["google/gemini-2.5-flash", "groq/llama-3.3-70b-versatile"],
+    "reasoning": ["cerebras/qwen-3-235b-instruct", "sambanova/DeepSeek-V3.1"],
+    "fast-cheap": ["groq/llama-4-scout-17b", "cloudflare/@cf/openchat"]
+  }
+}

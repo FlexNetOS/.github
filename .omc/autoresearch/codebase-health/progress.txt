@@ -1,0 +1,15 @@
+Ralph autoresearch run — my-github umbrella
+Started: 2026-05-28
+Mission: deepinit + autoresearch + TDD on FlexNetOS/.github umbrella repo
+
+ITERATION 1 — starting
+- No AGENTS.md files exist in the repo
+- Key directories: .claude/, .github/, data/, docs/, repos/, scripts/, tools/
+- Evaluator: make verify (actionlint + markdown + manifest + tools)
+- TDD: write AGENTS.md files, verify make verify still passes after each
+
+Learned patterns:
+- make verify runs 5 checks (actionlint, markdown, manifest, tools, tool-assets)
+- MANIFEST.yaml has 28 entries (verified in this session)
+- Repo is config/docs/submodule management — no app code to TDD in traditional sense
+- TDD here = write spec (AGENTS.md + acceptance criteria) before writing content
