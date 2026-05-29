@@ -449,7 +449,7 @@ feature branch but should not be merged to `main` without picking one of the abo
 
 ### UA-2026-05-28-005 — Re-authenticate `gh` CLI before attempting section 5 forks
 
-- **Surfaced by:** audit against brain/GitHub Workspace Vision.md
+- **Surfaced by:** `SESSION-2026-05-28-007`
 - **Blocks:** all `gh repo fork` commands in USER.TODO#5; any `gh` operation
 - **Why:** `gh auth status` returns HTTP 401 Bad credentials. All section 5 `gh repo fork` commands will fail silently or error until this is fixed.
 - **What to do:**
@@ -465,7 +465,7 @@ feature branch but should not be merged to `main` without picking one of the abo
 
 ### UA-2026-05-28-006 — Archon repo not found on disk — blocks section 5 for that entry
 
-- **Surfaced by:** audit against brain/GitHub Workspace Vision.md
+- **Surfaced by:** `SESSION-2026-05-28-007`
 - **Blocks:** USER.TODO#5 for the `coleam00/Archon` fork entry
 - **Why:** `repos/MANIFEST.yaml` entry for `repos/forked/archon` notes "Local checkout at /home/drdave/_work/repos/Archon is 1 file dirty." That path does not exist. Neither does `workspace/Archon`. The dirty local changes referenced are not recoverable from disk.
 - **What to do:**
@@ -479,7 +479,7 @@ feature branch but should not be merged to `main` without picking one of the abo
 
 ### UA-2026-05-28-007 — Runner GPG key still placeholder — section 4 incomplete
 
-- **Surfaced by:** audit against brain/GitHub Workspace Vision.md
+- **Surfaced by:** `SESSION-2026-05-28-007`
 - **Blocks:** full `pass` vault initialization for the runner subtree; secrets rotation workflow
 - **Why:** `secrets/store/runner/.gpg-id` still contains `PLACEHOLDER-NO-RUNNER-KEY-CONFIGURED`. The personal key is set (`6EC33743AA0CB75126F63F8765A937C4164F966F`) but the runner subtree cannot be initialized until a runner key fingerprint is added. `pass` will refuse to encrypt to the runner subtree.
 - **What to do:**

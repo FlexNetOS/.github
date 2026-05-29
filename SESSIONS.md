@@ -8,6 +8,79 @@
 
 ---
 
+## SESSION-2026-05-28-007 — Vision audit: align CLAUDE.md/AGENTS.md; capture fork-remediation dirty state
+
+- **ID:** `SESSION-2026-05-28-007`
+- **Date:** 2026-05-28
+- **Branch:** `feat/todo-session-2026-05-28-006`
+- **HEAD at end:** `1570d73`
+- **Mode:** manual audit; closed with `/wrap-up`
+- **Outcome:** CLAUDE.md + AGENTS.md aligned with Vision 5-step sequence; dirty state of 3 fork-violated repos captured as patches; `make verify` passes clean on all 4 checks.
+- **User-action gates surfaced:** `UA-2026-05-28-005`, `UA-2026-05-28-006`, `UA-2026-05-28-007`
+
+### What the user asked
+> "Read brain/GitHub Workspace Vision.md in this vault first — it is the architectural spec for the FlexNetOS my-github repo. Then cd into /home/drdave/workspace/my-github and audit it against that vision. Specifically: 1. Review CLAUDE.md and AGENTS.md — do they reflect the clone→research→setup→fork→submodule sequence? Do they enforce the branch discipline rule? Update them where they don't match the vision. 2. Check repos/MANIFEST.yaml — are entries that should be submodules (our forks on develop branch) correctly structured? 3. Check USER.TODO.md — section 4 is complete (pass + direnv working). Section 5 (fork the four dirty third-party repos) is next. Help me work through it. 4. Note: we are migrating away from _work/repos/my-github — the canonical path is workspace/my-github. Flag any references to the old path. Also read brain/Gotchas.md — it documents the pass/direnv pitfalls we just hit so you don't repeat them."
+
+Scope expanded mid-session: three repos confirmed set up fork-first (Vision violation); dirty diffs extracted before remediation. `tools/bin/repomix` confirmed working via `bunx`; plugin cache gitignored; markdown linter extended to exclude third-party dirs.
+
+### What the answer is
+CLAUDE.md and AGENTS.md now fully document the 5-step Vision sequence with "What Claude gets wrong" guards. Three fork-violated repos have dirty state preserved at `data/brain-data/research/fork-remediation/` with a 10-step remediation procedure. `make verify` passes cleanly.
+
+### What was actually done this session
+1. Read `data/brain-data/obsidian-mind/brain/GitHub Workspace Vision.md` and `Gotchas.md` as architectural spec.
+2. Audited CLAUDE.md, AGENTS.md, repos/MANIFEST.yaml against Vision.
+3. Created `AGENTS.md` (didn't exist; was referenced in CLAUDE.md).
+4. Updated `CLAUDE.md` — 5-step Vision sequence + "What Claude gets wrong" guards + branch discipline subsection.
+5. Updated `USER.TODO.md` — replaced 7× `_work/repos/my-github` → `workspace/my-github`; appended UA-005/006/007.
+6. Updated `repos/MANIFEST.yaml` — fixed header contradiction; updated weftos/archon notes.
+7. Updated `secrets/store/.gpg-id` — replaced placeholder with real fingerprint `6EC33743AA0CB75126F63F8765A937C4164F966F`.
+8. Confirmed 3 repos fork-first violated: everything-claude-code (20 tracked + 30 untracked agentic-os), oh-my-claudecode (3 dirty), oh-my-pi (2 dirty lock files).
+9. Extracted dirty diffs: `everything-claude-code.patch` (4062 lines), `oh-my-claudecode.patch` (48 lines), `oh-my-pi.patch` (150 lines), `ecc-untracked/` (30-file agentic-os subsystem), `README.md` (10-step procedure).
+10. Updated `tools/bin/repomix` — bunx over npx (bun 1.3.13 via mise); npx fallback retained.
+11. Updated `.gitignore` — plugin cache exclusions (`.claude/plugins/cache/`, `.claude/plugins/marketplaces/`, `.claude/plugins/data/`).
+12. Updated `scripts/verify-markdown.py` — `.attic` to EXCLUDE_PARTS; 4 new EXCLUDE_PREFIXES for third-party dirs.
+13. Fixed 6 bare fences across `.claude/agents/wrap-up-verifier.md`, `.claude/skills/clone-setup/SKILL.md`, `.claude/skills/wrap-up/SKILL.md`.
+14. Ran `make verify` — all 4 checks pass: `OK: 3 tool assets`, `OK: 58 markdown files`, `OK: 28 manifest entries`, `OK: 13 tool entries`.
+15. All work committed in 4 commits on `feat/todo-session-2026-05-28-006`.
+
+### Reservations / risks
+- **No `gh repo fork` calls made.** All fork remediation gated on UA-2026-05-28-005 (`gh auth login`).
+- **No push to origin. No submodule mutations.**
+- **MANIFEST `branch:` entries** for everything-claude-code, oh-my-claudecode, oh-my-pi still say `branch: main` — should be `branch: develop` per Vision; tracked in `TODO.md`.
+- `secrets/store/runner/.gpg-id` still placeholder (UA-007 open).
+- `data/brain-data/research/ai-top-utility.md` shows a 24-line working-tree diff — pre-existing from SESSION-006, not from this session. Carry-forward; not staged or committed here.
+
+### User-action gates (if any)
+- `UA-2026-05-28-005` — re-authenticate `gh` CLI (`gh auth login`) before any `gh repo fork`
+- `UA-2026-05-28-006` — Archon repo not found on disk; decide on lost changes
+- `UA-2026-05-28-007` — runner GPG key still placeholder
+
+### What's next
+After `gh auth login` (UA-005): run `make research.pack URL=affaan-m/everything-claude-code` then `/clone-setup` to begin fork remediation for the largest repo. Fix MANIFEST `branch: main` → `branch: develop` for 3 pending-fork entries. Address UA-006 (Archon) and UA-007 (runner GPG) in parallel.
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `AGENTS.md` | Created — cross-CLI instruction file (Vision sequence, branch discipline) |
+| `CLAUDE.md` | Updated — 5-step Vision sequence + guards + branch discipline |
+| `USER.TODO.md` | Updated — old paths fixed; UA-005/006/007 appended |
+| `repos/MANIFEST.yaml` | Updated — header fix + weftos/archon notes |
+| `secrets/store/.gpg-id` | Updated — real GPG fingerprint |
+| `data/brain-data/research/fork-remediation/README.md` | Created — 10-step remediation procedure |
+| `data/brain-data/research/fork-remediation/everything-claude-code.patch` | Created — 4062-line dirty diff |
+| `data/brain-data/research/fork-remediation/oh-my-claudecode.patch` | Created — 48-line dirty diff |
+| `data/brain-data/research/fork-remediation/oh-my-pi.patch` | Created — 150-line dirty diff |
+| `data/brain-data/research/fork-remediation/ecc-untracked/` | Created — 30-file agentic-os subsystem |
+| `tools/bin/repomix` | Updated — bunx over npx |
+| `.gitignore` | Updated — plugin cache exclusions |
+| `scripts/verify-markdown.py` | Updated — third-party content exclusions |
+| `.claude/agents/wrap-up-verifier.md` | Fixed — 1 bare fence |
+| `.claude/skills/clone-setup/SKILL.md` | Fixed — 3 bare fences (also created by SESSION-006) |
+| `.claude/skills/wrap-up/SKILL.md` | Fixed — 2 bare fences |
+
+---
+
 ## SESSION-2026-05-28-006 — clone-setup skill: post-clone research-before-fork automation
 
 - **ID:** `SESSION-2026-05-28-006`

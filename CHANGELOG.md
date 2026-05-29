@@ -77,11 +77,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Convention violation flagged:** v5 plan committed to `.omc/plans/ralplan-browser-choice.md` rather than the canonical `data/brain-data/research/v5-workstation-architecture.md`. Tracked in `UA-2026-05-28-003`.
 - **`3dd0ef4` first landed on `main`, not on a feature branch.** Wrap-up notes that the new branch-guard rule (installed *during the same session*) would have prevented this. The commit is now also reachable from `feat/restore-session-convention-files` (this branch); see `UA-2026-05-28-004` for the decision about whether to keep it on `main`.
 
-### Added (SESSION-2026-05-28-006)
+### Added (SESSION-2026-05-28-007)
 - `AGENTS.md` — new cross-CLI instruction file: repo identity, branch discipline, 5-step Vision sequence (clone→research→setup→fork→submodule), full-clone-only rule, secrets policy, what agents get wrong, session tracking. (research: GitHub Workspace Vision)
 - `data/brain-data/research/fork-remediation/` — dirty state snapshots for 3 fork-violated repos (everything-claude-code, oh-my-claudecode, oh-my-pi): `.patch` files + `ecc-untracked/` agentic-os subsystem (30 files) + 10-step remediation `README.md`. (TODO: USER.TODO#5)
 
-### Changed (SESSION-2026-05-28-006)
+### Changed (SESSION-2026-05-28-007)
 - `CLAUDE.md` — added full 5-step Vision sequence + "What Claude gets wrong" hard guards + "Branch discipline at session start" subsection.
 - `USER.TODO.md` — replaced 7× `_work/repos/my-github` → `workspace/my-github` (old-path migration); appended UA-2026-05-28-005/006/007.
 - `repos/MANIFEST.yaml` — fixed header contradiction about `.gitmodules` regeneration; updated weftos + archon notes; removed stale `_work/repos/actions-runner/` ref.
@@ -93,12 +93,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `.claude/skills/clone-setup/SKILL.md` — fixed 3 bare fences.
 - `.claude/skills/wrap-up/SKILL.md` — fixed 2 bare fences.
 
-### Decisions recorded (2026-05-28, SESSION-2026-05-28-006)
+### Decisions recorded (2026-05-28, SESSION-2026-05-28-007)
 - **Fork-first violation confirmed** for everything-claude-code, oh-my-claudecode, oh-my-pi: all three set up from forks before clone/research/setup (Vision sequence violated). Dirty diffs captured before remediation. Correct sequence: clone upstream fresh → `make research.pack` → verify setup → `gh repo fork` → develop branch → apply patches → submodule. See `data/brain-data/research/fork-remediation/README.md`.
 - **`tools/repomix/` stays gitignored** (not a submodule); promotion to MANIFEST/.gitmodules deferred until/unless FlexNetOS forks repomix.
 - **`make verify` clean baseline**: 3 tool assets, 58 markdown files, 28 manifest entries, 13 tool entries — all pass on `feat/todo-session-2026-05-28-006`.
 
-### Notes (SESSION-2026-05-28-006)
+### Notes (SESSION-2026-05-28-007)
 - **No `gh repo fork` calls made.** All fork remediation gated on UA-2026-05-28-005 (`gh auth login`).
 - **No push to origin. No submodule mutations.**
 - **MANIFEST `branch:` entries** for everything-claude-code, oh-my-claudecode, oh-my-pi still say `branch: main` — should be `branch: develop` per Vision; tracked in `TODO.md`.
