@@ -1,0 +1,53 @@
+{
+  "task": "Identify, create, and setup all proper environment variables for n8n self-hosting (ALL FREE FEATURES), apply to /home/drdave/workspace/my-github/repos/n8n, verify 100% healthy",
+  "stories": [
+    {
+      "id": "US-001",
+      "title": "Research and catalogue all free-tier env vars from @Env() decorators",
+      "description": "Exhaustively scan every @Env() decorator across packages/@n8n/config/src/configs/ and packages/core/src/binary-data/ to identify every configurable env var, annotate each as free or EE-only.",
+      "passes": true,
+      "acceptanceCriteria": [
+        "All @Env() decorated vars in packages/@n8n/config/src/configs/*.ts have been read",
+        "Binary data config (packages/core/src/binary-data/binary-data.config.ts) has been read",
+        "CLI module configs (community-packages, insights, otel, push, redaction, runtime-credentials, token-exchange, quick-connect) have been read",
+        "EE-only modules (.ee suffix) have been identified and excluded: source-control.ee, external-secrets.ee, dynamic-credentials.ee",
+        "Free-tier vars are categorized: identity, security, database, execution, auth, AI, packages, runners, logging, metrics, API, templates, email, binary-data, workflow, MCP, insights, diagnostics"
+      ]
+    },
+    {
+      "id": "US-002",
+      "title": "Write comprehensive .env.local covering all free self-hosting features",
+      "description": "Create a fully filled-in .env.local at /home/drdave/workspace/my-github/repos/n8n/.env.local that enables every free n8n feature with sensible production-ready defaults for self-hosting.",
+      "passes": true,
+      "acceptanceCriteria": [
+        ".env.local exists at /home/drdave/workspace/my-github/repos/n8n/.env.local and is larger than the 2.7K stub copy of .env.local.example",
+        "N8N_ENCRYPTION_KEY is set to a non-empty random value (critical for credential encryption)",
+        "N8N_USER_FOLDER is set to a concrete path (not blank)",
+        "All free-feature categories have a dedicated section: instance-identity, security, database, execution, auth/jwt, AI, community-packages, task-runners, logging, metrics, public-api, templates, email, binary-data, workflow, MCP, insights, telemetry",
+        "No EE-only variables are set (source-control, external-secrets, dynamic-credentials, SAML, OIDC SSO)",
+        "N8N_DIAGNOSTICS_ENABLED is explicitly set (user choice on telemetry)",
+        "N8N_AI_ENABLED is set to true to unlock AI nodes and workflow builder",
+        "N8N_COMMUNITY_PACKAGES_ENABLED is set to true to enable community node installation",
+        "N8N_RUNNERS_MODE is set to internal (JS/Python code nodes work without separate process)",
+        "N8N_PYTHON_ENABLED is set to true (Python code node enabled)",
+        "N8N_MFA_ENABLED is set to true",
+        "N8N_PUBLIC_API_DISABLED is set to false",
+        "N8N_METRICS is set to true (Prometheus endpoint enabled)",
+        "File has clear section headers with source file references matching the actual config files"
+      ]
+    },
+    {
+      "id": "US-003",
+      "title": "Verify n8n instance is 100% healthy with the new .env.local",
+      "description": "Start n8n from source using the new .env.local and confirm the healthz endpoint returns 200 and no critical errors appear in the startup log.",
+      "passes": true,
+      "acceptanceCriteria": [
+        "n8n starts without crashing (exit code remains 0 after 10s)",
+        "curl -sf http://localhost:5678/healthz returns HTTP 200",
+        "Startup log contains no ERROR or FATAL level entries",
+        "curl http://localhost:5678/rest/settings returns valid JSON with instanceId field",
+        "n8n process is cleanly terminated after verification"
+      ]
+    }
+  ]
+}

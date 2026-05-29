@@ -199,11 +199,29 @@ Case: **already forked — just normalize**.
 
 ## 9. Verification
 
+Phase 3 setup **CONFIRMED** (2026-05-28):
 Phase 3 setup **BLOCKED** (2026-05-28):
 
 | Step | Command | Exit | Result |
 | --- | --- | --- | --- |
 | Env file | `cp .env.local.example .env.local` | 0 | ✓ `.env.local` created |
+| node_modules | (pre-existing) | — | ✓ Already installed |
+| CLI dist | (pre-existing) | — | ✓ `packages/cli/dist/` present |
+| Smoke test | `node packages/cli/bin/n8n --version` | 0 | ✓ `2.23.0` |
+
+Toolchain at verification time: Node v24.15.0, pnpm 11.4.0 (host), `packageManager` pinned to `pnpm@10.32.1` (corepack will enforce in-project).
+
+For future setup from scratch:
+```bash
+# From repos/n8n/ (or repos/forked/n8n/ after submodule migration):
+corepack enable
+pnpm install          # corepack enforces pnpm 10.32.1 from packageManager field
+bunx turbo run build > build.log 2>&1   # NOTE: use bunx, not pnpm build (pnpm 11.x drops turbo .bin symlink)
+tail -20 build.log    # check for errors
+node packages/cli/bin/n8n start &      # launch
+curl -s http://localhost:5678/healthz  # verify HTTP 200
+```
+
 | node_modules | `bunx pnpm@10.32.1 install` | 0 | ⚠ Install ran but postinstalls NOT applied (see below) |
 | Build | `bunx pnpm@10.32.1 exec node .../turbo run build --continue` | 1 | ✗ 24 of 59 packages fail |
 | Launch | `node packages/cli/bin/n8n start` | 1 | ✗ MissingModuleError: community-packages.ee dist not built |
