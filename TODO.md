@@ -6,6 +6,8 @@
 
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-004 — n8n self-hosting env vars: Ralph loop + /verify)
 **Branch:** `feat/session-2026-05-29-002`
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-002 — wrap-up skill updated: commit all + push + PR)
+**Branch:** `feat/todo-session-2026-05-28-006`
 **Status:** Vision sequence enforced in CLAUDE.md+AGENTS.md; fork-remediation dirty diffs captured; `make verify` clean; adoption/forks gated pending `gh auth login` (UA-005).
 
 ---
