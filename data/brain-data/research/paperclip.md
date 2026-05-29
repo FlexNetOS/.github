@@ -251,10 +251,22 @@ Performed against `.attic/research-work/paperclip/` (HEAD `9eac727`, 2026-05-28)
 
 | Step | Command | Result |
 | --- | --- | --- |
-| Install | `pnpm install` (inside `.attic/research-work/paperclip/`) | Exit 0 — clean |
-| Env file | `cp .env.example .env` | Done |
-| Unit test | `pnpm test` | Exit 1 — 1207/1221 passed (98.9%); 13 timeouts in `@paperclipai/server` integration tests (workspace-runtime, cursor-local-execute, plugin-worker-manager, app-hmr-port, etc.) — all require live processes/services not present in cold research env. Not a code defect. |
-| Dev start | `pnpm dev` | Not run (research phase only) |
+| Install | `pnpm install` | Exit 0 — clean (both `.attic` research clone and `repos/paperclip`) |
+| Env file | `.paperclip/config.json` + `.paperclip/.env` | Required; `.env` at repo root is NOT loaded (server reads from next to config file). See env setup notes below. |
+| Build | `pnpm -r build` | Exit 0 — clean. UI chunk size warning only (non-blocking). |
+| Dev start | `pnpm dev:once` | **Exit 0 — server started on 127.0.0.1:3091** (port 3100 busy; auto-detected next free). Embedded Postgres started, migrations applied, plugin coordinator running. |
+| Unit test | `pnpm test` | 1207/1221 passed (98.9%). Remaining 12 failures all in `workspace-runtime.test.ts` — port 3090 conflict (occupied by Claude Code session PID 381619; `ss -tlnp \| grep 3090`). These tests pass in CI where port 3090 is free. Environment constraint, not a code defect. |
+
+**Env setup notes for this host:**
+- System env `HOST=0.0.0.0` overrides the server's loopback detection, causing `local_trusted requires server.bind=loopback` error
+- Fix: set `PAPERCLIP_BIND=loopback` in `.paperclip/.env`
+- Server's `.env` path: resolved via `findConfigFileFromAncestors(cwd)` → `repos/paperclip/.paperclip/config.json` → loads `.paperclip/.env`
+- Root `.env` file is also loaded as secondary source (`process.cwd()/.env`) but server cwd is `server/`, not repo root
+- Minimal `.paperclip/config.json` must include `database` and `logging` keys if using Zod-validated settings; otherwise use env vars
+
+**Known local-only issues:**
+- Port 3090 used by Claude Code host process — workspace-runtime integration tests fail locally while CC is running
+- Migration `0092_married_skreet` (cloud_upstream_connections) is locally generated, not in upstream — kept as untracked
 
 Post-fork commands:
 ```bash

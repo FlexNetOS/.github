@@ -251,6 +251,28 @@
   groups: [external, reference]
 
 # -----------------------------------------------------------------------------
+# NETWORK — portable-OS networking and local-dev tooling layer
+# Mounted under network/ (not repos/) — part of the broader OS package layout.
+# -----------------------------------------------------------------------------
+- path: network/slim
+  url: https://github.com/FlexNetOS/slim
+  upstream: https://github.com/nilbuild/slim
+  branch: develop
+  toolchain: [go, mise]
+  groups: [network, dev-tools, forked]
+  notes: |
+    Local dev reverse proxy: maps .test/.loc custom domains to localhost ports
+    with HTTPS + WebSocket/HMR passthrough. No DB, no Docker — pure Go binary.
+    Optional cloud tunnel via app.slim.sh (slim share); overridable via env vars
+    SLIM_TUNNEL_SERVER_API and SLIM_TUNNEL_SERVER.
+    License: PolyForm Shield 1.0.0 — personal/internal use only, non-compete
+    clause confirmed non-triggered. go.mod module path still uses upstream
+    kamranahmedse/slim (not yet updated after GitHub rename to nilbuild).
+    Fork pending: see UA-2026-05-29-001.
+    Go pinned via network/slim/.mise.toml (1.25.10).
+    Sync cadence: on-demand.
+
+# -----------------------------------------------------------------------------
 # NOT SUBMODULED (intentionally) — documentation for future-me
 # -----------------------------------------------------------------------------
 # - lifeos/                         Local nested LifeOS repo currently has no configured remote.

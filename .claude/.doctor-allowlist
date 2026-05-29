@@ -10,3 +10,35 @@
 # reference, e.g. (commented example below; uncomment + adapt if truly needed):
 #
 # ~/.config/flexnetos/
+
+# statusLine.command: portable env-var gated ref for HUD; uses
+# ${CLAUDE_CONFIG_DIR:-$HOME/.claude} which is portable across machines
+${CLAUDE_CONFIG_DIR:-$HOME/.claude}
+
+# sandbox.filesystem.allowWrite ~/... entries: XDG/home dirs needed by
+# installed toolchains (cargo, bun, npm, mise, docker, kube, etc.)
+# All entries use ~/ prefix which is portable (expands to $HOME at runtime)
+~/.cache
+~/.npm
+~/.bun
+~/.cargo
+~/.rustup
+~/.local
+~/.config
+~/.claude
+~/.kube
+~/.docker
+~/repos
+~/work
+~/personal
+~/containers
+
+# sandbox.filesystem.denyWrite ~/... entries: shell/auth config dirs
+# protected from agent writes; ~/ is portable (expands to $HOME at runtime)
+~/.bashrc
+~/.profile
+~/.bash_profile
+~/.bash_history
+~/.ssh
+~/.gnupg
+~/.aws

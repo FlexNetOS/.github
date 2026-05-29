@@ -342,14 +342,12 @@ and merge.
 
 These run automatically — no human action unless they alert:
 
-
 | Cadence           | Workflow                | What you do                                                       |
 | ----------------- | ----------------------- | ----------------------------------------------------------------- |
 | Monday 14:00 UTC  | `submodule-bump.yml`    | Review the auto-PR, merge if CI green                             |
 | Monday 14:30 UTC  | `secrets-rotate.yml`    | If issue opened, `pass edit <entry>`, commit, push                |
 | Nightly 11:00 UTC | `wiki-lint.yml`         | If issue opened, ingest the missing source or fix the broken link |
 | Every PR          | `dependency-review.yml` | Block on `high` severity CVEs; bump or vendor differently         |
-
 
 ---
 
@@ -394,6 +392,7 @@ and the workflow's `runs-on:` matches every label the runner advertises
 - **Blocks:** clean compliance with the project research-location convention (`feedback-research-location` memory)
 - **Why:** SESSION-2026-05-28-004 produced a six-layer workstation-architecture plan and committed it to `.omc/plans/ralplan-browser-choice.md`. Per the project convention (`feedback-research-location.md`), research and plans MUST go to `data/brain-data/research/`; the `.omc/plans/` path is explicitly disallowed ("NEVER `.omc/plans/` or scratch"). The agent violated the convention while recreating the file under cost pressure and after the file had been destroyed once by a concurrent branch rewrite. The file is currently committed at `3dd0ef4` on `feat/restore-session-convention-files`.
 - **What to do:**
+
   ```bash
   cd /home/drdave/workspace/my-github
   git mv .omc/plans/ralplan-browser-choice.md \
@@ -402,6 +401,7 @@ and the workflow's `runs-on:` matches every label the runner advertises
   # scripts/install-v5-architecture.sh header comment if it refers to the old path.
   git commit -m "chore(docs): move v5 workstation plan to canonical research/ path"
   ```
+
 - **How to verify done:** `test -f data/brain-data/research/v5-workstation-architecture.md && ! test -f .omc/plans/ralplan-browser-choice.md && echo ok`
 - **Status:** `open`
 
@@ -453,12 +453,14 @@ feature branch but should not be merged to `main` without picking one of the abo
 - **Blocks:** all `gh repo fork` commands in USER.TODO#5; any `gh` operation
 - **Why:** Token has been rotated (reset). `direnv` loads `GITHUB_TOKEN` from `pass github/personal/cli` into the environment, but that entry now holds a stale token. The long-term canonical secret source is **Vaultwarden+Bitwarden via the GitHub App** (Phase 6 gate — see `README.md`). Until the App is set up, the interim fix is to update the pass entry manually.
 - **What to do (interim — until Vaultwarden+Bitwarden App is live):**
+
   ```bash
   # 1. Get the new token from github.com/settings/tokens (or wherever you rotated it)
   pass edit github/personal/cli   # paste the new token, save
   direnv reload                   # re-export GITHUB_TOKEN from the updated store
   gh api user --jq '.login'       # should return your username
   ```
+
 - **Long-term fix:** complete Vaultwarden→GitHub secret sync (Phase 6 operational gate in `README.md`). Once the App is live, `GITHUB_TOKEN` is auto-rotated and this never needs manual intervention again.
 - **How to verify done:** `gh api user --jq '.login'` returns `FlexNetOS` (or the renamed account after section 3).
 - **Status:** `done (SESSION-2026-05-28-007)` — token updated in pass; `gh api user --jq '.login'` returns `drdave-flexnetos`. Note: personal account already renamed to `drdave-flexnetos` (USER.TODO#3 Step 1 complete). Vaultwarden App remains the long-term fix (Phase 6).
@@ -485,6 +487,7 @@ feature branch but should not be merged to `main` without picking one of the abo
 - **Blocks:** full `pass` vault initialization for the runner subtree; secrets rotation workflow
 - **Why:** `secrets/store/runner/.gpg-id` still contains `PLACEHOLDER-NO-RUNNER-KEY-CONFIGURED`. The personal key is set (`6EC33743AA0CB75126F63F8765A937C4164F966F`) but the runner subtree cannot be initialized until a runner key fingerprint is added. `pass` will refuse to encrypt to the runner subtree.
 - **What to do:**
+
   ```bash
   # On the runner host (same machine in this case):
   gpg --full-generate-key
@@ -498,5 +501,50 @@ feature branch but should not be merged to `main` without picking one of the abo
   PASSWORD_STORE_DIR="$PWD/secrets/store" \
     pass init -p runner "$(cat secrets/store/.gpg-id)" "$RUNNER_FP"
   ```
+
 - **How to verify done:** `cat secrets/store/runner/.gpg-id` is a real 40-char fingerprint (not the placeholder string).
+- **Status:** `open`
+
+---
+
+### UA-2026-05-29-001 — Fork nilbuild/slim to FlexNetOS org
+
+- **Surfaced by:** `SESSION-2026-05-29-003` (clone-setup for nilbuild/slim)
+- **Blocks:** `network/slim` submodule registration (`.gitmodules` + `make submodules.add`); MANIFEST `url` pointing to FlexNetOS fork
+- **Why:** my-github rules require a FlexNetOS fork before a repo can be tracked as a submodule. Clone health verified 2026-05-29 (`go build` + `go test ./...` all PASS at HEAD `9c07a08`).
+- **What to do:**
+
+  ```bash
+  gh repo fork nilbuild/slim --org FlexNetOS --clone=false
+  # Then update the remote in network/slim:
+  git -C /home/drdave/workspace/my-github/network/slim remote set-url origin https://github.com/FlexNetOS/slim
+  git -C /home/drdave/workspace/my-github/network/slim remote add upstream https://github.com/nilbuild/slim
+  # Create develop branch tracking upstream main:
+  git -C /home/drdave/workspace/my-github/network/slim checkout -b develop
+  git -C /home/drdave/workspace/my-github/network/slim push -u origin develop
+  # Register as submodule:
+  cd /home/drdave/workspace/my-github && make submodules.add
+  ```
+
+- **How to verify done:** `gh repo view FlexNetOS/slim --json name` returns `slim`; `git submodule status network/slim` shows the correct HEAD.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-29-002 — Create slim.sh free-tier account and login
+
+- **Surfaced by:** `SESSION-2026-05-29-003` (clone-setup for nilbuild/slim)
+- **Blocks:** `slim share` (public tunnels) and `slim domain` commands
+- **Why:** Cloud tunnel relay (`wss://app.slim.sh/tunnel`) requires OAuth authentication. Agent cannot perform browser OAuth.
+- **What to do:**
+
+  ```bash
+  # Build slim (or use upstream binary):
+  cd /home/drdave/workspace/my-github/network/slim
+  mise exec -- go build -ldflags "-s -w" -o /usr/local/bin/slim .
+  # Login (opens browser to app.slim.sh):
+  slim login
+  ```
+
+- **How to verify done:** `slim login` completes and prints "Logged in as \<name\> (\<email\>)".
 - **Status:** `open`

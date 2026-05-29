@@ -18,8 +18,8 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "make build",
-    "testCommand": "make test",
+    "buildCommand": "rtk git add data/brain-data/research/n8n.md && rtk git commit -m \"$(cat <<'EOF'\nresearch(n8n): correct §9 build cmd to bunx turbo; add healthz smoke test\n\npnpm 11.x drops the turbo .bin symlink so `pnpm build` fails — use\n`bunx turbo run build` instead. Add `curl healthz` smoke-test step.\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n)\"",
+    "testCommand": "rtk git -C /home/drdave/workspace/my-github add data/brain-data/research/paperclip.md && rtk git -C /home/drdave/workspace/my-github commit -m \"$(cat <<'EOF'\nresearch(paperclip): add Phase 3 verification results to dossier\n\npnpm install exit 0 (clean). pnpm test: 1207/1221 passed; 13 timeouts\nin @paperclipai/server integration tests (workspace-runtime, cursor-\nlocal-execute, plugin-worker-manager) — all require live processes not\npresent in cold research env. Not a code defect.\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n)\"",
     "lintCommand": null,
     "devCommand": null,
     "scripts": {}
@@ -235,27 +235,27 @@
   },
   "hotPaths": [
     {
+      "path": "USER.TODO.md",
+      "accessCount": 29,
+      "lastAccessed": 1780036110074,
+      "type": "file"
+    },
+    {
+      "path": "repos/MANIFEST.yaml",
+      "accessCount": 20,
+      "lastAccessed": 1780034716467,
+      "type": "file"
+    },
+    {
       "path": "README.md",
       "accessCount": 11,
       "lastAccessed": 1779999465436,
       "type": "file"
     },
     {
-      "path": "USER.TODO.md",
-      "accessCount": 10,
-      "lastAccessed": 1780005114545,
-      "type": "file"
-    },
-    {
-      "path": "repos/MANIFEST.yaml",
-      "accessCount": 9,
-      "lastAccessed": 1780005407352,
-      "type": "file"
-    },
-    {
       "path": "Makefile",
-      "accessCount": 6,
-      "lastAccessed": 1779999469009,
+      "accessCount": 8,
+      "lastAccessed": 1780031673590,
       "type": "file"
     },
     {

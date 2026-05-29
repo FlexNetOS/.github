@@ -95,6 +95,7 @@ jobs:
               "!**/dist/**" \
               "!**/build/**" \
               "!.omc/**" \
+              "!.claude/.omc/**" \
               "!repos/**" \
               "!wiki/raw/**" \
               "!_work/**"
@@ -106,6 +107,7 @@ jobs:
               "!**/dist/**" \
               "!**/build/**" \
               "!.omc/**" \
+              "!.claude/.omc/**" \
               "!repos/**" \
               "!wiki/raw/**" \
               "!_work/**"

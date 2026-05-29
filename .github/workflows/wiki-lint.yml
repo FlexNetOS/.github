@@ -45,7 +45,7 @@ jobs:
               broken_count=$((broken_count + 1))
               echo "BROKEN: $link"
             fi
-          done < <(grep -roEh '\[\[[^]]+\]\]' wiki/ 2>/dev/null | sort -u)
+          done < <(grep -roEh '\[\[[^]]+\]\]' wiki/pages/ 2>/dev/null | sort -u)
           echo "broken=$broken_count" >> "$GITHUB_OUTPUT"
           echo "Found $broken_count broken wikilinks"
 
