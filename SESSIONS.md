@@ -8,6 +8,58 @@
 
 ---
 
+## SESSION-2026-05-29-015 — ci-failure-tracker workflow + drive all open PRs to the finish line
+
+- **ID:** `SESSION-2026-05-29-015`
+- **Date:** 2026-05-29
+- **Branch:** work landed on `develop` via PRs; wrap-up on `docs/session-2026-05-29-015-wrapup`
+- **HEAD at end:** `origin/main`=`ab118f1`, `origin/develop`=`0bb14da` (content-identical)
+- **Mode:** manual → `/oh-my-claudecode:verify` → `/oh-my-claudecode:cancel` → `/github-ops` → `/ecc:ralphinho-rfc-pipeline` (sequential, not fan-out) → `/wrap-up`
+- **Outcome:** Original ci-failure-tracker shipped & live on main; all 3 open PRs resolved (#67 merged, #66/#51 closed superseded), 2 fix PRs (#71, #74) created+merged; repo cleaned (30→9 local, remote→main+develop).
+- **User-action gates surfaced:** none new (settings.json hygiene / G8 trim tracked in TODO)
+- **Cost:** ~$248 (Opus; long multi-PR pipeline across a concurrently-churning repo — user said disregard cost)
+
+### What the user asked
+> "create a github action workflow for failed workflows | it must that adds tags to refernce logs | create todo task at TODO.md to autofix"
+
+…then across follow-ups: `/verify`, stop the ralph loop, "push the feature branch and open the PR to develop", "A, everyone is stopped, now go. clean up all the branches and properly fix the repo /github-ops", and finally *"proceed until you reach the finish line. disregard the cost … Boil the ocean."*
+
+### What the answer is
+- **`ci-failure-tracker.yml`** is merged (PR #33→develop) and **live on `main`** (PR #67): on a watched-workflow `failure` it opens/updates a `ci-failure`+`needs-autofix` issue referencing run + per-job logs, with a `resolve` job that auto-closes on recovery.
+- **All open PRs resolved.** `main`↔`develop` content-identical; remote pruned to `main`+`develop`; 0 open PRs.
+- Durable artifact: `CHANGELOG.md` `[Unreleased]` (SESSION-2026-05-29-015).
+
+### What was actually done this session
+1. Authored `ci-failure-tracker.yml` + TODO autofix item; `/verify` (actionlint + JS-syntax under async wrapper).
+2. Investigated apparent "ralph loop": found no active OMC ralph state — concurrent **separate Claude sessions** were churning the repo (branch renames, commits landing under my staged files).
+3. Cleaned branches with an all-refs backup bundle first (recoverable): 30→9 local; remote 22→2.
+4. Diagnosed develop's red CI → 2 root causes: `reusable-typecheck.yml` dup `run:` key; `.claude/settings.json` two-objects-spliced (invalid JSON). Fixed both losslessly → **PR #71** → merged to develop (user-authorized the settings.json self-mod).
+5. Determined #66/#51 were **superseded** (merging would delete ~2.58M lines); salvaged their unique `network/` scaffolding → **PR #74** → merged; **closed #66 + #51** with rationale.
+6. Promoted develop→main via **PR #67** (squash; rebase refused due to develop merge commits; main requires linear history). User-authorized `--admin` merges.
+7. Final cleanup: pruned worktrees + 2 stale post-merge remote branches; verified fixes on main.
+8. `/wrap-up`: de-duplicated the triplicated TODO section + collapsed the 8-stack header.
+
+### Reservations / risks
+- **Concurrent-session churn** was the defining hazard: ~8 idle `claude` REPLs + worktrees; the working-tree branch flipped under me multiple times. Mitigated by working in isolated worktrees off `origin/develop` and an all-refs backup bundle (`~/my-github-allrefs-backup-20260529T102823.bundle`, 9.6 MB, complete history) — every deleted/closed ref is recoverable.
+- **Non-required CI still red** (non-blocking): `.claude/settings.json hygiene` + `Trivy filesystem + IaC` on the gated G8 violations (hardcoded marketplace paths + `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`). Tracked in TODO; not fixed (user-environment change).
+- **6 local-only unmerged branches kept** (real work, no PRs): `feat/ci-autofix-claude`, `feat/github-agentic-os-runner`, `feat/github-automation-doctor`, `docs/root-claude-md`, `fix/pr24-settings-json`, `fix/architecture-crosslinks`.
+- Negative gates: no `gh repo fork`, no submodule mutations, no host installs. Admin merges + settings.json repair were explicitly user-authorized.
+
+### What's next
+- Open PRs for the retained local-only branches when ready; resolve the gated G8 settings.json hygiene (relocate marketplace paths to `~/.claude`); build the CI-failure autofix loop (TODO) once the tracker has one green cycle on main.
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `.github/workflows/ci-failure-tracker.yml` | New failure-tracker (merged #33→develop, promoted #67→main) |
+| `.github/workflows/reusable-typecheck.yml` | Fixed duplicate `run:` key (PR #71) |
+| `.claude/settings.json` | Lossless splice repair → valid JSON (PR #71) |
+| `network/{service-map.yaml,scripts/*,README.md,MANIFEST.yaml,docs/*}` | Salvaged slim control-plane scaffolding (PR #74) |
+| `TODO.md`, `CHANGELOG.md`, `SESSIONS.md` | `/wrap-up` bookkeeping + TODO de-dup |
+
+---
+
 ## SESSION-2026-05-29-012 — n8n + n8n-mcp full stack launched with slim HTTPS
 
 - **ID:** `SESSION-2026-05-29-012`
