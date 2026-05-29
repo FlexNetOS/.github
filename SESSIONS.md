@@ -8,6 +8,68 @@
 
 ---
 
+## SESSION-2026-05-29-004 — n8n self-hosting env vars: Ralph loop + /verify (100% healthy)
+
+- **ID:** `SESSION-2026-05-29-004`
+- **Date:** 2026-05-29
+- **Branch:** `feat/session-2026-05-29-002`
+- **HEAD at end:** `766a948`
+- **Mode:** `/ralph loop` → `/oh-my-claudecode:verify` → `/wrap-up`
+- **Outcome:** `repos/n8n/.env.local` created (585 lines, 23 KB, 23 sections); n8n build fixed; `/healthz` → HTTP 200; `data/brain-data/research/n8n.md` updated (§13 + §14)
+- **User-action gates surfaced:** none
+- **Cost:** ~$27 (Ralph loop + multi-phase build fix + verification)
+
+### What the user asked
+> "/ralph loop /autoresearch on n8n to indetify, create, setup the proper enviroment veriables for n8n self-hosting (ALL-FREE-Features) | then apply to /home/drdave/workspace/my-github/repos/n8n and /verify 100% healthy"
+
+Post-compaction: user ran `/oh-my-claudecode:verify` to reconfirm health, then `/wrap-up`.
+
+### What the answer is
+- All free-tier n8n environment variables catalogued from 44+ `@Env()` decorator files across `packages/@n8n/config/src/configs/` + binary-data config + CLI module configs.
+- **`repos/n8n/.env.local`** — 585 lines, 23 KB, 23 sections. Key free features enabled: AI nodes (`N8N_AI_ENABLED=true`), community packages, Python code node, MFA, Prometheus metrics, public API, task runners (internal mode). All EE vars (SAML, source-control, external-secrets) commented out in a reference block only.
+- n8n build fixed from pnpm 11.x poisoned state: tsc-alias, pnpm@10.32.1 install, turbo sh shim. 59/59 tasks passed.
+- Verified 100% healthy: `/healthz` → `{"status":"ok"}`, `/rest/settings` → valid JSON with `communityNodesEnabled: true`, 0 ERROR/FATAL in startup log.
+
+### What was actually done this session
+1. Scanned all 44 config files in `packages/@n8n/config/src/configs/*.ts`, `packages/core/src/binary-data/binary-data.config.ts`, and CLI module configs for `@Env()` decorators
+2. Identified EE-only modules: `source-control.ee`, `external-secrets.ee`, `dynamic-credentials.ee` — all excluded from `.env.local`
+3. Created `repos/n8n/.env.local` (585 lines, 23 KB) with 22 named sections + 1 EE reference block
+4. Diagnosed and fixed n8n build failures: `tsc-alias` on `packages/core` (35 occurrences, 20 files), `@n8n/ai-workflow-builder.ee`, `@n8n/task-runner`; `bunx pnpm@10.32.1 install --frozen-lockfile`; turbo via sh shim (not `node turbo`)
+5. Started n8n with dotenvx, verified `/healthz` → HTTP 200 `{"status":"ok"}`
+6. Updated `data/brain-data/research/n8n.md` §13 (build fix recipe) + §14 (env var reference table, 23 categories) — commits `56a2b18` + `876210a`
+7. Saved memories: `feedback-n8n-pnpm-version.md`, `feedback-n8n-build-fix-2026-05-29.md`, updated `MEMORY.md` index
+8. Post-compaction: state confirmed clean (no active OMC modes); re-ran `/verify` — same HTTP 200 + `communityNodesEnabled: true` confirmed
+
+### Reservations / risks
+- `repos/n8n/.env.local` is gitignored inside `repos/n8n/` — not version-controlled; lives only on this host
+- Python task runner venv missing on this host — Python code nodes fail at runtime until a venv exists at `$HOME/.n8n/task-runners/python/venv`; all other features healthy without it
+- Architect approval was given with two findings (both fixed before sign-off): curl evidence captured to log, section count nit corrected
+- Pre-session OMC state files (`.omc/state/hud-stdin-cache.json`, `last-tool-error.json`, `mission-state.json`, `subagent-tracking.json`, deleted `sessions/94dfaace-.../session-started.json`) modified by session infrastructure — not session work
+
+### User-action gates (if any)
+None.
+
+### What's next
+- Push `feat/session-2026-05-29-002` to origin when ready (contains n8n research commits + all session wrap-ups)
+- Create Python venv for n8n Python task runner if Python code nodes are needed
+- Review `data/brain-data/research/n8n.md` section 9 to decide sync cadence and local-changes policy (TODO: n8n.md section 9 review)
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `repos/n8n/.env.local` | 585-line comprehensive free-tier self-hosting config (gitignored in repos/n8n) |
+| `data/brain-data/research/n8n.md` | Added §13 (build fix recipe) + §14 (env var reference, 23 categories) |
+| `~/.claude/projects/-home-drdave-workspace-my-github/memory/feedback-n8n-pnpm-version.md` | pnpm version requirement + correct turbo invocation |
+| `~/.claude/projects/-home-drdave-workspace-my-github/memory/feedback-n8n-build-fix-2026-05-29.md` | Step-by-step build fix recipe |
+| `~/.claude/projects/-home-drdave-workspace-my-github/memory/MEMORY.md` | Updated index with n8n memory entries |
+| `.omc/state/sessions/f90a462b-e3be-415a-9464-743696bd283a/prd.json` | Ralph PRD (3 stories, all `passes: true`) |
+| `CHANGELOG.md` | Added n8n env var + build fix entries under `[Unreleased]` |
+| `TODO.md` | Bumped Last updated |
+| `SESSIONS.md` | This entry |
+
+---
+
 ## SESSION-2026-05-29-003 — slim clone-setup complete; local HTTPS proxy live for all services
 
 - **ID:** `SESSION-2026-05-29-003`

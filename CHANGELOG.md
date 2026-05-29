@@ -11,6 +11,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added (SESSION-2026-05-29-004)
+- `repos/n8n/.env.local` — 585-line, 23 KB comprehensive free-tier self-hosting config (22 named sections + 1 EE-only reference block); covers AI nodes, community packages, Python code node, MFA, Prometheus metrics, public API, task runners in internal mode. Gitignored in `repos/n8n/`. (research: n8n)
+- `data/brain-data/research/n8n.md` §13 — n8n build fix recipe (tsc-alias + pnpm 10.x + turbo sh shim). (commits 56a2b18 + 876210a on `feat/session-2026-05-29-002`)
+- `data/brain-data/research/n8n.md` §14 — comprehensive self-hosting env var reference table (23 categories, all @Env() decorators catalogued from 44+ source files). (research: n8n)
+- Memory `feedback-n8n-pnpm-version.md` — pnpm version requirement (use pnpm@10.32.1; pnpm 11.x breaks n8n build) and correct turbo invocation.
+- Memory `feedback-n8n-build-fix-2026-05-29.md` — step-by-step build fix recipe for n8n post-pnpm-11 poisoning.
+
+### Changed (SESSION-2026-05-29-004)
+- n8n build fixed from pnpm 11.x poisoned state: ran `tsc-alias` on `packages/core`, `@n8n/ai-workflow-builder.ee`, `@n8n/task-runner` to resolve 35+ unresolved `@/` aliases; reinstalled with `bunx pnpm@10.32.1 install --frozen-lockfile`; executed turbo build via sh shim (not `node turbo`). All 59 tasks passed. (research: n8n)
+
+### Decisions recorded (2026-05-29, SESSION-2026-05-29-004)
+- n8n self-hosting uses SQLite (`DB_TYPE=sqlite`) as default free-tier database.
+- All EE modules (SAML, source-control.ee, external-secrets.ee, dynamic-credentials.ee) excluded from `.env.local`; EE vars documented in a commented-out block only.
+- Python task runner enabled but requires host venv at `$HOME/.n8n/task-runners/python/venv`; other features are healthy without it.
+
+### Notes (SESSION-2026-05-29-004)
+- n8n `/healthz` verified → HTTP 200 `{"status":"ok"}`; `/rest/settings` returns valid JSON with `communityNodesEnabled: true`; 0 ERROR/FATAL in startup log.
+- n8n research commits are on `feat/session-2026-05-29-002`, not on the current branch — push/merge both branches when ready.
+
 ### Added
 - `TODO.md` — working TODO list for active changes (separate from `USER.TODO.md` for human-only setup steps).
 - `CHANGELOG.md` — this file; tracks applied changes per project convention.
