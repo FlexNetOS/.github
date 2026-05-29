@@ -12,14 +12,56 @@
 
 - **ID:** `SESSION-2026-05-29-006`
 - **Date:** 2026-05-29
-- **Branch:** `feat/architecture-framework` (cut from `origin/develop`; isolated git worktree at `../my-github-arch`)
-- **Mode:** `superpowers:brainstorming` → OPSX chain (`/ccg:spec-research` → `/ccg:spec-plan` → `/ccg:spec-impl`) + `/ecc:plan-prd` + `/architecture-decision-records`, multi-model (Claude + codex/gpt-5.5; antigravity unavailable)
-- **Outcome:** Introduced `architecture/` as the single common root for plans/PRDs/ADRs/specs, routing the already-installed skills there (zero net-new templates). Dogfooded: PRD-0001, ADR-0001, and the OpenSpec change `2026-05-29-architecture-framework` (archived; promoted `architecture-framework` capability spec, 6 reqs). 8 PBT invariants pass; `make verify` EXIT=0. codex adversarial review run; both genuine blockers (current-truth spec, change back-links) resolved; the additive_scope "blocker" was a false alarm (codex diffed `main`, base is `develop`).
-- **Worktree rationale:** a concurrent session was flipping the branch in the main checkout (`feat/install-github-app`); isolation prevented clobber (echoes the prior $200 untracked-work loss).
-- **Decisions:** `architecture/.claude/` (OpenSpec init tooling) is gitignored, not committed (fails markdown lint; opsx skills work locally) — see ADR-0001. lifeos/openspec is a local/untracked precedent, not in-repo committed.
-- **HEAD at end:** see `feat/architecture-framework` tip.
-- **Cost:** high — full multi-model OPSX (3 codex passes) at user's explicit direction.
-- **Not yet done (user gate):** branch not pushed / no PR opened — awaiting user confirmation (branch tracks `origin/develop`; push needs explicit upstream).
+- **Branch:** `feat/architecture-framework` (framework; merged via PR #27 → `9b6ef51` on develop) + `fix/architecture-crosslinks` (follow-up, PR #29). Isolated git worktree at `../my-github-arch`.
+- **HEAD at end:** `0691e98` (fix/architecture-crosslinks) — framework on develop at `9b6ef51`.
+- **Mode:** `superpowers:brainstorming` → OPSX chain (`/ccg:spec-research` → `/ccg:spec-plan` → `/ccg:spec-impl`) + `/ecc:plan-prd` + `/architecture-decision-records` + `/oh-my-claudecode:verify` + `/wrap-up`. Multi-model (Claude + codex/gpt-5.5; antigravity unavailable).
+- **Outcome:** Shipped `architecture/` as the single common root for plans/PRDs/ADRs/specs, routing installed skills there (zero net-new templates). PR #27 **merged** to develop. Verify pass then caught a cross-link regression on develop (archive moved the change after #27's merge commit) → fixed forward in PR #29 (open).
+- **User-action gates surfaced:** `UA-2026-05-29-004`
+- **Cost:** ~$184 — full multi-model OPSX (3 codex passes) + verify, at user's explicit repeated direction.
+
+### What the user asked
+> "create a new feature branch from the develop branch `FlexNetOS/.github/tree/develop` | we are going to work on directory organization and architector framework | plans, PRD, ADR, specs"
+
+Follow-ups: use the existing skills (OpenSpec/PRD/ADR) rather than new templates; host plan/spec/adr/prd under one common root; full multi-model OPSX; then "verify all your work then /wrap-up".
+
+### What the answer is
+`architecture/` is now the umbrella's single design-artifact root: `prd/`, `adr/`, `plan/`, `openspec/` + `README.md` (lifecycle map, routing table, PRD/ADR registry). Installed skills are routed there via an identical **Architecture artifacts** block in `CLAUDE.md`+`AGENTS.md`. Dogfooded with PRD-0001, ADR-0001, and the archived OpenSpec change promoting capability spec `architecture-framework` (6 reqs). Framework merged (PR #27); cross-link fix pending in PR #29. Durable artifacts: `architecture/**`, archived change at `architecture/openspec/changes/archive/2026-05-29-architecture-framework/`.
+
+### What was actually done this session
+1. Cut `feat/architecture-framework` from `origin/develop` in an isolated worktree (concurrent session was flipping the main checkout's branch).
+2. Brainstormed the design (3 scoping rounds) → approved → wrote OpenSpec change `2026-05-29-architecture-framework` (proposal/tasks/spec delta).
+3. Ran OPSX multi-model: `spec-research` (codex constraint scan), `spec-plan` (codex zero-decision plan + 8 PBT invariants), generated PRD-0001 + ADR-0001 via their skills, `spec-impl` scaffold + codex adversarial review.
+4. `openspec init` (contained `.claude` churn under `architecture/.claude/`, gitignored); hand-scaffolded config/project/README; wired routing in CLAUDE.md+AGENTS.md; documented in directory-layout.md; verify-markdown excludes the gitignored `.claude`.
+5. Archived the change (promoted current-truth spec). `make verify` EXIT=0; PR #27 opened + merged to develop.
+6. `/wrap-up` verify pass found develop shipped 5 broken cross-links (PR #27 squash-merged before the post-archive link fix) → cherry-picked the fix onto `fix/architecture-crosslinks`, opened PR #29.
+
+### Reservations / risks
+- **PR #29 must merge to complete the work** — without it, develop's PRD-0001/ADR-0001/archived-proposal cross-links are broken (UA-2026-05-29-004).
+- codex's `additive_scope` "blocker" was a false alarm (it diffed `main`; base is `develop`).
+- `architecture/.claude/` is intentionally gitignored (fails markdown lint; opsx skills are global). `lifeos/openspec` is a local/untracked precedent, not committed.
+- No submodule mutations; no `docs/` relocation; `lifeos/openspec/` untouched.
+
+### User-action gates (if any)
+- `UA-2026-05-29-004 — review + merge PR #29 (fix/architecture-crosslinks) into develop` (blocks: correct cross-links on develop).
+
+### What's next
+Merge PR #29. Then deferred follow-ups (documented in PRD-0001 milestones): cross-repo rollout of `architecture/` to submodules, registry automation, org-wide promotion. Worktree `../my-github-arch` can be removed after #29 merges.
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `architecture/README.md` | Lifecycle map, routing table, PRD/ADR registry |
+| `architecture/prd/PRD-0001-architecture-framework.md` | PRD (via ecc:plan-prd) |
+| `architecture/adr/ADR-0001-architecture-artifact-homes.md` | ADR (via ecc:architecture-decision-records) |
+| `architecture/openspec/{config.yaml,project.md}` | Umbrella OPSX config + context |
+| `architecture/openspec/specs/architecture-framework/spec.md` | Promoted current-truth capability spec (6 reqs) |
+| `architecture/openspec/changes/archive/2026-05-29-architecture-framework/*` | Archived change (proposal/tasks/design/spec delta) |
+| `CLAUDE.md`, `AGENTS.md` | Identical Architecture artifacts routing block |
+| `docs/directory-layout.md` | `architecture/` entry |
+| `scripts/verify-markdown.py` | Exclude gitignored `architecture/.claude/` |
+| `.gitignore` | Ignore `architecture/.claude/` |
+| `TODO.md`, `CHANGELOG.md`, `SESSIONS.md`, `USER.TODO.md` | Session bookkeeping |
 
 ## SESSION-2026-05-29-005 — n8n clone-setup Phase 1-3 + deepinit AGENTS.md hierarchy + autoresearch mission
 

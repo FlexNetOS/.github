@@ -22,6 +22,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `scripts/verify-markdown.py` — exclude gitignored `architecture/.claude/` (OpenSpec init tooling) from markdown lint, mirroring the `.claude/plugins/` precedent.
 - `.gitignore` — ignore `architecture/.claude/` (OpenSpec init AI-tooling, local only).
 
+### Fixed (SESSION-2026-05-29-006)
+- `architecture/` cross-links repointed to the archived change path (`changes/archive/...`). PR #27 squash-merged before the post-archive link fix, shipping 5 broken relative links to develop; caught by `/wrap-up` verification, fixed forward in PR #29. (unblocks: UA-2026-05-29-004)
+
+### Notes (SESSION-2026-05-29-006)
+- Framework merged to develop via PR #27 (`9b6ef51`); cross-link fix follows in PR #29. Built via full multi-model OPSX (Claude + codex); antigravity backend unavailable. `architecture/.claude/` gitignored (OpenSpec init tooling). No submodule/`docs`-relocation/`lifeos` changes.
+
 ### Added (SESSION-2026-05-29-005)
 - `.claude/AGENTS.md`, `.github/AGENTS.md`, `scripts/AGENTS.md`, `tools/AGENTS.md`, `data/brain-data/research/AGENTS.md` — deepinit AGENTS.md hierarchy with `<!-- Parent: -->` tags + per-directory AI-agent guidance; `scripts/AGENTS.md` documents all 26 scripts. Architect-approved (26/26 after fix). (commits 1ca3663 + efba627)
 - `.omc/autoresearch/codebase-health/` — autoresearch mission: `mission.md`, `evaluator.json` (`make verify`), `runs/run-001/` iteration-0001 PASS + decision log. (SESSION-2026-05-29-005)
