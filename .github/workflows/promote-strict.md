@@ -16,6 +16,7 @@ Branch at promotion: `feat/reconciliation-slice-tooling`
 |-----|----------|-----|
 | `claude-dir-check` (No PascalCase Claude/ directories) | 2026-05-28 | 26598828751 |
 | `open-questions-lint` (open-questions.md schema) | 2026-05-28 | 26598828751 |
+| `claude-settings-doctor` (.claude/settings.json hygiene) | 2026-05-29 | G8 trim completed (SESSION-2026-05-29-007) |
 
 ---
 
@@ -23,7 +24,6 @@ Branch at promotion: `feat/reconciliation-slice-tooling`
 
 | Job | Reason | Unblock condition |
 |-----|--------|-------------------|
-| `claude-settings-doctor` | **Failed** on first run — 39 hardcoded user-home path violations in `.claude/settings.json`. | Complete the `.claude/settings.json` trim (G8 in TODO.md): move hook paths to `~/.claude/settings.json`. After one green cycle, promote. |
 | `check-user-todo-step5` | Intentionally informational — designed to surface progress, never block a PR. | No promotion planned. Remove `continue-on-error` only if consensus changes the job from "inform" to "gate". |
 | `submodules-materialize-noop` | Placeholder — the MANIFEST→.gitmodules lockfile (`materialize`) pattern is deferred (G4/G5 in `.omc/plans/open-questions.md`). | Replace the noop with a real check once `scripts/materialize-gitmodules.sh` lands, then promote after one green cycle. |
 

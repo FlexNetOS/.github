@@ -1,0 +1,48 @@
+{
+  "task": "Update, upgrade, and automate FlexNetOS/.github \u2014 fix all CI failures, warnings, conflicts, and polish the repo",
+  "stories": [
+    {
+      "id": "US-001",
+      "title": "Fix reusable-lint.yml CI failure (606 markdownlint errors)",
+      "description": "bunx markdownlint-cli2 in reusable-lint.yml scans .claude/.omc/wiki/ files because it only excludes .omc/** (not .claude/.omc/**). 606 errors on every push.",
+      "acceptanceCriteria": [
+        "reusable-lint.yml excludes '!.claude/.omc/**' and '!.claude/**/.omc/**' from markdownlint-cli2 patterns",
+        "Local dry-run of the markdownlint command returns 0 errors on relevant .claude/.omc/wiki files",
+        "The lint CI job for this branch passes (verified via gh run list after push)"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-002",
+      "title": "Fix Issue #18 \u2014 18 broken wikilinks in wiki-lint check",
+      "description": "wiki-lint.yml greps ALL of wiki/ including schema.md, AGENTS.md, README.md which contain example [[wikilinks]] as documentation. Should only check wiki/pages/ for real broken links.",
+      "acceptanceCriteria": [
+        "wiki-lint.yml 'Find broken wikilinks' step uses 'wiki/pages/' as search root, not 'wiki/'",
+        "Local simulation of the wiki-lint broken-link check returns 0 broken wikilinks",
+        "Issue #18 is closed with a comment explaining the fix"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-003",
+      "title": "Resolve PR #24 merge conflicts (feat/todo-session-2026-05-28-006)",
+      "description": "PR #24 (Feat/todo session 2026 05 28 006) is CONFLICTING/DIRTY. Determine if it should be rebased or closed as stale.",
+      "acceptanceCriteria": [
+        "PR #24 is either closed with a clear rationale comment, or rebased so mergeable != CONFLICTING",
+        "No uncommitted conflicts remain in the feat/todo-session-2026-05-28-006 branch"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-004",
+      "title": "Resolve PR #22 conflicts (current branch feat/session-2026-05-29-002)",
+      "description": "PR #22 (chore: sync session state for SESSION-2026-05-29-001) is CONFLICTING. Current branch has many newer commits. Rebase or close.",
+      "acceptanceCriteria": [
+        "PR #22 is either closed (if stale) or updated so it is no longer CONFLICTING",
+        "Current working branch is clean and CI passes"
+      ],
+      "passes": true
+    }
+  ],
+  "progress_file": ".omc/state/sessions/github-ops-ralph/progress.txt"
+}

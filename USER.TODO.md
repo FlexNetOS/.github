@@ -577,6 +577,127 @@ feature branch but should not be merged to `main` without picking one of the abo
 - **How to verify done:** `git ls-remote https://github.com/FlexNetOS/n8n.git develop` returns a sha AND `git -C /home/drdave/workspace/my-github submodule status repos/forked/n8n` lists the submodule.
 - **Status:** `open`
 
+### UA-2026-05-29-004 — Merge `feat/install-github-app` PR to `main` to activate the promote-develop-to-main workflow
+
+- **Surfaced by:** `SESSION-2026-05-29-006`
+- **Blocks:** `promote-develop-to-main.yml` triggering via `workflow_run` — GitHub only fires `workflow_run` events for workflows that exist on the **default branch**. The workflow is currently only on `feat/install-github-app`.
+- **Why:** The agent committed `promote-develop-to-main.yml` and validated it (actionlint clean, branch protections live, `PROMOTE_TOKEN` set) but cannot trigger a live end-to-end test until the file lands on `main`. All static checks pass; the only remaining gate is this merge.
+- **What to do:**
+
+  ```bash
+  # Option A: create a PR and merge through the normal review flow
+  gh pr create --base main --head feat/install-github-app \
+    --title "ci: SESSION-2026-05-29-006 — branch protections + promote workflow" \
+    --body "Adds promote-develop-to-main.yml + install-github-app skill. See SESSION-2026-05-29-006."
+
+  # Option B: if you have already opened a PR, just approve + merge it
+  gh pr merge <number> --squash --admin
+  ```
+
+- **How to verify done:** `gh api repos/FlexNetOS/.github/contents/.github/workflows/promote-develop-to-main.yml --jq .name` returns `"promote-develop-to-main.yml"`.
+- **Status:** `open`
+
+### UA-2026-05-29-005 — Set `N8N_MCP_TOKEN` in the environment for the n8n-mcp MCP server
+
+- **Surfaced by:** `SESSION-2026-05-29-007`
+- **Blocks:** the `n8n-mcp` MCP server connecting (configured in `.mcp.json` and `~/.claude.json`). Until the var is set, the project `.mcp.json` reference (`Bearer ${N8N_MCP_TOKEN}`, no default) will also fail to parse per Claude Code's rule that a referenced-but-unset env var with no default fails the config parse.
+- **Why:** The agent registered the server using env-var indirection (never a token literal) to honor the repo's no-secrets-in-git rule. Only the human can store the real credential. The JWT was supplied in chat but deliberately not written to any file.
+- **What to do:**
+
+  ```bash
+  # Store the token in pass (paste your real n8n MCP JWT):
+  pass insert n8n/mcp/token
+
+  # PROJECT scope (inside this repo): add to whatever the .envrc dev-env template reads,
+  # mirroring the GITHUB_TOKEN pattern, then reload:
+  #   N8N_MCP_TOKEN  pass:n8n/mcp/token
+  direnv reload
+
+  # GLOBAL scope (every dir — ~/.claude.json is read everywhere): add to shell startup:
+  echo 'export N8N_MCP_TOKEN="$(pass show n8n/mcp/token)"' >> ~/.bashrc
+
+  # Then restart Claude Code and verify (n8n must be running on localhost:5678):
+  claude mcp get n8n-mcp
+  ```
+
+- **How to verify done:** `claude mcp get n8n-mcp` shows the server connected (not "needs auth"/failed), and `printenv N8N_MCP_TOKEN` returns the JWT in a fresh shell.
+- **Status:** `done (SESSION-2026-05-29-012)` — `pass n8n/mcp/token` confirmed populated; `pass n8n/api-key` also stored. n8n-mcp running with AUTH_TOKEN on port 3001, 17 management tools verified via MCP `tools/list`.
+
+---
+
+### UA-2026-05-29-006 — Push `feat/session-2026-05-29-007` and open PR
+
+- **Surfaced by:** `SESSION-2026-05-29-012`
+- **Blocks:** durable record of all session work (otherwise exposed to `git reset` wipe per `feedback-always-commit` memory)
+- **Why:** The session branch carries multiple sessions of work (007 through 012) and the wrap-up bookkeeping. Agent cannot push to remote or open PRs without explicit authorization.
+- **What to do:**
+
+  ```bash
+  cd /home/drdave/workspace/my-github
+  git push -u origin feat/session-2026-05-29-007
+  gh pr create \
+    --title "chore: sessions 007-012 — n8n+n8n-mcp stack, slim CA fix, CI templates" \
+    --body "Multi-session branch: reusable-typecheck.yml, ci-failure-tracker.yml, paperclip dossier, n8n-mcp clone-setup + deployment, slim CA trust bug fix." \
+    --base main
+  ```
+
+- **How to verify done:** `gh pr view --web` opens the PR on GitHub.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-29-007 — Set up n8n and n8n-mcp as persistent services (survive reboots)
+
+- **Surfaced by:** `SESSION-2026-05-29-012`
+- **Blocks:** reliable n8n + n8n-mcp availability; current processes die on reboot
+- **Why:** Both n8n and n8n-mcp are running as unmanaged background processes started in the Claude Code session. They will not survive a reboot or session termination. Persistent systemd user services are needed.
+- **What to do:**
+
+  ```bash
+  # n8n — create systemd user service
+  mkdir -p ~/.config/systemd/user
+  cat > ~/.config/systemd/user/n8n.service <<'EOF'
+  [Unit]
+  Description=n8n workflow automation
+  After=network.target
+
+  [Service]
+  Type=simple
+  WorkingDirectory=/home/drdave/workspace/my-github/repos/n8n
+  ExecStart=/home/drdave/.local/share/mise/shims/node node_modules/@dotenvx/dotenvx/src/cli/dotenvx.js run -f .env.local -- node packages/cli/bin/n8n start
+  Restart=on-failure
+  RestartSec=10
+
+  [Install]
+  WantedBy=default.target
+  EOF
+
+  # n8n-mcp — create systemd user service
+  cat > ~/.config/systemd/user/n8n-mcp.service <<'EOF'
+  [Unit]
+  Description=n8n MCP server
+  After=n8n.service
+
+  [Service]
+  Type=simple
+  WorkingDirectory=/home/drdave/workspace/my-github/repos/n8n/mcp/n8n-mcp
+  EnvironmentFile=/home/drdave/workspace/my-github/repos/n8n/mcp/n8n-mcp/.env
+  ExecStart=/home/drdave/.local/share/mise/shims/node dist/mcp/index.js
+  Restart=on-failure
+  RestartSec=5
+
+  [Install]
+  WantedBy=default.target
+  EOF
+
+  systemctl --user daemon-reload
+  systemctl --user enable --now n8n.service
+  systemctl --user enable --now n8n-mcp.service
+  # Enable linger so user services start at boot without login:
+  loginctl enable-linger $USER
+  ```
+
+- **How to verify done:** `systemctl --user status n8n n8n-mcp` both show `Active: active (running)`; `curl -s http://localhost:5678/healthz` and `curl -s http://localhost:3001/health` both return `{"status":"ok"}` after a reboot.
 ---
 
 ### UA-2026-05-29-004 — Review + merge PR #29 (architecture cross-link fix) into develop
