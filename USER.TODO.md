@@ -451,15 +451,17 @@ feature branch but should not be merged to `main` without picking one of the abo
 
 - **Surfaced by:** `SESSION-2026-05-28-007`
 - **Blocks:** all `gh repo fork` commands in USER.TODO#5; any `gh` operation
-- **Why:** `gh auth status` returns HTTP 401 Bad credentials. All section 5 `gh repo fork` commands will fail silently or error until this is fixed.
-- **What to do:**
+- **Why:** Token has been rotated (reset). `direnv` loads `GITHUB_TOKEN` from `pass github/personal/cli` into the environment, but that entry now holds a stale token. The long-term canonical secret source is **Vaultwarden+Bitwarden via the GitHub App** (Phase 6 gate — see `README.md`). Until the App is set up, the interim fix is to update the pass entry manually.
+- **What to do (interim — until Vaultwarden+Bitwarden App is live):**
   ```bash
-  gh auth login
-  # choose: GitHub.com → HTTPS → browser
-  gh auth status   # should show: ✓ Logged in to github.com as FlexNetOS
+  # 1. Get the new token from github.com/settings/tokens (or wherever you rotated it)
+  pass edit github/personal/cli   # paste the new token, save
+  direnv reload                   # re-export GITHUB_TOKEN from the updated store
+  gh api user --jq '.login'       # should return your username
   ```
+- **Long-term fix:** complete Vaultwarden→GitHub secret sync (Phase 6 operational gate in `README.md`). Once the App is live, `GITHUB_TOKEN` is auto-rotated and this never needs manual intervention again.
 - **How to verify done:** `gh api user --jq '.login'` returns `FlexNetOS` (or the renamed account after section 3).
-- **Status:** `open`
+- **Status:** `open` — token rotated; pass entry stale; Vaultwarden App not yet configured
 
 ---
 
