@@ -25,6 +25,56 @@ Examples:
 
 ---
 
+## HARD RULES — read before every run
+
+**These rules override the script's own output. The script is a tool; you are the judge.**
+
+1. **`✅ Step 0 complete` means the pack is available. It does NOT mean the repo is set up or healthy.** The script prints this message on every successful run, including reruns on already-cloned repos. Treat it as "pack ready, proceed to Phase 2."
+
+2. **"Dossier already exists (leaving untouched)" is NOT a health signal.** An existing dossier may be a stub with unfilled TODOs from a prior interrupted run. You must check its completeness (see §Idempotency below) before treating any phase as done.
+
+3. **"Reusing existing clone" means the work dir was not re-created.** The prior install may be stale, broken, or on a different commit. Re-verify Phase 3 even if the directory exists.
+
+4. **The script's "step 3: THEN run `gh repo fork`" is a conditional, not a next action.** This skill never runs `gh repo fork`. Forking is gated on the user resolving §10 Open Decisions. If the script's output says to fork, ignore it and report the §10 gate items instead.
+
+5. **Never report "setup complete and healthy" without running the health check in Phase 3.**
+
+---
+
+## Idempotency — what to do on a re-run
+
+At the start of every invocation, determine `<name>` from the input (lowercased repo slug, e.g. `repomix` for `yamadashy/repomix`), then check existing state:
+
+```bash
+cd /home/drdave/workspace/my-github
+
+# Check work dir
+ls -la ".attic/research-work/<name>/.git" 2>/dev/null && echo "WORK_DIR_EXISTS" || echo "WORK_DIR_MISSING"
+
+# Check dossier and count remaining TODOs
+grep -c "^TODO\b\|: TODO$\| TODO$" "data/brain-data/research/<name>.md" 2>/dev/null \
+  || echo "DOSSIER_MISSING"
+```
+
+Decision table — follow the matching row exactly:
+
+| Work dir | Dossier | TODOs remaining | Action |
+|---|---|---|---|
+| Missing | Missing | — | Full run: Phase 1 → Phase 2 → Phase 3 |
+| Missing | Exists | any | Phase 1 (reclone), re-read dossier to find gaps, complete Phase 2, Phase 3 |
+| Exists | Missing | — | Phase 1 (repack only, skip reclone), full Phase 2, Phase 3 |
+| Exists | Exists | > 0 | Phase 1 (repack, skip reclone), fill remaining TODOs in Phase 2, Phase 3 |
+| Exists | Exists | 0 | Dossier looks complete — still run Phase 3 health check to confirm current state |
+
+**No row says "already done, skip to fork."** Every invocation ends at Phase 3.
+
+To force a full re-clone from scratch (e.g. upstream has changed significantly):
+```bash
+FORCE_RECLONE=1 make research.pack URL=<owner/repo>
+```
+
+---
+
 ## Phase 1 — Pack (Step 0 of the ritual)
 
 Run from the umbrella root:
@@ -41,10 +91,12 @@ This produces:
 - `data/brain-data/research/<name>/repomix-pack.xml` — full source pack
 - `data/brain-data/research/<name>/repomix-pack.compressed.xml` — signatures + comments only
 - `data/brain-data/research/<name>/repomix-summary.md` — file counts, languages, HEAD
-- `data/brain-data/research/<name>.md` — stub dossier with TODO placeholders
+- `data/brain-data/research/<name>.md` — stub dossier (only created if one doesn't already exist)
 
 Capture `<name>` (lowercased repo name shown in script output) and the work-dir path.
 If the command exits non-zero, stop and report the error — do not continue.
+
+**After Phase 1 completes:** report what was found (new clone vs reused, dossier state, TODO count). Do not declare success or health yet.
 
 ---
 
@@ -178,6 +230,14 @@ The dossier must have all of these sections filled:
 ## 12. Discrepancies      — README vs code table (mandatory, even if "None found")
 ```
 
+After writing the dossier, verify no TODOs remain:
+
+```bash
+grep -n "^TODO\b\|: TODO$\| TODO$" "data/brain-data/research/<name>.md" | wc -l
+```
+
+If the count is > 0, list the unfilled lines and complete them before proceeding to Phase 3.
+
 Write the dossier to disk before starting Phase 3.
 
 ---
@@ -186,15 +246,33 @@ Write the dossier to disk before starting Phase 3.
 
 Work in `.attic/research-work/<name>/`.
 
+**Even if the directory already has `node_modules`/`target`/`.venv` from a prior run, re-run the install command.** Prior artifacts are not evidence of current health.
+
 1. **Env file**: if `.env.example` exists and `.env` does not → `cp .env.example .env`. Note which vars are blank and need real values.
 
 2. **Install**: use the command from Phase 2 code-verified findings — NOT what README says. If Phase 2 found `pnpm-lock.yaml`, run `pnpm install` even if README says `npm install`.
 
-3. **Smoke test**: if `scripts.test` exists and Phase 2 found no reason to skip, run it. Capture exit code.
+3. **Health check** — run these to confirm the install actually worked (adapt to actual package manager / runtime):
 
-4. **Record result** in dossier §9 Verification:
-   - Exact command run
-   - Exit code
+   ```bash
+   cd .attic/research-work/<name>
+
+   # Node/npm/pnpm/bun projects:
+   node --version              # confirm runtime matches engines field
+   ls node_modules | wc -l    # confirm install produced output
+   
+   # Rust projects:
+   cargo check 2>&1 | tail -5  # compile check without full build
+   
+   # Python/uv projects:
+   .venv/bin/python --version 2>/dev/null || python3 --version
+   ```
+
+4. **Smoke test**: if `scripts.test` exists and Phase 2 found no reason to skip, run it. Capture exit code.
+
+5. **Record result** in dossier §9 Verification:
+   - Exact commands run
+   - Exit codes
    - First error line if non-zero
    - Pass/fail verdict
 
@@ -209,18 +287,21 @@ Print after all phases complete:
 ```text
 ## clone-setup summary: <name>
 
-| Phase    | Status         | Details                                          |
-|----------|----------------|--------------------------------------------------|
-| Pack     | ✓ / ✗         | <size>, HEAD <sha>, branch <branch>              |
-| Research | ✓ / ✗         | <N> discrepancies; dossier written               |
-| Dossier  | ✓ / ✗         | data/brain-data/research/<name>.md               |
-| Setup    | ✓ / ✗ / ⚠ SKIPPED | Command: <cmd>; exit <code>                |
+| Phase    | Status              | Details                                            |
+|----------|---------------------|----------------------------------------------------|
+| Pack     | ✓ / ✗              | <size>, HEAD <sha>, branch <branch>                |
+| Research | ✓ / ✗              | <N> discrepancies; dossier written; 0 TODOs remain |
+| Dossier  | ✓ / ✗              | data/brain-data/research/<name>.md                 |
+| Setup    | ✓ / ✗ / ⚠ SKIPPED  | Command: <cmd>; exit <code>                        |
 
-Next steps:
-  Resolve §10 Open Decisions in the dossier before forking.
-  When ready: gh repo fork <slug> --org FlexNetOS --clone=false
-  See docs/fork-workflow.md for Steps 3–5.
+Open decisions blocking fork (§10):
+  <list each unchecked [ ] item, or "— none, all resolved">
+
+⛔ Fork is NOT the next step.
+   Resolve the §10 items above. When they are all checked off, report back
+   and the user will decide whether to run:
+     gh repo fork <slug> --org FlexNetOS --clone=false
 ```
 
-Do not suggest or run `gh repo fork` as part of this skill.
-Forking is gated on the user resolving §10 Open Decisions.
+**Do not run `gh repo fork` as part of this skill.**
+**Do not suggest it as the immediate next action.** The fork gate exists because naming collisions and upstream drift are expensive to undo. Even if §10 appears empty, present the summary and let the user confirm.
