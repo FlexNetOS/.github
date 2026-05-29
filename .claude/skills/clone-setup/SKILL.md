@@ -75,6 +75,57 @@ FORCE_RECLONE=1 make research.pack URL=<owner/repo>
 
 ---
 
+## Setup philosophy — free tier, full features, preferred tooling
+
+These three rules apply to every Phase 3 setup decision. When in doubt, they are the tiebreaker.
+
+### 1. Local-host-only free tier
+
+**Always configure the self-hosted / local variant of any required service.** Never point the dev setup at a paid cloud service unless there is literally no self-hosted alternative.
+
+| Service type | Prefer | Avoid |
+|---|---|---|
+| Relational DB | Local Postgres via `docker compose up -d` or `apt install postgresql` | RDS, Neon, Supabase cloud, PlanetScale |
+| Cache | Local Redis via `docker compose` or `apt install redis-server` | Redis Cloud, Upstash, ElastiCache |
+| Object storage | MinIO running locally | AWS S3, GCS, R2 (cloud) |
+| Auth / SSO | Local JWT, Keycloak, or Authentik | Auth0, Clerk, WorkOS paid |
+| Email | mailpit or mailhog (`docker run mailpit/mailpit`) | SendGrid, Postmark, SES (real delivery) |
+| LLM API | Ollama locally if the app supports it | OpenAI/Anthropic keys (note in §10 if required, don't block) |
+| Vector DB | Chroma or Qdrant local Docker image | Pinecone, Weaviate cloud |
+| Queues | Redis Streams or RabbitMQ local Docker | SQS, Confluent Cloud |
+
+If a paid-only API key is genuinely required (no local substitute exists), note it in dossier §10 Open Decisions with the exact env var name and skip that feature — do not block the entire setup.
+
+If the app ships a `docker-compose.yml` or `compose.yaml`, run it: it already defines the free-tier local stack the upstream developers use.
+
+### 2. Tooling preference order
+
+When the project allows a choice of tool for a given job, pick in this priority order:
+
+| Priority | Tool | When it applies |
+|---|---|---|
+| 1 | **Rust / cargo** | Any CLI or utility that has a Rust-native alternative (e.g. `cargo install ripgrep` over `brew install ripgrep`; `cargo install sqlx-cli` over npm equivalent) |
+| 2 | **bunx** | Node-based one-shot tool invocations — use `bunx <tool>` instead of `npx <tool>` |
+| 3 | **mise** | Runtime version management — use `mise use node@<ver>` / `mise use python@<ver>` instead of nvm, pyenv, rbenv, asdf |
+| 4 | **direnv** | Environment variable loading — if the repo has a `.envrc` or you are creating one, prefer `direnv allow` over manually sourcing `.env` files |
+
+When a lock file dictates the package manager (e.g. `bun.lockb` → bun, `pnpm-lock.yaml` → pnpm), that mandate overrides the preference order.
+
+### 3. Always full-feature dev setup
+
+Never do a minimal or production install. Always enable every optional feature, dev dependency, and plugin the repo ships.
+
+- **Rust**: `cargo build --all-features` (not default features only); `cargo test --all-features`
+- **Node/Bun**: always install devDependencies — never `--production`, `--omit=dev`, or `--no-dev`
+- **Python/uv**: `uv pip install ".[all]"` or `uv pip install ".[dev,test,extra1,extra2]"` — include every extras group found in `pyproject.toml`
+- **Cargo features**: if `Cargo.toml` lists optional features, enable them all: `cargo build --features feat1,feat2,...` or `--all-features`
+- **Env var feature gates**: if Phase 2 found env vars that enable optional features (e.g. `ENABLE_EXPERIMENTAL=true`, `USE_REDIS=1`, `ENABLE_PLUGINS=true`), set them all to their enabling value in `.env`
+- **Makefile targets**: if both `make build` and `make dev` exist, use `make dev`; if both `make install` and `make install-dev` exist, use `make install-dev`
+
+If a feature cannot be enabled without a paid credential and there is no local substitute, mark it in §10 and move on. Everything else gets enabled.
+
+---
+
 ## Phase 1 — Pack (Step 0 of the ritual)
 
 Run from the umbrella root:
