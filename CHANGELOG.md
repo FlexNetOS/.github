@@ -11,6 +11,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added (SESSION-2026-05-29-006)
+- `architecture/` — single common root for the umbrella's design-time artifacts: `prd/`, `adr/`, `plan/`, and `openspec/` (OpenSpec OPSX engine), plus `README.md` (lifecycle map + routing table + PRD/ADR registry). Built via the OPSX multi-model flow (Claude + codex/gpt-5.5): spec-research → spec-plan → spec-impl → adversarial review → archive.
+- `architecture/prd/PRD-0001-architecture-framework.md` (via `ecc:plan-prd`), `architecture/adr/ADR-0001-architecture-artifact-homes.md` (via `ecc:architecture-decision-records`), and the archived OpenSpec change `2026-05-29-architecture-framework` promoting capability spec `openspec/specs/architecture-framework/spec.md` (6 requirements).
+- `architecture/openspec/config.yaml` (umbrella context + rules) and `project.md`.
+
+### Changed (SESSION-2026-05-29-006)
+- `CLAUDE.md` + `AGENTS.md` — added an identical **Architecture artifacts** routing block directing `ecc:plan-prd`/`prp-prd`, `ecc:architecture-decision-records`, `ccg:spec-*`, and `writing-plans`/`plan` outputs into `architecture/` (overriding their built-in defaults).
+- `docs/directory-layout.md` — documented the `architecture/` top-level entry.
+- `scripts/verify-markdown.py` — exclude gitignored `architecture/.claude/` (OpenSpec init tooling) from markdown lint, mirroring the `.claude/plugins/` precedent.
+- `.gitignore` — ignore `architecture/.claude/` (OpenSpec init AI-tooling, local only).
+
 ### Added (SESSION-2026-05-29-005)
 - `.claude/AGENTS.md`, `.github/AGENTS.md`, `scripts/AGENTS.md`, `tools/AGENTS.md`, `data/brain-data/research/AGENTS.md` — deepinit AGENTS.md hierarchy with `<!-- Parent: -->` tags + per-directory AI-agent guidance; `scripts/AGENTS.md` documents all 26 scripts. Architect-approved (26/26 after fix). (commits 1ca3663 + efba627)
 - `.omc/autoresearch/codebase-health/` — autoresearch mission: `mission.md`, `evaluator.json` (`make verify`), `runs/run-001/` iteration-0001 PASS + decision log. (SESSION-2026-05-29-005)

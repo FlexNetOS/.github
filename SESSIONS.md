@@ -8,6 +8,19 @@
 
 ---
 
+## SESSION-2026-05-29-006 — architecture/ artifact framework via OPSX multi-model flow
+
+- **ID:** `SESSION-2026-05-29-006`
+- **Date:** 2026-05-29
+- **Branch:** `feat/architecture-framework` (cut from `origin/develop`; isolated git worktree at `../my-github-arch`)
+- **Mode:** `superpowers:brainstorming` → OPSX chain (`/ccg:spec-research` → `/ccg:spec-plan` → `/ccg:spec-impl`) + `/ecc:plan-prd` + `/architecture-decision-records`, multi-model (Claude + codex/gpt-5.5; antigravity unavailable)
+- **Outcome:** Introduced `architecture/` as the single common root for plans/PRDs/ADRs/specs, routing the already-installed skills there (zero net-new templates). Dogfooded: PRD-0001, ADR-0001, and the OpenSpec change `2026-05-29-architecture-framework` (archived; promoted `architecture-framework` capability spec, 6 reqs). 8 PBT invariants pass; `make verify` EXIT=0. codex adversarial review run; both genuine blockers (current-truth spec, change back-links) resolved; the additive_scope "blocker" was a false alarm (codex diffed `main`, base is `develop`).
+- **Worktree rationale:** a concurrent session was flipping the branch in the main checkout (`feat/install-github-app`); isolation prevented clobber (echoes the prior $200 untracked-work loss).
+- **Decisions:** `architecture/.claude/` (OpenSpec init tooling) is gitignored, not committed (fails markdown lint; opsx skills work locally) — see ADR-0001. lifeos/openspec is a local/untracked precedent, not in-repo committed.
+- **HEAD at end:** see `feat/architecture-framework` tip.
+- **Cost:** high — full multi-model OPSX (3 codex passes) at user's explicit direction.
+- **Not yet done (user gate):** branch not pushed / no PR opened — awaiting user confirmation (branch tracks `origin/develop`; push needs explicit upstream).
+
 ## SESSION-2026-05-29-005 — n8n clone-setup Phase 1-3 + deepinit AGENTS.md hierarchy + autoresearch mission
 
 - **ID:** `SESSION-2026-05-29-005`
