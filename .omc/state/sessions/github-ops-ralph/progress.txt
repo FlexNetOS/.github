@@ -1,0 +1,38 @@
+# GitHub Ops Ralph — Progress Log
+
+## Iteration 1 (2026-05-29)
+
+### US-001: Fix reusable-lint.yml CI failure ✓ DONE
+- Root cause: bunx markdownlint-cli2 in reusable-lint.yml excluded `.omc/**` but NOT `.claude/.omc/**`
+  → `.claude/.omc/wiki/*.md` files (OMC auto-generated) were being linted → 606 errors
+- Fix: added `!.claude/.omc/**` to both bunx and npx exclusion patterns in reusable-lint.yml
+- Verified: actionlint clean on modified file
+- Committed: commit on feat/session-2026-05-29-002
+
+### US-002: Fix Issue #18 — 18 broken wikilinks ✓ DONE
+- Root cause: wiki-lint.yml searched `wiki/` including schema.md/AGENTS.md/README.md
+  which contain illustrative [[wikilinks]] as examples, not real pages
+- Fix: changed grep search root from `wiki/` to `wiki/pages/`
+- Verified: local simulation returns 0 broken wikilinks
+- Committed: same commit as US-001
+- Issue #18 needs to be closed manually (auto-mode blocked external write)
+
+### US-003: PR #24 conflicts ✓ DONE (pending user action to close)
+- Found: feat/todo-session-2026-05-28-006 IS an ancestor of feat/session-2026-05-29-002
+- All 33 commits from PR #24 are already contained in the current branch
+- Action needed: user must run `gh pr close 24` (auto-mode blocked)
+
+### US-004: Current branch conflicts (PR #22) ✓ DONE
+- Merged origin/main (2 commits: Add Claude Code GitHub Workflow + clone-setup fix)
+- Resolved 12 conflict files:
+  - .omc/ state files → --ours (current branch state authoritative)
+  - data/brain-data/research/n8n.md + paperclip.md → --ours (more complete research)
+  - CHANGELOG.md, SESSIONS.md, TODO.md, USER.TODO.md → --ours (superset of main)
+  - .claude/skills/wrap-up/SKILL.md → --ours (newest version)
+- All local checks pass (verify-markdown, actionlint, verify-manifest)
+- Pushed: branch updated, PR #22 now shows MERGEABLE (was CONFLICTING)
+- CI in progress on latest push
+
+## Patterns learned
+- wiki-lint: always check if grep scope includes documentation/schema files
+- markdownlint-cli2: glob exclusions are path-prefix based, not path-part based (`.omc/**` ≠ `.claude/.omc/**`)

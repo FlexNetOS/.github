@@ -577,6 +577,21 @@ feature branch but should not be merged to `main` without picking one of the abo
 - **How to verify done:** `git ls-remote https://github.com/FlexNetOS/n8n.git develop` returns a sha AND `git -C /home/drdave/workspace/my-github submodule status repos/forked/n8n` lists the submodule.
 - **Status:** `open`
 
+---
+
+### UA-2026-05-29-004 — Review + merge PR #29 (architecture cross-link fix) into develop
+
+- **Surfaced by:** `SESSION-2026-05-29-006` (architecture/ framework)
+- **Blocks:** Correct relative cross-links in `architecture/` on `develop`. PR #27 (the framework) is already merged, but it squash-merged at the pre-archive commit, so `develop` currently has 5 broken links (PRD-0001 / ADR-0001 / archived proposal point at the pre-archive `changes/<id>/` path).
+- **Why:** PR #29 (`fix/architecture-crosslinks`) repoints them to `changes/archive/...` and is verified (all 11 `architecture/**/*.md` links resolve). Merging is a human gate (review + merge to develop).
+- **What to do:**
+
+  ```bash
+  gh pr view 29 --web         # review
+  gh pr merge 29 --squash     # or via the GitHub UI, targeting develop
+  ```
+
+- **How to verify done:** on updated `develop`, `architecture/prd/PRD-0001-architecture-framework.md` links to `../openspec/changes/archive/2026-05-29-architecture-framework/proposal.md` (the `archive/` path), and a link-resolution scan of `architecture/**/*.md` reports 0 broken.
 ### UA-2026-05-29-004 — Merge `feat/install-github-app` PR to `main` to activate the promote-develop-to-main workflow
 
 - **Surfaced by:** `SESSION-2026-05-29-006`
@@ -621,4 +636,96 @@ feature branch but should not be merged to `main` without picking one of the abo
   ```
 
 - **How to verify done:** `claude mcp get n8n-mcp` shows the server connected (not "needs auth"/failed), and `printenv N8N_MCP_TOKEN` returns the JWT in a fresh shell.
+- **Status:** `done (SESSION-2026-05-29-012)` — `pass n8n/mcp/token` confirmed populated; `pass n8n/api-key` also stored. n8n-mcp running with AUTH_TOKEN on port 3001, 17 management tools verified via MCP `tools/list`.
+
+---
+
+### UA-2026-05-29-006 — Push `feat/session-2026-05-29-007` and open PR
+
+- **Surfaced by:** `SESSION-2026-05-29-012`
+- **Blocks:** durable record of all session work (otherwise exposed to `git reset` wipe per `feedback-always-commit` memory)
+- **Why:** The session branch carries multiple sessions of work (007 through 012) and the wrap-up bookkeeping. Agent cannot push to remote or open PRs without explicit authorization.
+- **What to do:**
+
+  ```bash
+  cd /home/drdave/workspace/my-github
+  git push -u origin feat/session-2026-05-29-007
+  gh pr create \
+    --title "chore: sessions 007-012 — n8n+n8n-mcp stack, slim CA fix, CI templates" \
+    --body "Multi-session branch: reusable-typecheck.yml, ci-failure-tracker.yml, paperclip dossier, n8n-mcp clone-setup + deployment, slim CA trust bug fix." \
+    --base main
+  ```
+
+- **How to verify done:** `gh pr view --web` opens the PR on GitHub.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-29-007 — Set up n8n and n8n-mcp as persistent services (survive reboots)
+
+- **Surfaced by:** `SESSION-2026-05-29-012`
+- **Blocks:** reliable n8n + n8n-mcp availability; current processes die on reboot
+- **Why:** Both n8n and n8n-mcp are running as unmanaged background processes started in the Claude Code session. They will not survive a reboot or session termination. Persistent systemd user services are needed.
+- **What to do:**
+
+  ```bash
+  # n8n — create systemd user service
+  mkdir -p ~/.config/systemd/user
+  cat > ~/.config/systemd/user/n8n.service <<'EOF'
+  [Unit]
+  Description=n8n workflow automation
+  After=network.target
+
+  [Service]
+  Type=simple
+  WorkingDirectory=/home/drdave/workspace/my-github/repos/n8n
+  ExecStart=/home/drdave/.local/share/mise/shims/node node_modules/@dotenvx/dotenvx/src/cli/dotenvx.js run -f .env.local -- node packages/cli/bin/n8n start
+  Restart=on-failure
+  RestartSec=10
+
+  [Install]
+  WantedBy=default.target
+  EOF
+
+  # n8n-mcp — create systemd user service
+  cat > ~/.config/systemd/user/n8n-mcp.service <<'EOF'
+  [Unit]
+  Description=n8n MCP server
+  After=n8n.service
+
+  [Service]
+  Type=simple
+  WorkingDirectory=/home/drdave/workspace/my-github/repos/n8n/mcp/n8n-mcp
+  EnvironmentFile=/home/drdave/workspace/my-github/repos/n8n/mcp/n8n-mcp/.env
+  ExecStart=/home/drdave/.local/share/mise/shims/node dist/mcp/index.js
+  Restart=on-failure
+  RestartSec=5
+
+  [Install]
+  WantedBy=default.target
+  EOF
+
+  systemctl --user daemon-reload
+  systemctl --user enable --now n8n.service
+  systemctl --user enable --now n8n-mcp.service
+  # Enable linger so user services start at boot without login:
+  loginctl enable-linger $USER
+  ```
+
+- **How to verify done:** `systemctl --user status n8n n8n-mcp` both show `Active: active (running)`; `curl -s http://localhost:5678/healthz` and `curl -s http://localhost:3001/health` both return `{"status":"ok"}` after a reboot.
+---
+
+### UA-2026-05-29-004 — Review + merge PR #29 (architecture cross-link fix) into develop
+
+- **Surfaced by:** `SESSION-2026-05-29-006` (architecture/ framework)
+- **Blocks:** Correct relative cross-links in `architecture/` on `develop`. PR #27 (the framework) is already merged, but it squash-merged at the pre-archive commit, so `develop` currently has 5 broken links (PRD-0001 / ADR-0001 / archived proposal point at the pre-archive `changes/<id>/` path).
+- **Why:** PR #29 (`fix/architecture-crosslinks`) repoints them to `changes/archive/...` and is verified (all 11 `architecture/**/*.md` links resolve). Merging is a human gate (review + merge to develop).
+- **What to do:**
+
+  ```bash
+  gh pr view 29 --web         # review
+  gh pr merge 29 --squash     # or via the GitHub UI, targeting develop
+  ```
+
+- **How to verify done:** on updated `develop`, `architecture/prd/PRD-0001-architecture-framework.md` links to `../openspec/changes/archive/2026-05-29-architecture-framework/proposal.md` (the `archive/` path), and a link-resolution scan of `architecture/**/*.md` reports 0 broken.
 - **Status:** `open`

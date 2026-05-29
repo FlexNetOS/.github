@@ -70,6 +70,24 @@ Secrets are injected at runtime via `pass` + `direnv`. `.env.example` files (key
 
 ---
 
+## Architecture artifacts
+
+Design-time artifacts live under the single `architecture/` root (see
+[`architecture/README.md`](architecture/README.md)). The installed skills are routed
+here, overriding their built-in defaults:
+
+| Stage | Skill | Output path |
+|---|---|---|
+| PRD | `ecc:plan-prd`, `ecc:prp-prd` | `architecture/prd/PRD-NNNN-<slug>.md` |
+| ADR | `ecc:architecture-decision-records` | `architecture/adr/ADR-NNNN-<slug>.md` |
+| Spec | `ccg:spec-research` -> `spec-plan` -> `spec-impl` | `architecture/openspec/` (run from `architecture/`) |
+| Plan | `writing-plans`, `oh-my-claudecode:plan` | `architecture/plan/YYYY-MM-DD-<slug>-plan.md` |
+
+`architecture/README.md` is the PRD/ADR registry + numbering source of truth.
+`architecture/.claude/` is git-ignored. Submodule rollout is deferred.
+
+---
+
 ## Key commands
 
 ```bash

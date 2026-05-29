@@ -18,7 +18,6 @@ jobs:
   claude-dir-check:
     name: No PascalCase Claude/ directories
     runs-on: ubuntu-latest
-    continue-on-error: true   # REPORT_ONLY: promote to STRICT after one green cycle
     steps:
       - uses: actions/checkout@v6
         with:
@@ -36,9 +35,8 @@ jobs:
           echo "claude-dir check: OK"
 
   claude-settings-doctor:
-    name: .claude/settings.json hygiene (report-only)
+    name: .claude/settings.json hygiene
     runs-on: ubuntu-latest
-    continue-on-error: true   # REPORT_ONLY
     steps:
       - uses: actions/checkout@v6
         with:
@@ -74,7 +72,6 @@ jobs:
     name: open-questions.md schema
     runs-on: ubuntu-latest
     # STRICT: promoted 2026-05-28 after one green cycle on feat/reconciliation-slice-tooling (run 26598828751)
-    continue-on-error: true   # REPORT_ONLY
     steps:
       - uses: actions/checkout@v6
         with:

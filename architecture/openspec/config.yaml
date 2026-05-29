@@ -1,0 +1,23 @@
+schema: spec-driven
+
+# Umbrella OpenSpec instance for the FlexNetOS .github mega-repo.
+# Run `openspec`/`opsx` commands from the `architecture/` directory so the CLI
+# resolves this `openspec/` tree.
+context: |
+  Repo: FlexNetOS/.github — the org's special .github mega-umbrella (community
+  health fallback, mount point for ~24 submodules under repos/{owned,forked,external},
+  Karpathy LLM-wiki, pass+GPG secrets vault, self-hosted runner config, reusable CI).
+  There is nothing to "build" here — it is operational config + scripts + docs.
+  Conventions: Conventional Commits; feature branch per session; main is protected
+  (PR + 1 approval, linear history). `make verify` is the pre-PR gate. All tracked
+  architecture/**/*.md is markdown-linted (fences must be language-tagged + closed).
+  Artifacts route to the architecture/ framework: PRDs -> architecture/prd/,
+  ADRs -> architecture/adr/, plans -> architecture/plan/, specs -> architecture/openspec/.
+
+rules:
+  proposal:
+    - State a Non-goals section; the umbrella defers cross-repo/submodule rollout by default.
+    - Keep changes additive; never relocate existing docs/ or touch lifeos/openspec/.
+  tasks:
+    - Use checkbox format so the OpenSpec CLI parses tasks.
+    - Include a markdown-lint-clean verification task for any new tracked docs.
