@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `.claude/skills/clone-setup/SKILL.md` — three-phase research-before-fork automation: `make research.pack` → code-first analysis (manifest → compressed pack → source → README last, enforced) → verified setup in `.attic/research-work/<name>/`; mandatory §12 Discrepancies table; `gh repo fork` never called by the skill. (SESSION-2026-05-28-006)
 
 ### Changed
+- `.claude/skills/wrap-up/SKILL.md` — step 7 now commits all session work (7a: uncommitted substantive files), commits bookkeeping (7b), pushes branch to origin (7c), and opens a PR via `gh pr create` (7d); done-when item 6 updated from "committed, not pushed" to "committed, pushed, PR open"; do-not list updated (removed "Don't push", added "Don't force-push"); step 8 report now includes PR URL. (SESSION-2026-05-29-002)
 - `scripts/runner-doctor.sh` — extended with `ps`-based orphan/ghost runner-process detection. (SESSION-2026-05-28-005; research: G12)
 - `CONTRIBUTING.md` — added AI-tooling directory convention (`.claude` not `Claude`), CI-invariant promotion pattern, doctor allowlist policy, `.gitmodules` merge-conflict note. (SESSION-2026-05-28-005; research: G10/G14/G9)
 - `README.md` — added Repo-navigation table + Phase-6 Vaultwarden operational gate. (SESSION-2026-05-28-005; research: G13)

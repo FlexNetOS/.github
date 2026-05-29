@@ -8,6 +8,49 @@
 
 ---
 
+## SESSION-2026-05-29-002 — wrap-up skill: add commit-all + push + PR to step 7
+
+- **ID:** `SESSION-2026-05-29-002`
+- **Date:** 2026-05-29
+- **Branch:** `feat/session-2026-05-29-002`
+- **HEAD at end:** `efba627`
+- **Mode:** `/wrap-up` (invoked after skill update)
+- **Outcome:** `.claude/skills/wrap-up/SKILL.md` updated; committed, pushed, PR open
+- **User-action gates surfaced:** `none`
+
+### What the user asked
+> `update "wrap-up" skill | must include commit all changes and create PR`
+
+### What the answer is
+Updated `.claude/skills/wrap-up/SKILL.md`: step 7 restructured into sub-steps 7a–7d (commit remaining session work, commit bookkeeping, `git push -u origin`, `gh pr create`); done-when item 6 and the do-not list updated to match; step 8 report now includes PR URL.
+
+### What was actually done this session
+1. Located existing skill at `.claude/skills/wrap-up/SKILL.md`.
+2. Read the full skill (395 lines, 8-step procedure).
+3. Edited step 7: renamed to "Commit all session work, then push and open a PR"; added sub-steps 7a (commit remaining uncommitted session work before bookkeeping), 7b (commit bookkeeping files), 7c (`git push -u origin`), 7d (`gh pr create` with structured body template).
+4. Updated done-when item 6: "Committed, not pushed" → "Committed, pushed, and PR open".
+5. Updated do-not list: removed "Don't push, and don't commit to a protected branch"; split into "Don't commit to a protected branch" + new "Don't force-push".
+6. Updated step 8 report: added PR URL as item 5; updated gate condition to include push + PR open.
+7. Verified all internal cross-references (step numbers 1–8, sub-steps 7a–7d) intact and consistent.
+
+### Reservations / risks
+- The skill loaded by `/wrap-up` showed old cached content; on-disk file is correct. Cache mismatch is expected within the same session.
+- `wrap-up-verifier` subagent (step 6) not invoked — single-file skill update, low bluffing risk.
+
+### What's next
+No pending agent work. Next `/wrap-up` invocation will execute the new step 7 (commit all → push → PR).
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `.claude/skills/wrap-up/SKILL.md` | Step 7 restructured (7a–7d); done-when item 6 and do-not list updated; step 8 adds PR URL |
+| `TODO.md` | Bumped "Last updated" to SESSION-2026-05-29-002 |
+| `CHANGELOG.md` | Added `### Changed` entry for wrap-up skill update |
+| `SESSIONS.md` | This entry |
+
+---
+
 ## SESSION-2026-05-29-001 — clone-setup skill: fix false-positive health detection + add setup philosophy
 
 - **ID:** `SESSION-2026-05-29-001`
