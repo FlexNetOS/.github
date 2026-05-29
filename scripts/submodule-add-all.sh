@@ -2,6 +2,7 @@
 # Reads repos/MANIFEST.yaml and runs `git submodule add` for any entry not
 # yet present in .gitmodules. Idempotent. Safe to re-run.
 #
+# Requires: git, python3, gh (only if --create-missing is used).
 # 404 handling:
 #   - Tagged entries (# depends-on: USER.TODO#5) that 404: WARN + skip, exit 0.
 #     These are known-pending forks; the fork is a deliberate human step.
