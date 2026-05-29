@@ -4,9 +4,9 @@
 > Applied changes move to `CHANGELOG.md`. Per-session logs land in `SESSIONS.md`.
 > The full deep-research plan that produced this list lives at `data/brain-data/research/my-github-reconciliation.md`.
 
-**Last updated:** 2026-05-28 (SESSION-2026-05-28-005 — additive reconciliation tooling shipped; PR #20)
-**Branch:** `feat/reconciliation-slice-tooling`
-**Status:** additive tooling slice shipped (PR #20 open, report-only CI); reconciliation slice remainder `pending approval`; adoption/forks gated on dossier review.
+**Last updated:** 2026-05-28 (SESSION-2026-05-28-006 — Vision audit; AGENTS.md created; fork-remediation dirty diffs captured)
+**Branch:** `feat/todo-session-2026-05-28-006`
+**Status:** Vision sequence enforced in CLAUDE.md+AGENTS.md; fork-remediation dirty diffs captured; `make verify` clean; adoption/forks gated pending `gh auth login` (UA-005).
 
 ---
 
@@ -73,6 +73,8 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 - [x] Add `# depends-on: USER.TODO#5` comments to the 4 pending-fork MANIFEST entries (Archon, everything-claude-code, oh-my-claudecode, oh-my-pi). ✓ Done 2026-05-28 — `check-user-todo-step5.sh --list-tagged` surfaces all 4.
 - [x] Refactor `scripts/submodule-add-all.sh` to be 404-resilient: tagged 404 → WARN exit 0; untagged 404 → ERROR exit 1. ✓ Done 2026-05-28.
 - [ ] **CRITICAL:** No `gh repo fork ... --org FlexNetOS` until the original-side cleanup is verified per-fork. See memory `feedback-fork-after-original-setup`.
+  - Dirty diffs captured at `data/brain-data/research/fork-remediation/` (SESSION-2026-05-28-006). Next step per `/clone-setup`: `make research.pack URL=<upstream>` for each repo — gated on UA-2026-05-28-005 (`gh auth login`).
+- [ ] Update `branch: main` → `branch: develop` in `repos/MANIFEST.yaml` for everything-claude-code, oh-my-claudecode, oh-my-pi (Vision: `develop` carries FlexNetOS changes; gated until after fork remediation).
 
 ## CI invariant promotion (workflow DONE; promotion remains)
 

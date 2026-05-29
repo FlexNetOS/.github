@@ -8,6 +8,68 @@
 
 ---
 
+## SESSION-2026-05-28-006 — clone-setup skill: post-clone research-before-fork automation
+
+- **ID:** `SESSION-2026-05-28-006`
+- **Date:** 2026-05-28
+- **Branch:** `feat/todo-session-2026-05-28-006`
+- **HEAD at end:** `c1ccec6`
+- **Mode:** `/claude-code-setup:claude-automation-recommender` + manual follow-up
+- **Outcome:** Created `.claude/skills/clone-setup/SKILL.md` — three-phase research-before-fork automation wired to the existing `make research.pack` infrastructure.
+- **User-action gates surfaced:** none
+
+### What the user asked
+
+> `/claude-code-setup:claude-automation-recommender [looks for deep code base research and understanding | need an automation we can run right after a clone to ensure we install and setup the clone repo properly]`
+
+Follow-up clarification: *"You forgot the very critical research the code base. sometime the readme and quickstart do match the code. most of the repos we are working with will but research is mandatory and must be saved at /home/drdave/workspace/my-github/data/brain-data/research"*
+
+### What the answer is
+
+Created `/clone-setup` skill at `.claude/skills/clone-setup/SKILL.md`. Invoke after any upstream `git clone` to run the full Step 0–2 ritual:
+
+1. **Pack** — `make research.pack URL=<url>` (existing infrastructure unchanged)
+2. **Research** — reads compressed repomix pack (code first, README last enforced), fills all TODO stubs in `data/brain-data/research/<name>.md` with code-verified findings; mandatory §12 Discrepancies table
+3. **Verified setup** — install command derived from lock-file detection, not README
+
+`gh repo fork` is never called by the skill — gated on user resolving §10 Open Decisions.
+
+### What was actually done this session
+
+1. Invoked `claude-code-setup:claude-automation-recommender` skill for workspace analysis
+2. Inventoried workspace: hermes-workspace (pnpm/Electron/Vite), 18 repos across Bun/TS, Python/uv, Rust, Markdown stacks
+3. Discovered existing `make research.pack` + `scripts/clone-and-pack.sh` — already clones, packs, and stubs the dossier
+4. Read existing dossier format from `data/brain-data/research/repomix.md` for style reference
+5. Identified gap: `clone-and-pack.sh` creates TODO stubs but no automation fills them from actual code
+6. Created `.claude/skills/clone-setup/SKILL.md` — enforced reading order, mandatory §12 Discrepancies, verified setup phase
+7. Ran 10-point structural verification; all checks passed
+8. Saved auto-memory at `~/.claude/projects/-home-drdave/memory/project_clone_setup_skill.md` (outside repo)
+
+### Reservations / risks
+
+- `data/brain-data/research/ai-top-utility.md` has a 24-line diff in working tree — pre-existing, not from this session, not staged
+- `.omc/` state files are dirty — OMC internal state, not from this session
+- No `gh repo fork` calls made
+- No submodule mutations
+- No push to origin — branch is local only
+
+### What's next
+
+Invoke `/clone-setup <owner/repo>` when the next upstream adoption begins. Replaces the manual "fill dossier from code" step that was previously ad-hoc.
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `.claude/skills/clone-setup/SKILL.md` | NEW — post-clone research+setup automation skill |
+| `TODO.md` | Bumped "Last updated" to SESSION-2026-05-28-006 |
+| `CHANGELOG.md` | Added `clone-setup/SKILL.md` entry under `### Added` |
+| `SESSIONS.md` | This entry |
+| `~/.claude/projects/-home-drdave/memory/project_clone_setup_skill.md` | NEW — auto-memory (outside repo) |
+| `~/.claude/projects/-home-drdave/memory/MEMORY.md` | Added one index line (outside repo) |
+
+---
+
 ## SESSION-2026-05-28-005 — Additive reconciliation tooling (doctors, reversibility chain, report-only CI)
 
 - **ID:** `SESSION-2026-05-28-005`
