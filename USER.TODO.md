@@ -16,7 +16,7 @@ The committed scaffold is at HEAD = `feat: scaffold FlexNetOS .github mega-umbre
 inheritance / CI behavior activates until they land on GitHub.
 
 ```bash
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 git push origin main
 ```
 
@@ -49,8 +49,8 @@ GitHub UI: **Settings → Branches → Branch protection rules → Add rule**
 - Allow force pushes: **No**
 - Allow deletions: **No**
 - Require status checks to pass before merging: (enable after CI runs
-  green at least once — pick `lint`, `manifest-validate`, `actionlint`,
-  `markdownlint`, `security`)
+green at least once — pick `lint`, `manifest-validate`, `actionlint`,
+`markdownlint`, `security`)
 
 ---
 
@@ -67,7 +67,7 @@ the original username, and finally moving repositories.
 
 ### Step 1 — Rename the personal account
 
-1. Go to <https://github.com/settings/admin> (while logged in as `FlexNetOS`)
+1. Go to [https://github.com/settings/admin](https://github.com/settings/admin) (while logged in as `FlexNetOS`)
 2. Under **Change username**, pick a new name (e.g., `drdave-flexnetos`)
 3. Confirm the rename. This frees up `FlexNetOS` as an organization name.
 
@@ -77,14 +77,14 @@ the original username, and finally moving repositories.
 
 ### Step 2 — Create the `FlexNetOS` organization
 
-1. Go to <https://github.com/account/organizations/new?plan=free>
+1. Go to [https://github.com/account/organizations/new?plan=free](https://github.com/account/organizations/new?plan=free)
 2. Organization name: `FlexNetOS`
 3. Choose the **Free** plan.
 4. Complete setup.
 
 ### Step 3 — Move repositories to the organization
 
-1. Go to <https://github.com/settings/organizations>
+1. Go to [https://github.com/settings/organizations](https://github.com/settings/organizations)
 2. Under **Move to an organization**, click **Move work to an organization**
 3. Select all repositories you want to transfer (at minimum, include `.github`)
 4. Target organization: `FlexNetOS`
@@ -99,7 +99,7 @@ gh auth status
 # gh auth login
 
 # Update the origin remote if it still points at the old username
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 git remote set-url origin https://github.com/FlexNetOS/.github.git
 git remote -v  # verify
 ```
@@ -129,7 +129,7 @@ gpg --full-generate-key
 gpg --list-secret-keys --keyid-format LONG
 # Note the long key fingerprint — the 40-char string under `sec`.
 
-echo "<40-CHAR-FINGERPRINT>" > /home/drdave/_work/repos/my-github/secrets/.gpg-id
+echo "<40-CHAR-FINGERPRINT>" > /home/drdave/workspace/my-github/secrets/.gpg-id
 ```
 
 ### Runner key (separate — never reuse the personal one)
@@ -139,19 +139,19 @@ case, but conceptually it's a separate identity).
 
 ```bash
 gpg --full-generate-key
-# Use a runner-specific identity, e.g. name: "FlexNetOS runner",
+# Use a runner-specific identity, e.g. name: "FlexNetOS Runner",
 # email: noreply+runner@flexnetos.local
 
 gpg --list-secret-keys --keyid-format LONG
 # Note the runner fingerprint.
 
-echo "<RUNNER-40-CHAR-FINGERPRINT>" >> /home/drdave/_work/repos/my-github/secrets/.gpg-id.runner
+echo "<RUNNER-40-CHAR-FINGERPRINT>" >> /home/drdave/workspace/my-github/secrets/.gpg-id.runner
 ```
 
 ### Initialize the pass store under both keys
 
 ```bash
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 export PASSWORD_STORE_DIR="$PWD/secrets/store"
 pass init "$(cat secrets/.gpg-id)"
 pass init -p runner "$(cat secrets/.gpg-id) $(cat secrets/.gpg-id.runner)"
@@ -238,7 +238,7 @@ URL — push wherever the remote ends up.
 Idempotent — safe to re-run after fixing 404s.
 
 ```bash
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 
 # Install yq if not already
 command -v yq >/dev/null 2>&1 || sudo wget -qO /usr/local/bin/yq \
@@ -278,7 +278,7 @@ cd /home/drdave/_work/repos/actions-runner
 ORG_TOKEN=<paste-here>
 
 # 3. Re-register at org scope
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 make runner.register MODE=org   # interactive — paste $ORG_TOKEN when prompted
 # OR run runner/register.sh directly:
 # runner/register.sh --org --token "$ORG_TOKEN" --name local-gh-rnr-lnx \
@@ -299,7 +299,7 @@ New group `local`**, restrict to the allowlist from
 **Why:** Prove the loop works before relying on it.
 
 ```bash
-cd /home/drdave/_work/repos/my-github
+cd /home/drdave/workspace/my-github
 
 # Verify local toolchain + scaffold one more time
 make verify
@@ -342,12 +342,14 @@ and merge.
 
 These run automatically — no human action unless they alert:
 
-| Cadence | Workflow | What you do |
-| --- | --- | --- |
-| Monday 14:00 UTC | `submodule-bump.yml` | Review the auto-PR, merge if CI green |
-| Monday 14:30 UTC | `secrets-rotate.yml` | If issue opened, `pass edit <entry>`, commit, push |
-| Nightly 11:00 UTC | `wiki-lint.yml` | If issue opened, ingest the missing source or fix the broken link |
-| Every PR | `dependency-review.yml` | Block on `high` severity CVEs; bump or vendor differently |
+
+| Cadence           | Workflow                | What you do                                                       |
+| ----------------- | ----------------------- | ----------------------------------------------------------------- |
+| Monday 14:00 UTC  | `submodule-bump.yml`    | Review the auto-PR, merge if CI green                             |
+| Monday 14:30 UTC  | `secrets-rotate.yml`    | If issue opened, `pass edit <entry>`, commit, push                |
+| Nightly 11:00 UTC | `wiki-lint.yml`         | If issue opened, ingest the missing source or fix the broken link |
+| Every PR          | `dependency-review.yml` | Block on `high` severity CVEs; bump or vendor differently         |
+
 
 ---
 
@@ -356,9 +358,375 @@ These run automatically — no human action unless they alert:
 - **gh CLI auth issues:** `gh auth status`, then `gh auth login` if needed.
 - **GPG agent not running:** `gpg-connect-agent reloadagent /bye`.
 - **direnv not auto-loading:** ensure `eval "$(direnv hook bash)"` is in `~/.bashrc`,
-  then `direnv allow .` in the repo.
+then `direnv allow .` in the repo.
 - **Submodule 404:** the entry's `url` in MANIFEST.yaml points at a repo that
-  doesn't exist yet. Either fork-then-push (steps 5, 6) or edit the URL.
+doesn't exist yet. Either fork-then-push (steps 5, 6) or edit the URL.
 - **Runner not picking up jobs:** check `sudo systemctl status 'actions.runner.*'`
-  and the workflow's `runs-on:` matches every label the runner advertises
-  (all four: `self-hosted, linux, x64, local`).
+and the workflow's `runs-on:` matches every label the runner advertises
+(all four: `self-hosted, linux, x64, local`).
+
+---
+
+## Agent-flagged user actions
+
+> Append-only. The agent adds `UA-YYYY-MM-DD-NNN` items here when it needs a human
+> to decide or act on something it cannot do itself. The numbered sections above are
+> hand-authored by the maintainer and are never edited by the agent.
+
+### UA-2026-05-28-002 — Rotate Anthropic + OpenRouter API keys IMMEDIATELY (chat-transcript leak)
+
+- **Surfaced by:** `SESSION-2026-05-28-004`
+- **Blocks:** running `scripts/install-v5-architecture.sh` safely; any production use of `~/bifrost/.env`
+- **Why:** During SESSION-2026-05-28-004, both `ANTHROPIC_API_KEY` and `OPENROUTER_API_KEY` were pasted by the user directly into the chat transcript so the agent could write `~/bifrost/.env` for the bifrost LLM gateway. The keys are now in the conversation history and any logs Claude Code retains. Treat both as compromised. The agent cannot rotate them — only the human key owner can.
+- **What to do:**
+  1. Go to `https://console.anthropic.com/settings/keys`, revoke the existing key, create a new one.
+  2. Go to `https://openrouter.ai/keys`, revoke the existing key, create a new one.
+  3. Update `~/bifrost/.env` with the new values (keep `chmod 600`).
+  4. If bifrost is already running, `docker compose -f ~/bifrost/docker-compose.yml restart`.
+- **How to verify done:** `curl -sS https://bifrost.test/v1/chat/completions -H "Content-Type: application/json" -d '{"model":"anthropic/claude-3-7-sonnet-latest","messages":[{"role":"user","content":"ping"}]}'` returns a 200 with a reply (requires the install script to have run).
+- **Status:** `open`
+
+---
+
+### UA-2026-05-28-003 — Move the v5 plan from `.omc/plans/` to `data/brain-data/research/` (convention violation)
+
+- **Surfaced by:** `SESSION-2026-05-28-004`
+- **Blocks:** clean compliance with the project research-location convention (`feedback-research-location` memory)
+- **Why:** SESSION-2026-05-28-004 produced a six-layer workstation-architecture plan and committed it to `.omc/plans/ralplan-browser-choice.md`. Per the project convention (`feedback-research-location.md`), research and plans MUST go to `data/brain-data/research/`; the `.omc/plans/` path is explicitly disallowed ("NEVER `.omc/plans/` or scratch"). The agent violated the convention while recreating the file under cost pressure and after the file had been destroyed once by a concurrent branch rewrite. The file is currently committed at `3dd0ef4` on `feat/restore-session-convention-files`.
+- **What to do:**
+
+  ```bash
+  cd /home/drdave/workspace/my-github
+  git mv .omc/plans/ralplan-browser-choice.md \
+         data/brain-data/research/v5-workstation-architecture.md
+  # Update internal cross-reference in TODO.md "Sibling plan status" line and in
+  # scripts/install-v5-architecture.sh header comment if it refers to the old path.
+  git commit -m "chore(docs): move v5 workstation plan to canonical research/ path"
+  ```
+
+- **How to verify done:** `test -f data/brain-data/research/v5-workstation-architecture.md && ! test -f .omc/plans/ralplan-browser-choice.md && echo ok`
+- **Status:** `open`
+
+---
+
+### UA-2026-05-28-004 — Decide whether `3dd0ef4` should remain on `main` (cherry-picked from a transient branch)
+
+- **Surfaced by:** `SESSION-2026-05-28-004`
+- **Blocks:** clean branch history; relates to the new branch-guard hard rule
+- **Why:** Mid-session, the agent attempted to write the v5 plan and install script while the working tree was concurrently being rewritten by cherry-pick / branch-delete operations. The first writes were destroyed. The agent eventually recreated and committed both files as `3dd0ef4` directly on `main` (the working tree was on `main` at that moment). The new branch-guard hook (installed in the same session) would now block exactly this pattern. You then created `feat/restore-session-convention-files` and the commit landed here too. Decide: is `3dd0ef4` allowed to stay on `main`, or should `main` be reset to its prior tip and the commit only live on this feature branch (the post-rule canonical pattern)?
+- **What to do:** review `git log --oneline main..feat/restore-session-convention-files` and `git log --oneline origin/main..main`; decide whether to `git reset --hard <prior-main-tip>` on `main` and re-push, or accept `3dd0ef4` as a valid main-direct commit (one-time pre-rule exception).
+- **How to verify done:** `git log --oneline -1 main` matches the maintainer's decided tip.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-28-001 — Decide how the hand-maintained `CHANGELOG.md` coexists with release-please
+
+**Context:** This session restored a root `CHANGELOG.md` in the Keep-a-Changelog `[Unreleased]`
+style (per the documented project convention in memory `feedback-research-location`). The repo
+*also* runs release-please via `.github/workflows/reusable-release.yml`, which generates its **own**
+`CHANGELOG.md` — the `1.0.0` section currently lives on the branch
+`origin/release-please--branches--main` (not yet merged to `main`).
+
+**Why it needs you:** When that release-please PR eventually merges, it and the hand-maintained
+`[Unreleased]` section will both own `CHANGELOG.md`, producing a merge conflict and ambiguity about
+which file is canonical.
+
+**Options:**
+
+1. **Keep both, configured to coexist (recommended).** Configure release-please to preserve an
+  `## [Unreleased]` section it prepends below (release-please supports a changelog header /
+   sections config). The hand log stays as the working buffer; release-please promotes entries into
+   dated releases.
+2. **release-please owns `CHANGELOG.md` exclusively.** Move the hand-maintained working log to a
+  differently-named file (e.g., `CHANGES.unreleased.md`) so there is no collision.
+3. **Drop release-please's changelog generation.** Keep only the hand-maintained `CHANGELOG.md`
+  (set `skip-changelog` / changelog off), accept manual changelog discipline.
+
+**Blocker for resolution:** Maintainer preference; touches the release pipeline config, so it is a
+human decision, not an agent default. Until resolved, the restored `CHANGELOG.md` is safe on this
+feature branch but should not be merged to `main` without picking one of the above.
+
+---
+
+### UA-2026-05-28-005 — Re-authenticate `gh` CLI before attempting section 5 forks
+
+- **Surfaced by:** `SESSION-2026-05-28-007`
+- **Blocks:** all `gh repo fork` commands in USER.TODO#5; any `gh` operation
+- **Why:** Token has been rotated (reset). `direnv` loads `GITHUB_TOKEN` from `pass github/personal/cli` into the environment, but that entry now holds a stale token. The long-term canonical secret source is **Vaultwarden+Bitwarden via the GitHub App** (Phase 6 gate — see `README.md`). Until the App is set up, the interim fix is to update the pass entry manually.
+- **What to do (interim — until Vaultwarden+Bitwarden App is live):**
+
+  ```bash
+  # 1. Get the new token from github.com/settings/tokens (or wherever you rotated it)
+  pass edit github/personal/cli   # paste the new token, save
+  direnv reload                   # re-export GITHUB_TOKEN from the updated store
+  gh api user --jq '.login'       # should return your username
+  ```
+
+- **Long-term fix:** complete Vaultwarden→GitHub secret sync (Phase 6 operational gate in `README.md`). Once the App is live, `GITHUB_TOKEN` is auto-rotated and this never needs manual intervention again.
+- **How to verify done:** `gh api user --jq '.login'` returns `FlexNetOS` (or the renamed account after section 3).
+- **Status:** `done (SESSION-2026-05-28-007)` — token updated in pass; `gh api user --jq '.login'` returns `drdave-flexnetos`. Note: personal account already renamed to `drdave-flexnetos` (USER.TODO#3 Step 1 complete). Vaultwarden App remains the long-term fix (Phase 6).
+
+---
+
+### UA-2026-05-28-006 — Archon repo not found on disk — blocks section 5 for that entry
+
+- **Surfaced by:** `SESSION-2026-05-28-007`
+- **Blocks:** USER.TODO#5 for the `coleam00/Archon` fork entry
+- **Why:** `repos/MANIFEST.yaml` entry for `repos/forked/archon` notes "Local checkout at /home/drdave/_work/repos/Archon is 1 file dirty." That path does not exist. Neither does `workspace/Archon`. The dirty local changes referenced are not recoverable from disk.
+- **What to do:**
+  1. Decide: were the local Archon changes important? If yes — check git stash, backup drives, or other locations.
+  2. If the changes are lost or unimportant: proceed with `gh repo fork coleam00/Archon --org FlexNetOS --clone=false` (no local changes to push).
+  3. Update the `repos/MANIFEST.yaml` note for `repos/forked/archon` to remove the stale "1 file dirty" note.
+- **How to verify done:** either the local changes are recovered and pushed to `FlexNetOS/Archon`, or the MANIFEST note is updated to drop the dirty-file reference.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-28-007 — Runner GPG key still placeholder — section 4 incomplete
+
+- **Surfaced by:** `SESSION-2026-05-28-007`
+- **Blocks:** full `pass` vault initialization for the runner subtree; secrets rotation workflow
+- **Why:** `secrets/store/runner/.gpg-id` still contains `PLACEHOLDER-NO-RUNNER-KEY-CONFIGURED`. The personal key is set (`6EC33743AA0CB75126F63F8765A937C4164F966F`) but the runner subtree cannot be initialized until a runner key fingerprint is added. `pass` will refuse to encrypt to the runner subtree.
+- **What to do:**
+
+  ```bash
+  # On the runner host (same machine in this case):
+  gpg --full-generate-key
+  # Name: FlexNetOS Runner, email: noreply+runner@flexnetos.local, no expiry
+  RUNNER_FP=$(gpg --list-secret-keys --keyid-format LONG noreply+runner@flexnetos.local \
+    | grep -E "^      [0-9A-F]{40}" | tr -d ' ')
+  echo "$RUNNER_FP" > /home/drdave/workspace/my-github/secrets/store/runner/.gpg-id
+
+  # Re-init runner subtree under both keys
+  cd /home/drdave/workspace/my-github
+  PASSWORD_STORE_DIR="$PWD/secrets/store" \
+    pass init -p runner "$(cat secrets/store/.gpg-id)" "$RUNNER_FP"
+  ```
+- **How to verify done:** `cat secrets/store/runner/.gpg-id` is a real 40-char fingerprint (not the placeholder string).
+- **Status:** `open`
+
+- **How to verify done:** `cat secrets/store/runner/.gpg-id` is a real 40-char fingerprint (not the placeholder string).
+- **Status:** `open`
+
+---
+
+### UA-2026-05-29-001 — Fork nilbuild/slim to FlexNetOS org
+
+- **Surfaced by:** `SESSION-2026-05-29-003` (clone-setup for nilbuild/slim)
+- **Blocks:** `network/slim` submodule registration (`.gitmodules` + `make submodules.add`); MANIFEST `url` pointing to FlexNetOS fork
+- **Why:** my-github rules require a FlexNetOS fork before a repo can be tracked as a submodule. Clone health verified 2026-05-29 (`go build` + `go test ./...` all PASS at HEAD `9c07a08`).
+- **What to do:**
+
+  ```bash
+  gh repo fork nilbuild/slim --org FlexNetOS --clone=false
+  # Then update the remote in network/slim:
+  git -C /home/drdave/workspace/my-github/network/slim remote set-url origin https://github.com/FlexNetOS/slim
+  git -C /home/drdave/workspace/my-github/network/slim remote add upstream https://github.com/nilbuild/slim
+  # Create develop branch tracking upstream main:
+  git -C /home/drdave/workspace/my-github/network/slim checkout -b develop
+  git -C /home/drdave/workspace/my-github/network/slim push -u origin develop
+  # Register as submodule:
+  cd /home/drdave/workspace/my-github && make submodules.add
+  ```
+
+- **How to verify done:** `gh repo view FlexNetOS/slim --json name` returns `slim`; `git submodule status network/slim` shows the correct HEAD.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-29-002 — Create slim.sh free-tier account and login
+
+- **Surfaced by:** `SESSION-2026-05-29-003` (clone-setup for nilbuild/slim)
+- **Blocks:** `slim share` (public tunnels) and `slim domain` commands
+- **Why:** Cloud tunnel relay (`wss://app.slim.sh/tunnel`) requires OAuth authentication. Agent cannot perform browser OAuth.
+- **What to do:**
+
+  ```bash
+  # Build slim (or use upstream binary):
+  cd /home/drdave/workspace/my-github/network/slim
+  mise exec -- go build -ldflags "-s -w" -o /usr/local/bin/slim .
+  # Login (opens browser to app.slim.sh):
+  slim login
+  ```
+
+- **How to verify done:** `slim login` completes and prints "Logged in as \<name\> (\<email\>)".
+- **Status:** `open`
+
+### UA-2026-05-29-003 — Create + push `develop` branch on FlexNetOS/n8n, then convert to submodule
+
+- **Surfaced by:** `SESSION-2026-05-29-005` (n8n clone-setup Phase 1-3)
+- **Blocks:** `TODO.md` → "Per `n8n.md` §6 — convert to `repos/forked/n8n/` submodule". The n8n fork-adoption gate cannot close until `develop` exists on the fork and the plain clone at `repos/n8n/` is replaced by a submodule.
+- **Why:** Creating `develop` requires `git push` to `https://github.com/FlexNetOS/n8n.git`. The agent attempted it and the push was blocked by the auto-mode permission classifier (external-remote push needs explicit human authorization). Build is verified healthy and all §10 dossier decisions are resolved — this push is the only remaining gate before submodule conversion.
+- **What to do:**
+
+  ```bash
+  cd /home/drdave/workspace/my-github/repos/n8n
+  git fetch upstream master --depth=1
+  git checkout master && git merge --ff-only upstream/master
+  git push origin master                       # mirror upstream
+  git checkout -b develop origin/master 2>/dev/null || git checkout develop
+  git push -u origin develop
+  # Then convert plain clone → submodule (from umbrella root):
+  cd /home/drdave/workspace/my-github
+  rm -rf repos/n8n && mkdir -p repos/forked
+  git submodule add --depth=1 -b develop https://github.com/FlexNetOS/n8n.git repos/forked/n8n
+  cd repos/forked/n8n && git remote add upstream https://github.com/n8n-io/n8n.git
+  ```
+
+- **How to verify done:** `git ls-remote https://github.com/FlexNetOS/n8n.git develop` returns a sha AND `git -C /home/drdave/workspace/my-github submodule status repos/forked/n8n` lists the submodule.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-29-004 — Review + merge PR #29 (architecture cross-link fix) into develop
+
+- **Surfaced by:** `SESSION-2026-05-29-006` (architecture/ framework)
+- **Blocks:** Correct relative cross-links in `architecture/` on `develop`. PR #27 (the framework) is already merged, but it squash-merged at the pre-archive commit, so `develop` currently has 5 broken links (PRD-0001 / ADR-0001 / archived proposal point at the pre-archive `changes/<id>/` path).
+- **Why:** PR #29 (`fix/architecture-crosslinks`) repoints them to `changes/archive/...` and is verified (all 11 `architecture/**/*.md` links resolve). Merging is a human gate (review + merge to develop).
+- **What to do:**
+
+  ```bash
+  gh pr view 29 --web         # review
+  gh pr merge 29 --squash     # or via the GitHub UI, targeting develop
+  ```
+
+- **How to verify done:** on updated `develop`, `architecture/prd/PRD-0001-architecture-framework.md` links to `../openspec/changes/archive/2026-05-29-architecture-framework/proposal.md` (the `archive/` path), and a link-resolution scan of `architecture/**/*.md` reports 0 broken.
+
+### UA-2026-05-29-004 — Merge `feat/install-github-app` PR to `main` to activate the promote-develop-to-main workflow
+
+- **Surfaced by:** `SESSION-2026-05-29-006`
+- **Blocks:** `promote-develop-to-main.yml` triggering via `workflow_run` — GitHub only fires `workflow_run` events for workflows that exist on the **default branch**. The workflow is currently only on `feat/install-github-app`.
+- **Why:** The agent committed `promote-develop-to-main.yml` and validated it (actionlint clean, branch protections live, `PROMOTE_TOKEN` set) but cannot trigger a live end-to-end test until the file lands on `main`. All static checks pass; the only remaining gate is this merge.
+- **What to do:**
+
+  ```bash
+  # Option A: create a PR and merge through the normal review flow
+  gh pr create --base main --head feat/install-github-app \
+    --title "ci: SESSION-2026-05-29-006 — branch protections + promote workflow" \
+    --body "Adds promote-develop-to-main.yml + install-github-app skill. See SESSION-2026-05-29-006."
+
+  # Option B: if you have already opened a PR, just approve + merge it
+  gh pr merge <number> --squash --admin
+  ```
+
+- **How to verify done:** `gh api repos/FlexNetOS/.github/contents/.github/workflows/promote-develop-to-main.yml --jq .name` returns `"promote-develop-to-main.yml"`.
+- **Status:** `open`
+
+### UA-2026-05-29-005 — Set `N8N_MCP_TOKEN` in the environment for the n8n-mcp MCP server
+
+- **Surfaced by:** `SESSION-2026-05-29-007`
+- **Blocks:** the `n8n-mcp` MCP server connecting (configured in `.mcp.json` and `~/.claude.json`). Until the var is set, the project `.mcp.json` reference (`Bearer ${N8N_MCP_TOKEN}`, no default) will also fail to parse per Claude Code's rule that a referenced-but-unset env var with no default fails the config parse.
+- **Why:** The agent registered the server using env-var indirection (never a token literal) to honor the repo's no-secrets-in-git rule. Only the human can store the real credential. The JWT was supplied in chat but deliberately not written to any file.
+- **What to do:**
+
+  ```bash
+  # Store the token in pass (paste your real n8n MCP JWT):
+  pass insert n8n/mcp/token
+
+  # PROJECT scope (inside this repo): add to whatever the .envrc dev-env template reads,
+  # mirroring the GITHUB_TOKEN pattern, then reload:
+  #   N8N_MCP_TOKEN  pass:n8n/mcp/token
+  direnv reload
+
+  # GLOBAL scope (every dir — ~/.claude.json is read everywhere): add to shell startup:
+  echo 'export N8N_MCP_TOKEN="$(pass show n8n/mcp/token)"' >> ~/.bashrc
+
+  # Then restart Claude Code and verify (n8n must be running on localhost:5678):
+  claude mcp get n8n-mcp
+  ```
+
+- **How to verify done:** `claude mcp get n8n-mcp` shows the server connected (not "needs auth"/failed), and `printenv N8N_MCP_TOKEN` returns the JWT in a fresh shell.
+- **Status:** `done (SESSION-2026-05-29-012)` — `pass n8n/mcp/token` confirmed populated; `pass n8n/api-key` also stored. n8n-mcp running with AUTH_TOKEN on port 3001, 17 management tools verified via MCP `tools/list`.
+
+---
+
+### UA-2026-05-29-006 — Push `feat/session-2026-05-29-007` and open PR
+
+- **Surfaced by:** `SESSION-2026-05-29-012`
+- **Blocks:** durable record of all session work (otherwise exposed to `git reset` wipe per `feedback-always-commit` memory)
+- **Why:** The session branch carries multiple sessions of work (007 through 012) and the wrap-up bookkeeping. Agent cannot push to remote or open PRs without explicit authorization.
+- **What to do:**
+
+  ```bash
+  cd /home/drdave/workspace/my-github
+  git push -u origin feat/session-2026-05-29-007
+  gh pr create \
+    --title "chore: sessions 007-012 — n8n+n8n-mcp stack, slim CA fix, CI templates" \
+    --body "Multi-session branch: reusable-typecheck.yml, ci-failure-tracker.yml, paperclip dossier, n8n-mcp clone-setup + deployment, slim CA trust bug fix." \
+    --base main
+  ```
+
+- **How to verify done:** `gh pr view --web` opens the PR on GitHub.
+- **Status:** `open`
+
+---
+
+### UA-2026-05-29-007 — Set up n8n and n8n-mcp as persistent services (survive reboots)
+
+- **Surfaced by:** `SESSION-2026-05-29-012`
+- **Blocks:** reliable n8n + n8n-mcp availability; current processes die on reboot
+- **Why:** Both n8n and n8n-mcp are running as unmanaged background processes started in the Claude Code session. They will not survive a reboot or session termination. Persistent systemd user services are needed.
+- **What to do:**
+
+  ```bash
+  # n8n — create systemd user service
+  mkdir -p ~/.config/systemd/user
+  cat > ~/.config/systemd/user/n8n.service <<'EOF'
+  [Unit]
+  Description=n8n workflow automation
+  After=network.target
+
+  [Service]
+  Type=simple
+  WorkingDirectory=/home/drdave/workspace/my-github/repos/n8n
+  ExecStart=/home/drdave/.local/share/mise/shims/node node_modules/@dotenvx/dotenvx/src/cli/dotenvx.js run -f .env.local -- node packages/cli/bin/n8n start
+  Restart=on-failure
+  RestartSec=10
+
+  [Install]
+  WantedBy=default.target
+  EOF
+
+  # n8n-mcp — create systemd user service
+  cat > ~/.config/systemd/user/n8n-mcp.service <<'EOF'
+  [Unit]
+  Description=n8n MCP server
+  After=n8n.service
+
+  [Service]
+  Type=simple
+  WorkingDirectory=/home/drdave/workspace/my-github/repos/n8n/mcp/n8n-mcp
+  EnvironmentFile=/home/drdave/workspace/my-github/repos/n8n/mcp/n8n-mcp/.env
+  ExecStart=/home/drdave/.local/share/mise/shims/node dist/mcp/index.js
+  Restart=on-failure
+  RestartSec=5
+
+  [Install]
+  WantedBy=default.target
+  EOF
+
+  systemctl --user daemon-reload
+  systemctl --user enable --now n8n.service
+  systemctl --user enable --now n8n-mcp.service
+  # Enable linger so user services start at boot without login:
+  loginctl enable-linger $USER
+  ```
+
+- **How to verify done:** `systemctl --user status n8n n8n-mcp` both show `Active: active (running)`; `curl -s http://localhost:5678/healthz` and `curl -s http://localhost:3001/health` both return `{"status":"ok"}` after a reboot.
+---
+
+### UA-2026-05-29-004 — Review + merge PR #29 (architecture cross-link fix) into develop
+
+- **Surfaced by:** `SESSION-2026-05-29-006` (architecture/ framework)
+- **Blocks:** Correct relative cross-links in `architecture/` on `develop`. PR #27 (the framework) is already merged, but it squash-merged at the pre-archive commit, so `develop` currently has 5 broken links (PRD-0001 / ADR-0001 / archived proposal point at the pre-archive `changes/<id>/` path).
+- **Why:** PR #29 (`fix/architecture-crosslinks`) repoints them to `changes/archive/...` and is verified (all 11 `architecture/**/*.md` links resolve). Merging is a human gate (review + merge to develop).
+- **What to do:**
+
+  ```bash
+  gh pr view 29 --web         # review
+  gh pr merge 29 --squash     # or via the GitHub UI, targeting develop
+  ```
+
+- **How to verify done:** on updated `develop`, `architecture/prd/PRD-0001-architecture-framework.md` links to `../openspec/changes/archive/2026-05-29-architecture-framework/proposal.md` (the `archive/` path), and a link-resolution scan of `architecture/**/*.md` reports 0 broken.
+- **Status:** `open`

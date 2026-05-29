@@ -1,0 +1,35 @@
+[submodule "tools/cpython"]
+	path = tools/cpython
+	url = https://github.com/python/cpython
+	branch = main
+	shallow = true
+[submodule "tools/actionlint"]
+	path = tools/actionlint
+	url = https://github.com/rhysd/actionlint
+	branch = main
+	shallow = true
+[submodule "tools/gitleaks"]
+	path = tools/gitleaks
+	url = https://github.com/gitleaks/gitleaks
+	branch = master
+	shallow = true
+[submodule "tools/trivy"]
+	path = tools/trivy
+	url = https://github.com/aquasecurity/trivy
+	branch = main
+	shallow = true
+[submodule "tools/node"]
+	path = tools/node
+	url = https://github.com/nodejs/node
+	branch = main
+	shallow = true
+[submodule "tools/bun"]
+	path = tools/bun
+	url = https://github.com/oven-sh/bun
+	branch = main
+	shallow = true
+[submodule "tools/uv"]
+	path = tools/uv
+	url = https://github.com/astral-sh/uv
+	branch = main
+	shallow = true

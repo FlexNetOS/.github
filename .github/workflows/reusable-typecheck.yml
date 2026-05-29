@@ -1,0 +1,111 @@
+name: Reusable Typecheck
+
+# TypeScript type checker for bun and node projects. Runs `tsc --noEmit`
+# (or the repo's `typecheck` script when defined) without producing build
+# artifacts — the fastest CI signal for type safety.
+#
+# Distinct from reusable-lint.yml (ESLint/Ruff/clippy) and
+# reusable-build.yml (produces artifacts). Natural position in a caller:
+# after lint, before build.
+#
+# Caller snippet:
+#
+#   typecheck:
+#     needs: lint
+#     uses: FlexNetOS/.github/.github/workflows/reusable-typecheck.yml@main
+#     with:
+#       language: bun
+#     secrets: inherit
+
+on:
+  workflow_call:
+    inputs:
+      language:
+        description: 'Toolchain to use: bun or node'
+        required: true
+        type: string
+      working-directory:
+        description: 'Working directory for the typecheck command'
+        required: false
+        type: string
+        default: '.'
+      tsconfig-path:
+        description: 'Path to tsconfig.json relative to working-directory'
+        required: false
+        type: string
+        default: 'tsconfig.json'
+      strict:
+        description: 'Append --strict to tsc when no typecheck script is defined'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: Typecheck (${{ inputs.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Report-only first: keep continue-on-error until one green cycle on main, then remove (STRICT).
+    continue-on-error: ${{ github.event_name == 'pull_request' }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Bun
+        if: inputs.language == 'bun'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Set up Node
+        if: inputs.language == 'node'
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: ${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != '' && 'npm' || '' }}
+
+      - name: Install deps (bun)
+        if: inputs.language == 'bun'
+        run: bun install --frozen-lockfile
+
+      - name: Install deps (node)
+        if: inputs.language == 'node'
+        run: npm ci
+
+      - name: Typecheck
+        shell: bash
+        env:
+          LANGUAGE: ${{ inputs.language }}
+          STRICT_INPUT: ${{ inputs.strict }}
+          TSCONFIG_PATH: ${{ inputs.tsconfig-path }}
+        run: |
+          if jq -e '.scripts.typecheck' package.json >/dev/null 2>&1; then
+            if [[ "$LANGUAGE" == "bun" ]]; then
+        run: |
+          if jq -e '.scripts.typecheck' package.json >/dev/null 2>&1; then
+            if [[ "${{ inputs.language }}" == "bun" ]]; then
+              bun run typecheck
+            else
+              npm run typecheck
+            fi
+          elif [[ -f node_modules/.bin/tsc ]]; then
+            STRICT_FLAG=""
+            if [[ "$STRICT_INPUT" == "true" ]]; then
+              STRICT_FLAG="--strict"
+            fi
+            node_modules/.bin/tsc --noEmit --project "$TSCONFIG_PATH" $STRICT_FLAG
+            if [[ "${{ inputs.strict }}" == "true" ]]; then
+              STRICT_FLAG="--strict"
+            fi
+            node_modules/.bin/tsc --noEmit --project "${{ inputs.tsconfig-path }}" $STRICT_FLAG
+          else
+            echo "No 'typecheck' script in package.json and no local tsc found." >&2
+            echo "Add typescript as a devDependency or define a 'typecheck' script." >&2
+            exit 1
+          fi

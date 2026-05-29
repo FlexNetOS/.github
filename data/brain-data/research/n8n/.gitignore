@@ -1,0 +1,3 @@
+# Repomix packs are large (40-200MB) — kept locally, not committed to git.
+repomix-pack.xml
+repomix-pack.compressed.xml

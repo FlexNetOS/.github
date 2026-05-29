@@ -1,0 +1,139 @@
+# =============================================================================
+# FlexNetOS repo-local toolchain manifest
+# =============================================================================
+# Goal: every tool used by local verification and CI should eventually be either
+# a submodule under tools/, a committed repo asset, or a generated binary built
+# from an included source submodule.
+# =============================================================================
+
+- name: python
+  path: tools/cpython
+  url: https://github.com/python/cpython
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: materialized
+  purpose: Run repo-local standard-library verification scripts without relying on a system Python.
+  latest_stable_policy: Track latest stable CPython release branch once materialized.
+
+- name: actionlint
+  path: tools/actionlint
+  url: https://github.com/rhysd/actionlint
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: materialized
+  binary_asset: tools/assets.json#tools.actionlint
+  purpose: Lint GitHub Actions workflows from repo-local source/binary instead of curl-installing.
+  latest_stable_policy: Track latest stable release; update source when GitHub runner runtime changes.
+
+- name: markdownlint-cli2
+  path: tools/markdownlint-cli2
+  url: https://github.com/DavidAnson/markdownlint-cli2
+  branch: main
+  kind: source-submodule
+  status: planned
+  purpose: Full Markdown lint parity when the repo-local Python checker is not enough.
+  latest_stable_policy: Track latest stable Node runtime support; fork/update if pinned to a legacy Node.
+
+- name: gitleaks
+  path: tools/gitleaks
+  url: https://github.com/gitleaks/gitleaks
+  branch: master
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: materialized
+  binary_asset: tools/assets.json#tools.gitleaks
+  purpose: Secret scanning without paid GitHub Action wrapper or runtime release download.
+  latest_stable_policy: Track latest stable release source/binary with checksum.
+
+- name: trivy
+  path: tools/trivy
+  url: https://github.com/aquasecurity/trivy
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: materialized
+  binary_asset: tools/assets.json#tools.trivy
+  purpose: Filesystem and IaC scanning from repo-local source/binary instead of remote action.
+  latest_stable_policy: Track latest stable release source/binary with checksum.
+
+- name: node
+  path: tools/node
+  url: https://github.com/nodejs/node
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: materialized
+  purpose: Latest stable Node runtime for tools that truly need Node.
+  latest_stable_policy: No legacy Node pinning; update dependent tools to current stable.
+
+- name: bun
+  path: tools/bun
+  url: https://github.com/oven-sh/bun
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: materialized
+  purpose: Bun runtime/package manager for caller repos that use Bun.
+  latest_stable_policy: Track latest stable release source/binary with checksum.
+
+- name: uv
+  path: tools/uv
+  url: https://github.com/astral-sh/uv
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: materialized
+  purpose: Python package/tool runner for caller repos while CPython hermetic path is built.
+  latest_stable_policy: Track latest stable release source/binary with checksum.
+
+- name: rust
+  path: tools/rust
+  url: https://github.com/rust-lang/rust
+  branch: master
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Shared Rust compiler/toolchain for LifeOS, Tauri, ruOS, and other Rust-bearing FlexNetOS repos.
+  latest_stable_policy: Track latest stable Rust; do not pin the ecosystem to stale compiler requirements.
+
+- name: vite
+  path: tools/frontend/vite
+  url: https://github.com/vitejs/vite
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Shared frontend build tool for LifeOS and other FlexNetOS UI surfaces.
+  latest_stable_policy: Track latest stable Vite and current stable Node/Bun runtime support.
+
+- name: vue
+  path: tools/frontend/vue
+  url: https://github.com/vuejs/core
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Shared frontend framework source/pin for LifeOS and other Vue-based FlexNetOS UI surfaces.
+  latest_stable_policy: Track latest stable Vue 3 release line unless a product repo explicitly records an upgrade blocker.
+
+- name: tauri
+  path: tools/frontend/tauri
+  url: https://github.com/tauri-apps/tauri
+  branch: dev
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Shared desktop app runtime/tooling source for LifeOS and other Tauri-based FlexNetOS surfaces.
+  latest_stable_policy: Track latest stable Tauri 2 release line; keep Rust/Node frontend wrappers current.
+
+- name: bitwarden-cli
+  path: tools/bitwarden-clients
+  url: https://github.com/bitwarden/clients
+  branch: main
+  kind: source-submodule
+  partial_clone: "blob:none"
+  status: planned
+  purpose: Source pin for the Bitwarden CLI used to read Bitwarden/Vaultwarden vault items before syncing selected values into GitHub Actions secrets.
+  latest_stable_policy: Track latest stable Bitwarden CLI; prefer repo-local wrapper once the binary/source path is materialized.

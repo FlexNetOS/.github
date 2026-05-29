@@ -50,32 +50,34 @@ jobs:
 
       # --- toolchain setup, conditional per language ---
       - name: Set up Bun
-        if: inputs.language == 'bun' || inputs.language == 'mixed'
+        if: (inputs.language == 'bun' || inputs.language == 'mixed') && (hashFiles(format('{0}/bun.lock', inputs.working-directory)) != '' || hashFiles(format('{0}/bun.lockb', inputs.working-directory)) != '')
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
       - name: Set up Node
-        if: inputs.language == 'node' || inputs.language == 'mixed'
+        if: (inputs.language == 'node' || inputs.language == 'mixed') && hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != ''
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: ${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) != '' && 'npm' || '' }}
 
       - name: Set up uv (Python)
-        if: inputs.language == 'python' || inputs.language == 'mixed'
+        if: (inputs.language == 'python' || inputs.language == 'mixed') && (hashFiles(format('{0}/pyproject.toml', inputs.working-directory)) != '' || hashFiles(format('{0}/setup.py', inputs.working-directory)) != '' || hashFiles(format('{0}/requirements.txt', inputs.working-directory)) != '')
         uses: astral-sh/setup-uv@v3
         with:
-          enable-cache: true
+          # setup-uv fails when cache is enabled but a repo has no uv.lock.
+          # The reusable lint workflow must support mixed repos without Python deps.
+          enable-cache: false
 
       - name: Set up Rust
-        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        if: (inputs.language == 'rust' || inputs.language == 'mixed') && hashFiles(format('{0}/Cargo.toml', inputs.working-directory)) != ''
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
 
       - name: Rust cache
-        if: inputs.language == 'rust' || inputs.language == 'mixed'
+        if: (inputs.language == 'rust' || inputs.language == 'mixed') && hashFiles(format('{0}/Cargo.toml', inputs.working-directory)) != ''
         uses: Swatinem/rust-cache@v2
 
       # --- markdown lint (always, unless language=none) ---
@@ -83,24 +85,50 @@ jobs:
         if: inputs.language != 'none'
         shell: bash
         run: |
-          bunx --bun markdownlint-cli2 "**/*.md" \
-            "!**/node_modules/**" \
-            "!**/target/**" \
-            "!**/.venv/**" \
-            "!**/dist/**" \
-            "!**/build/**" \
-            "!.omc/**" \
-            "!_work/**"
+          if [[ -x scripts/verify-markdown.py ]]; then
+            python3 scripts/verify-markdown.py .
+          elif command -v bunx >/dev/null 2>&1; then
+            bunx --bun markdownlint-cli2 "**/*.md" \
+              "!**/node_modules/**" \
+              "!**/target/**" \
+              "!**/.venv/**" \
+              "!**/dist/**" \
+              "!**/build/**" \
+              "!.omc/**" \
+              "!.claude/.omc/**" \
+              "!repos/**" \
+              "!wiki/raw/**" \
+              "!_work/**"
+          elif command -v npx >/dev/null 2>&1; then
+            npx -y markdownlint-cli2 "**/*.md" \
+              "!**/node_modules/**" \
+              "!**/target/**" \
+              "!**/.venv/**" \
+              "!**/dist/**" \
+              "!**/build/**" \
+              "!.omc/**" \
+              "!.claude/.omc/**" \
+              "!repos/**" \
+              "!wiki/raw/**" \
+              "!_work/**"
+          else
+            echo "No repo-local scripts/verify-markdown.py and neither bunx nor npx is available" >&2
+            exit 1
+          fi
 
       # --- workflow lint (always when workflows present) ---
       - name: Workflow lint (actionlint)
         if: inputs.language != 'none' && hashFiles(format('{0}/.github/workflows/*.yml', inputs.working-directory)) != ''
         shell: bash
         run: |
-          bash <(curl --silent --location \
-            https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) \
-            >/dev/null
-          ./actionlint -color
+          if [[ -x tools/bin/actionlint ]]; then
+            tools/bin/actionlint .github/workflows/*.yml
+          elif command -v actionlint >/dev/null 2>&1; then
+            actionlint .github/workflows/*.yml
+          else
+            echo "No repo-local tools/bin/actionlint and no host actionlint available" >&2
+            exit 1
+          fi
 
       # --- per-language lint ---
       - name: Lint (bun)

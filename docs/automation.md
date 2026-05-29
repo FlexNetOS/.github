@@ -10,6 +10,7 @@ runner, and who owns turning it off.
 | [`ci.yml`](../.github/workflows/ci.yml) | push to `main`, every PR, manual | GitHub-hosted | repo maintainer | green or red |
 | [`release.yml`](../.github/workflows/release.yml) | push to `main`, manual | GitHub-hosted | repo maintainer | release-please PR; on merge, tag + release |
 | [`dependency-review.yml`](../.github/workflows/dependency-review.yml) | every PR | GitHub-hosted | repo maintainer | block-or-pass on CVE severity |
+| [`auto-review-merge.yml`](../.github/workflows/auto-review-merge.yml) | same-repo upgrade PR events, completed checks/statuses, manual | GitHub-hosted | repo maintainer | gate comment and optional GitHub auto-merge |
 | [`submodule-bump.yml`](../.github/workflows/submodule-bump.yml) | Mondays 14:00 UTC, manual | GitHub-hosted | repo maintainer | PR with bumped submodule SHAs |
 | [`wiki-lint.yml`](../.github/workflows/wiki-lint.yml) | nightly 11:00 UTC, manual | GitHub-hosted | repo maintainer | issue if structural problems |
 | [`secrets-rotate.yml`](../.github/workflows/secrets-rotate.yml) | Mondays 14:30 UTC, manual | **self-hosted `local`** | repo maintainer | issue if stale secrets |
@@ -35,6 +36,7 @@ make verify                actionlint + markdownlint + manifest validation
 make submodules.{init,add,bump,sync-upstream,status}
 make wiki.{ingest,query,lint}      prints LLM prompts to run
 make secrets.{unlock,rotate,mirror-bws}
+make secrets.sync-github-bw DRY_RUN=1
 make runner.{install,register,status}
 make ci.local WORKFLOW=ci.yml
 make clean
@@ -47,6 +49,7 @@ Monday 14:00 UTC  → submodule-bump.yml         (bump submodules PR)
 Monday 14:30 UTC  → secrets-rotate.yml         (issue if stale secrets)
 Daily  11:00 UTC  → wiki-lint.yml              (issue if structural drift)
 Every PR          → ci.yml + dependency-review.yml
+Upgrade PR events → auto-review-merge.yml        (gate comment + optional auto-merge)
 Push to main      → ci.yml + release.yml
 ```
 
@@ -67,10 +70,12 @@ Push to main      → ci.yml + release.yml
 ## Permissions philosophy
 
 Every workflow declares minimum `permissions:` explicitly. Defaults
-are `contents: read`. `contents: write` only appears on `release.yml`
-and `submodule-bump.yml`. `security-events: write` only on
-`reusable-security.yml`. If you need more, add it in the caller's job
-block, not in the reusable workflow itself.
+are `contents: read`. `contents: write` appears only where a workflow must
+create releases, update branches, or enable GitHub auto-merge. `pull-requests:
+write` on `auto-review-merge.yml` is limited to metadata-only gate comments and
+same-repo upgrade PRs; that workflow never checks out PR code. `security-events:
+write` is reserved for `reusable-security.yml`. If you need more, add it in the
+caller's job block, not in the reusable workflow itself.
 
 ## Action pinning
 

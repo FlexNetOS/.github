@@ -5,9 +5,13 @@ name: ci
 
 on:
   push:
-    branches: [main]
+    # Run on feature/stack branches too so stacked PRs get a base check before
+    # their eventual merge target is main.
+    branches: ['**']
   pull_request:
-    branches: [main]
+    # Stacked PRs often target another feature branch. Validate every PR base,
+    # not just PRs whose immediate base is main.
+    branches: ['**']
   workflow_dispatch:
 
 # Block default permissions; callers re-grant minimally.
@@ -22,79 +26,45 @@ jobs:
     secrets: inherit
 
   manifest-validate:
-    name: Validate repos/MANIFEST.yaml
+    name: Validate manifests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq \
-            https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-      - name: Manifest is valid YAML
-        run: yq '.' repos/MANIFEST.yaml > /dev/null
-      - name: Every entry has required fields
-        run: |
-          count=$(yq '. | length' repos/MANIFEST.yaml)
-          for i in $(seq 0 $((count - 1))); do
-            for f in path url branch; do
-              v=$(yq ".[$i].$f" repos/MANIFEST.yaml)
-              if [[ "$v" == "null" || -z "$v" ]]; then
-                echo "::error::manifest entry $i missing required field: $f"
-                exit 1
-              fi
-            done
-          done
-          echo "OK: $count entries validated"
-      - name: Paths are unique
-        run: |
-          dupes=$(yq '.[].path' repos/MANIFEST.yaml | sort | uniq -d)
-          if [[ -n "$dupes" ]]; then
-            echo "::error::duplicate paths in manifest:"
-            echo "$dupes"
-            exit 1
-          fi
-      - name: URLs use https://github.com/
-        run: |
-          bad=$(yq '.[].url' repos/MANIFEST.yaml | grep -v '^https://github.com/' || true)
-          if [[ -n "$bad" ]]; then
-            echo "::warning::non-github URLs found (not an error, just an FYI):"
-            echo "$bad"
-          fi
+      - name: Validate repo manifest
+        run: python3 scripts/verify-manifest.py repos/MANIFEST.yaml
+      - name: Validate tool manifest
+        run: python3 scripts/verify-manifest.py tools/MANIFEST.yaml
 
   actionlint:
     name: actionlint .github/workflows
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: raven-actions/actionlint@v2
-        with:
-          files: '.github/workflows/*.yml'
-          fail-on-error: true
+      - name: Run repo-local actionlint wrapper
+        run: tools/bin/actionlint .github/workflows/*.yml
 
   markdownlint:
     name: markdownlint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 'lts/*'
-      - run: |
-          npx -y markdownlint-cli2 \
-            "**/*.md" \
-            "!.omc/**" \
-            "!repos/**" \
-            "!wiki/raw/**" \
-            "!node_modules/**"
+      - run: python3 scripts/verify-markdown.py .
+
+  hermetic-audit:
+    name: Hermetic dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: python3 scripts/hermetic-audit.py .
 
   security:
     needs: lint
     uses: ./.github/workflows/reusable-security.yml
     with:
-      languages: 'javascript,python'
+      languages: 'actions'
       fail-on-severity: high
     secrets: inherit
     permissions:
+      actions: read
       contents: read
       security-events: write

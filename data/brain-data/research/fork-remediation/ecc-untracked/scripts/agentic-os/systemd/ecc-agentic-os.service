@@ -1,0 +1,36 @@
+[Unit]
+Description=ECC Agentic-OS Harness (user-mode)
+Documentation=file:%h/_work/repos/everything-claude-code/docs/agentic-os/DEPLOY.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/_work/repos/everything-claude-code
+ExecStart=/usr/bin/env node scripts/agentic-os/harness.js --serve --interval 5000
+Restart=on-failure
+RestartSec=10s
+
+# Environment — keep secrets out of the unit file; source from EnvironmentFile if you must.
+EnvironmentFile=-%h/.agentic-os/env
+Environment=NODE_ENV=production
+
+# Hardening — user-mode systemd already limits privileges, but be explicit.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=%h/.agentic-os %h/_work/repos/everything-claude-code/data/agentic-os
+
+# Resource limits — prevent runaway loops eating the box.
+MemoryMax=512M
+CPUQuota=50%
+TasksMax=64
+
+# Log everything to the user journal.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ecc-agentic-os
+
+[Install]
+WantedBy=default.target

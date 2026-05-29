@@ -1,12 +1,11 @@
 name: release
 
-# Umbrella self-release. Calls reusable-release.yml on every push to main.
-# release-please reads the Conventional Commit log, opens (or updates) a
-# release PR, and on merge of that PR tags + creates the GitHub release.
+# Umbrella self-release. This is manual until the FlexNetOS org allows
+# GitHub Actions to create pull requests, or this workflow is wired to a
+# release-token secret from a GitHub App/PAT. Without that org-level setting,
+# release-please can compute the release but fails when opening the release PR.
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

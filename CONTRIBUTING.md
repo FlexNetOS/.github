@@ -66,13 +66,55 @@ git clone https://github.com/FlexNetOS/.github.git
 cd .github
 
 # Lint workflows
-actionlint .github/workflows/*.yml
+tools/bin/actionlint .github/workflows/*.yml
 
 # Lint markdown
-bunx markdownlint-cli2 "**/*.md" "!.omc/**"
+python3 scripts/verify-markdown.py .
 ```
 
 ## Licence of contributions
 
 By submitting a contribution, you agree to license it under the [MIT License](LICENSE)
 that covers this repository.
+
+## Directory conventions for AI tooling
+
+Claude Code on Linux uses **`.claude/`** (lowercase, leading dot) **only** — both
+user-global (`~/.claude/`) and project-local (`<repo>/.claude/`). **Never create a
+PascalCase `Claude/` directory.** It is not a Claude Code convention; tooling does
+not look there. The capitalized `Claude/` you may have seen belongs to **Claude
+Desktop** on macOS (`~/Library/Application Support/Claude/`) or Windows
+(`%APPDATA%\Claude\`) — a different product on a different OS. There is no
+"two-submodule" (`.claude` + `Claude`) scheme.
+
+`AGENTS.md` is the shared, cross-CLI instruction file and lives at the repo root.
+Per-tool config lives in that tool's hidden directory (`.claude/`, `.codex/`).
+CI enforces the no-`Claude/` rule via the `claude-dir-check` job in
+[`manifest-drift.yml`](.github/workflows/manifest-drift.yml).
+
+## CI invariant promotion pattern
+
+New CI invariants land **report-only first**: the job sets `continue-on-error: true`
+on pull requests so it annotates without blocking. After one full green cycle on
+`main`, the job is promoted to **STRICT** (remove `continue-on-error`, or gate the
+merge). The canonical reference is the upgrade-auto-review workflow. The
+`manifest-drift.yml` jobs are currently report-only and follow this pattern.
+
+## Doctor allowlist policy
+
+Tracked `.claude` / `.codex` configuration must not contain hardcoded absolute
+user-home paths (`/home/<user>/…`, `/Users/<user>/…`, `C:\Users\<user>\…`) — those
+are CI errors and can never be allowlisted. Portable references under `$HOME`,
+`${HOME}`, `~/`, or `%APPDATA%` are permitted **only** when listed in the relevant
+allowlist (`.claude/.doctor-allowlist`, `.codex/.doctor-allowlist`) with a one-line
+rationale. The `make claude.doctor` / `make config.doctor` targets enforce this
+read-only.
+
+## Resolving a `.gitmodules` merge conflict
+
+Today `.gitmodules` is hand-maintained alongside `repos/MANIFEST.yaml`; resolve
+conflicts manually and keep the two consistent. **Forward-looking:** if the
+MANIFEST→`.gitmodules` *lockfile* (materialize) pattern is adopted (deferred —
+tracked as G4/G5 in [`.omc/plans/open-questions.md`](.omc/plans/open-questions.md)),
+`.gitmodules` becomes a generated artifact and conflicts are resolved by
+regenerating it from MANIFEST rather than editing by hand.

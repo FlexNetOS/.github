@@ -85,11 +85,26 @@ sudo systemctl enable --now runner-spawn@drdave.timer
 ## Operation
 
 ```bash
-make runner.install     # install.sh (idempotent)
-make runner.register    # register.sh — interactive if no token in env
-make runner.status      # svc.sh status (Path A) or systemctl (Path B)
-make runner.uninstall   # svc.sh uninstall + ./config.sh remove
+make runner.doctor      # read-only readiness checks
+make runner.install     # dry-run install plan; add CONFIRM=1 DRY_RUN=0 to apply
+make runner.register    # dry-run registration; add CONFIRM=1 DRY_RUN=0 to apply
+make runner.status      # systemd status for persistent and ephemeral units
+make runner.remove      # dry-run removal; add CONFIRM=1 DRY_RUN=0 to apply
 ```
+
+## Safety defaults
+
+Runner lifecycle commands default to dry-run/read-only behavior. Host or
+GitHub mutations require both `DRY_RUN=0` and `CONFIRM=1`, for example:
+
+```bash
+make runner.install DRY_RUN=0 CONFIRM=1
+make runner.register MODE=repo NAME=weftos DRY_RUN=0 CONFIRM=1
+make runner.remove MODE=repo NAME=weftos DRY_RUN=0 CONFIRM=1
+```
+
+Copy `runner/.env.example` to a private local file before activating a host.
+Registration/removal tokens are short-lived and must never be committed.
 
 ## Troubleshooting
 

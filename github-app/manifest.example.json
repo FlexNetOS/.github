@@ -1,0 +1,33 @@
+{
+  "name": "flexnetos-control-plane-automation",
+  "url": "https://github.com/FlexNetOS",
+  "hook_attributes": {
+    "url": "https://example.invalid/github-app/webhook",
+    "active": false
+  },
+  "redirect_url": "https://example.invalid/github-app/callback",
+  "callback_urls": [
+    "https://example.invalid/github-app/callback"
+  ],
+  "setup_url": "https://example.invalid/github-app/setup",
+  "request_oauth_on_install": false,
+  "public": false,
+  "default_permissions": {
+    "actions": "read",
+    "administration": "read",
+    "checks": "write",
+    "contents": "write",
+    "issues": "write",
+    "metadata": "read",
+    "pull_requests": "write",
+    "secrets": "write",
+    "workflows": "write"
+  },
+  "default_events": [
+    "check_run",
+    "check_suite",
+    "pull_request",
+    "push",
+    "workflow_run"
+  ]
+}

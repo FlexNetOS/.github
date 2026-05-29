@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Repo-local repomix wrapper.
+#
+# Upstream ships no GitHub release binary — only npm + Docker. So unlike
+# tools/bin/{actionlint,gitleaks,trivy} which exec via scripts/toolchain.py
+# off a pinned tarball in tools/assets.json, this wrapper pins via npm
+# (`npx --yes repomix@<VERSION>`) and runs through host Node.
+#
+# The matching `tools/repomix/` clone is gitignored — it stays out of the
+# umbrella until FlexNetOS commits to forking repomix. Until then, it
+# serves as the hermetic-mode source (FLEXNETOS_NO_TOOL_DOWNLOAD=1) and
+# as a local audit/inspection target.
+#
+# Bump policy: when a new repomix release lands, update REPOMIX_VERSION
+# below. See data/brain-data/research/repomix.md §7 for the adoption
+# rationale.
+
+set -euo pipefail
+
+REPOMIX_VERSION="${REPOMIX_VERSION:-1.14.1}"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+# Hermetic mode (umbrella-wide convention — see scripts/toolchain.py and
+# tools/README.md): refuse network, run from the local clone. Requires
+# `(cd tools/repomix && npm ci && npm run build)` at least once so
+# tools/repomix/bin/repomix.cjs is wired to the built lib/.
+if [[ "${FLEXNETOS_NO_TOOL_DOWNLOAD:-0}" == "1" ]]; then
+  if [[ -f "$REPO_ROOT/tools/repomix/bin/repomix.cjs" ]]; then
+    exec node "$REPO_ROOT/tools/repomix/bin/repomix.cjs" "$@"
+  fi
+  echo "ERROR: FLEXNETOS_NO_TOOL_DOWNLOAD=1 but tools/repomix/bin/repomix.cjs is missing." >&2
+  echo "Run: (cd tools/repomix && npm ci && npm run build)" >&2
+  exit 1
+fi
+
+# Network-permitted path: bunx (workspace-preferred bun runtime) caches the
+# package on first run; steady-state runs are local-only. Falls back to npx
+# if bun is not on PATH.
+if command -v bunx >/dev/null 2>&1; then
+  exec bunx "repomix@${REPOMIX_VERSION}" "$@"
+fi
+exec npx --yes "repomix@${REPOMIX_VERSION}" "$@"

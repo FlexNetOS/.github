@@ -25,23 +25,31 @@ bootstrap: ## Idempotent setup: tools check, submodules init, secrets unlock
 	@scripts/bootstrap.sh
 
 .PHONY: verify
-verify: verify.actionlint verify.markdown verify.manifest ## Run every local verification
+verify: verify.tool-assets verify.actionlint verify.markdown verify.manifest verify.tools verify.hermetic ## Run every local verification
 
 .PHONY: verify.actionlint
 verify.actionlint: ## Lint .github/workflows/*.yml
-	@command -v actionlint >/dev/null 2>&1 || { echo "actionlint not installed — see github.com/rhysd/actionlint"; exit 1; }
-	actionlint .github/workflows/*.yml
+	@tools/bin/actionlint .github/workflows/*.yml
+
+.PHONY: verify.tool-assets
+verify.tool-assets: ## Validate pinned repo-local tool asset manifest
+	@python3 scripts/toolchain.py validate
 
 .PHONY: verify.markdown
 verify.markdown: ## Lint all markdown except submodules/raw
-	@bunx --bun markdownlint-cli2 \
-	  "**/*.md" "!.omc/**" "!repos/**" "!wiki/raw/**" "!node_modules/**"
+	@python3 scripts/verify-markdown.py .
 
 .PHONY: verify.manifest
 verify.manifest: ## Validate repos/MANIFEST.yaml structure
-	@command -v yq >/dev/null 2>&1 || { echo "yq not installed (mikefarah/yq v4+)"; exit 1; }
-	@yq '.' repos/MANIFEST.yaml > /dev/null
-	@n=$$(yq '. | length' repos/MANIFEST.yaml); echo "OK: $$n manifest entries parse"
+	@python3 scripts/verify-manifest.py repos/MANIFEST.yaml
+
+.PHONY: verify.tools
+verify.tools: ## Validate tools/MANIFEST.yaml structure
+	@python3 scripts/verify-manifest.py tools/MANIFEST.yaml
+
+.PHONY: verify.hermetic
+verify.hermetic: ## Report non-hermetic workflow/script dependencies (advisory)
+	@python3 scripts/hermetic-audit.py .
 
 # ---------- Submodules ----------
 
@@ -71,6 +79,14 @@ submodules.sync-upstream: ## For forked/, fetch upstream and merge (filter: NAME
 .PHONY: submodules.status
 submodules.status: ## Report dirty / ahead-of-tracking / detached submodules
 	@git submodule foreach --quiet 'echo "--- $$name ---"; git -C "$$toplevel/$$path" status --short --branch | head -5'
+
+# ---------- Research (Step 0 of the clone-and-research-before-fork ritual) ----------
+
+.PHONY: research.pack
+research.pack: ## Clone an upstream and pack it with repomix: URL=<github-url-or-owner/repo> [BRANCH=<branch>]
+	@if [ -z "$$URL" ]; then echo "Usage: make research.pack URL=https://github.com/<owner>/<repo> [BRANCH=<branch>]"; exit 2; fi
+	@args="$$URL"; if [ -n "$${BRANCH:-}" ]; then args="$$args $${BRANCH}"; fi; \
+	scripts/clone-and-pack.sh $$args
 
 # ---------- Wiki ----------
 
@@ -125,18 +141,75 @@ secrets.mirror-bws: ## Mirror pass store to Bitwarden Secrets Manager (needs BWS
 	@PASSWORD_STORE_DIR="$$PWD/secrets/store" \
 	  scripts/secrets-mirror-to-bws.sh --project-id "$$PROJECT_ID"
 
-# ---------- Runner ----------
+.PHONY: secrets.sync-github-bw
+secrets.sync-github-bw: ## Sync Bitwarden/Vaultwarden vault items to GitHub Actions secrets (MAP=, DRY_RUN=1)
+	@args="--map $${MAP:-secrets/github-secrets.tsv}"; \
+	if [ "$${DRY_RUN:-0}" = "1" ]; then args="$$args --dry-run"; fi; \
+	scripts/secrets-sync-github-from-bitwarden.sh $$args
 
+# ---------- GitHub control plane ----------
+.PHONY: github.doctor
+github.doctor: ## Read-only audit of runner/workflows/app/submodules/secrets/policy state
+	@args=""; \
+	if [ "$${OFFLINE:-0}" = "1" ]; then args="$$args --offline"; fi; \
+	if [ "$${JSON:-0}" = "1" ]; then args="$$args --json"; fi; \
+	if [ "$${STRICT:-0}" = "1" ]; then args="$$args --strict"; fi; \
+	python3 scripts/github-doctor.py $$args
+
+.PHONY: github-app.smoke
+github-app.smoke: ## Smoke-test GitHub App installation token exchange (DRY_RUN=1 skips API)
+	@args=""; \
+	if [ "$${DRY_RUN:-0}" = "1" ]; then args="$$args --dry-run"; fi; \
+	if [ "$${JSON:-0}" = "1" ]; then args="$$args --json"; fi; \
+	python3 scripts/github-app-token-smoke.py $$args
+
+# ---------- Reconciliation tooling (additive; see data/brain-data/research/my-github-reconciliation.md) ----------
+.PHONY: claude.doctor
+claude.doctor: ## Report hardcoded user-home paths / aspirational keys in .claude/settings.json (read-only)
+	node scripts/claude-settings-doctor.js --check --allowlist .claude/.doctor-allowlist
+
+.PHONY: config.doctor
+config.doctor: ## claude.doctor plus a note on the .codex allowlist (read-only)
+	@node scripts/claude-settings-doctor.js --check --allowlist .claude/.doctor-allowlist; \
+	echo "config.doctor: .codex user-global references governed by .codex/.doctor-allowlist"
+
+.PHONY: check.user-todo-5
+check.user-todo-5: ## List MANIFEST entries tagged / untagged for USER.TODO#5 (read-only)
+	@bash scripts/check-user-todo-step5.sh --list-untagged
+
+.PHONY: open-questions.lint
+open-questions.lint: ## Validate .omc/plans/open-questions.md schema
+	node scripts/open-questions-lint.js .omc/plans/open-questions.md
+
+# ---------- Runner ----------
 .PHONY: runner.install
-runner.install: ## Install (or upgrade) the self-hosted runner binary
-	@runner/install.sh
+runner.install: ## Dry-run install/upgrade self-hosted runner binary (CONFIRM=1 DRY_RUN=0 to apply)
+	@args=""; \
+	if [ "$${DRY_RUN:-1}" = "0" ]; then args="$$args --execute"; else args="$$args --dry-run"; fi; \
+	runner/install.sh $$args
 
 .PHONY: runner.register
-runner.register: ## Register the runner: MODE=org|repo NAME=<reponame>
+runner.register: ## Dry-run register runner: MODE=org|repo NAME=<reponame> (CONFIRM=1 DRY_RUN=0 to apply)
 	@if [ -z "$$MODE" ]; then echo "Usage: make runner.register MODE=org  (or MODE=repo NAME=<reponame>)"; exit 2; fi
 	@args="--$$MODE"; \
 	if [ "$$MODE" = "repo" ] && [ -n "$$NAME" ]; then args="$$args $$NAME"; fi; \
+	if [ "$${DRY_RUN:-1}" = "0" ]; then args="$$args --execute"; else args="$$args --dry-run"; fi; \
 	runner/register.sh $$args
+
+.PHONY: runner.remove
+runner.remove: ## Dry-run remove runner registration/service (CONFIRM=1 DRY_RUN=0 to apply)
+	@if [ -z "$$MODE" ]; then echo "Usage: make runner.remove MODE=org  (or MODE=repo NAME=<reponame>)"; exit 2; fi
+	@args="--$$MODE"; \
+	if [ "$$MODE" = "repo" ] && [ -n "$$NAME" ]; then args="$$args $$NAME"; fi; \
+	if [ "$${DRY_RUN:-1}" = "0" ]; then args="$$args --execute"; else args="$$args --dry-run"; fi; \
+	runner/remove.sh $$args
+
+.PHONY: runner.doctor
+runner.doctor: ## Read-only local runner readiness checks
+	@args=""; \
+	if [ "$${JSON:-0}" = "1" ]; then args="$$args --json"; fi; \
+	if [ "$${STRICT:-0}" = "1" ]; then args="$$args --strict"; fi; \
+	scripts/runner-doctor.sh $$args
 
 .PHONY: runner.status
 runner.status: ## Show systemd status of the runner service(s)

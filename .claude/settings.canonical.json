@@ -1,0 +1,31 @@
+{
+  "_README": "REFERENCE TARGET — NOT the live settings file. This documents the trimmed canonical shape the umbrella's .claude/settings.json should converge to. The live trim is a gated, manual step tracked as a USER.TODO item; claude-settings-doctor.js only REPORTS drift, it never edits the live file. Legitimate top-level keys for the umbrella: 'permissions' (repo-relative policy), 'mcpServers' (only if umbrella-backed, with repo-relative or env-portable commands), and 'hooks' (whose commands are repo-relative, e.g. 'bash scripts/...', not '/home/<user>/...'). Hardcoded absolute user-home paths (/home/..., /Users/..., /root/..., C:\\Users\\) are never permitted in command strings; use $HOME/, ${HOME}/, ~/, or %APPDATA% and add an explicit allowlist entry when a home reference is unavoidable. The key env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS must not appear.",
+  "permissions": {
+    "_note": "Repo-relative allow/deny rules. Example shape only; the live file's real permission set is preserved during the gated trim.",
+    "allow": [],
+    "deny": []
+  },
+  "mcpServers": {
+    "_note": "Include only umbrella-backed servers whose 'command' is repo-relative or resolved via PATH/env. Drop user-specific MCPs (those live in ~/.codex/config.toml or the user's global ~/.claude)."
+  },
+  "hooks": {
+    "_note": "Hook commands must be repo-relative (e.g. 'bash scripts/foo.sh' or 'node scripts/foo.js'). Commands referencing /home/<user>/.claude/hooks/... are user-global config that does not belong in the committed umbrella settings. The PostToolUse/PreToolUse entries below are the umbrella's OWN repo-relative hooks (scripts/hooks/*.sh) and should survive the gated trim of the live settings.json; the user-global hooks in the live file (ruvector/ccg/gitnexus/global/*) are drift to be dropped.",
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "bash scripts/hooks/actionlint-on-workflow-edit.sh", "timeout": 10000 }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          { "type": "command", "command": "bash scripts/hooks/protect-secrets-store.sh", "timeout": 5000 },
+          { "type": "command", "command": "bash scripts/hooks/gitmodules-drift-guard.sh", "timeout": 5000 }
+        ]
+      }
+    ]
+  }
+}

@@ -3,6 +3,50 @@
 How to carry local patches on a third-party repository while staying
 current with upstream releases.
 
+## Step 0 — clone & pack with repomix (always, before `gh repo fork`)
+
+The umbrella's hard rule, baked into operator memory and into every
+existing research dossier under `data/brain-data/research/`:
+
+> **Never run `gh repo fork` against a new upstream until
+> `data/brain-data/research/<name>.md` exists and the §10 "Open
+> decisions" gate is resolved.**
+
+Step 0 is the mechanical part of that rule. It produces a reviewable
+codebase pack so the dossier is informed by *source*, not README skim:
+
+```bash
+make research.pack URL=https://github.com/<owner>/<repo>
+# or, equivalently:
+scripts/clone-and-pack.sh <owner>/<repo> [BRANCH]
+```
+
+What it does (idempotent — safe to re-run):
+
+1. Clones the **original** upstream (never the FlexNetOS fork) into
+   `.attic/research-work/<name>/` — gitignored, never committed.
+2. Runs `tools/bin/repomix` against the clone, producing:
+   - `data/brain-data/research/<name>/repomix-pack.xml` — full pack.
+   - `data/brain-data/research/<name>/repomix-pack.compressed.xml` —
+     signatures-only compression (tree-sitter), useful for LLM context
+     windows.
+   - `data/brain-data/research/<name>/repomix-summary.md` — file count,
+     pack size, top extensions, top directories, clone HEAD.
+3. Seeds a stub dossier at `data/brain-data/research/<name>.md` with
+   the umbrella's standard 11-section shape (identity, purpose, stack,
+   license, FlexNetOS-side intent, pre-adoption audit, adoption plan,
+   sync risk, verification, open decisions, decision log). Existing
+   dossiers are left untouched.
+
+**`research.pack` does not call `gh repo fork`.** Forking remains a
+deliberate human/agent step gated on the dossier being filled in.
+
+The repomix tool itself is vendored at `tools/repomix/` and pinned via
+`tools/bin/repomix` (npx-pinned `repomix@<version>`). See
+[`data/brain-data/research/repomix.md`](../data/brain-data/research/repomix.md)
+for the adoption dossier, and `FLEXNETOS_NO_TOOL_DOWNLOAD=1` for the
+hermetic-mode path through the vendored submodule.
+
 ## The pattern
 
 When FlexNetOS forks an upstream project (e.g. `ruvnet/RuVector` →
@@ -93,9 +137,23 @@ version. If it doesn't, that's a useful signal: upstream changed the
 patch in review, and we should adopt the upstream variant rather than
 re-applying ours.
 
+## Adopting a new upstream
+
+Choose the lane before you fork:
+
+| Case | Lane | First step |
+|------|------|------------|
+| FlexNetOS-original, no upstream | `repos/owned/` | `gh repo create FlexNetOS/<name>` |
+| Third-party we will patch and track | `repos/forked/` | Step 0 (`make research.pack`) → fill dossier → `gh repo fork` |
+| Third-party for reference only | `repos/external/` | No fork — add URL to MANIFEST as-is |
+
+The research-before-fork gate is mandatory for `repos/forked/` entries.
+See [`../CLAUDE.md`](../CLAUDE.md) for the full ritual and the
+`data/brain-data/research/` dossier schema.
+
 ## See also
 
-- [`directory-layout.md`](directory-layout.md) — where forks vs upstream
-  vs first-party live on disk.
+- [`directory-layout.md`](directory-layout.md) — umbrella layout and the
+  `repos/{owned,forked,external}/` submodule tree.
 - [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — commit conventions and
   branch policy.

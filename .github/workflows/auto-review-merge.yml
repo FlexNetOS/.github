@@ -1,0 +1,182 @@
+name: auto-review-merge
+
+# Upgrade-only merge helper.
+#
+# Safety model:
+# - Never checks out or executes PR code.
+# - Same-repo upgrade PRs only; forks are always blocked.
+# - Requires either an upgrade label or an upgrade-style branch prefix.
+# - Requires existing non-failing checks; "no checks" is not mergeable.
+# - Leaves branch deletion disabled.
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, labeled, unlabeled, ready_for_review, edited]
+  check_suite:
+    types: [completed]
+  status:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'Optional PR number to evaluate'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  statuses: read
+
+concurrency:
+  group: auto-review-merge-${{ github.event.pull_request.number || inputs.pr || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Gate upgrade PR for auto-review/merge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate PR gate
+        id: gate
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            async function resolvePull() {
+              if (context.payload.pull_request) return context.payload.pull_request;
+
+              const inputPr = context.payload.inputs && context.payload.inputs.pr;
+              if (inputPr) {
+                const pull_number = Number(inputPr);
+                if (!Number.isInteger(pull_number) || pull_number <= 0) {
+                  core.setFailed(`Invalid PR input: ${inputPr}`);
+                  return null;
+                }
+                const { data } = await github.rest.pulls.get({ owner, repo, pull_number });
+                return data;
+              }
+
+              const suitePulls = context.payload.check_suite && context.payload.check_suite.pull_requests;
+              const suitePr = Array.isArray(suitePulls) ? suitePulls[0] : null;
+              if (suitePr) {
+                const { data } = await github.rest.pulls.get({ owner, repo, pull_number: suitePr.number });
+                return data;
+              }
+
+              if (context.payload.sha) {
+                const { data } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                  owner,
+                  repo,
+                  commit_sha: context.payload.sha,
+                });
+                return data[0] || null;
+              }
+
+              return null;
+            }
+
+            const pr = await resolvePull();
+            if (!pr) {
+              core.notice('No pull request associated with this event.');
+              core.setOutput('eligible', 'false');
+              core.setOutput('number', '');
+              core.setOutput('reasons', 'No pull request associated with this event.');
+              return;
+            }
+
+            const labels = (pr.labels || []).map((label) => label.name);
+            const upgradeLabels = new Set(['automerge-upgrade', 'dependencies', 'dependency', 'upgrade', 'tools', 'submodule']);
+            const hasUpgradeLabel = labels.some((label) => upgradeLabels.has(label));
+            const headRef = pr.head.ref || '';
+            const upgradeBranch = /^(dependabot|renovate|submodule-bump|upgrade|updates|tools)\//.test(headRef);
+            const sameRepo = pr.head.repo && pr.base.repo && pr.head.repo.full_name === pr.base.repo.full_name;
+
+            const reasons = [];
+            if (pr.draft) reasons.push('PR is still draft.');
+            if (!sameRepo) reasons.push('PR is from a fork; upgrade automerge is same-repo only.');
+            if (!hasUpgradeLabel && !upgradeBranch) {
+              reasons.push('PR is not marked as an upgrade. Add label `automerge-upgrade` or use an upgrade branch prefix.');
+            }
+
+            const { data: freshPr } = await github.rest.pulls.get({ owner, repo, pull_number: pr.number });
+            const mergeableState = freshPr.mergeable_state || 'unknown';
+            if (mergeableState === 'dirty') reasons.push('PR has merge conflicts.');
+            if (mergeableState === 'behind') reasons.push('PR branch is behind its base branch.');
+
+            const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: pr.number, per_page: 100 });
+            const latestByUser = new Map();
+            for (const review of reviews) {
+              if (review.user && review.user.login) latestByUser.set(review.user.login, review.state);
+            }
+            const requestedChanges = [...latestByUser.values()].includes('CHANGES_REQUESTED');
+            if (requestedChanges) reasons.push('A reviewer has requested changes.');
+
+            const ref = pr.head.sha;
+            const { data: checkRuns } = await github.rest.checks.listForRef({ owner, repo, ref, per_page: 100 });
+            const relevantCheckRuns = checkRuns.check_runs.filter((run) => run.name !== 'Gate upgrade PR for auto-review/merge');
+            const pendingCheckRuns = relevantCheckRuns.filter((run) => run.status !== 'completed');
+            const failedCheckRuns = relevantCheckRuns.filter((run) => run.status === 'completed' && !['success', 'neutral', 'skipped'].includes(run.conclusion));
+
+            const { data: status } = await github.rest.repos.getCombinedStatusForRef({ owner, repo, ref });
+            if (relevantCheckRuns.length === 0 && status.statuses.length === 0) reasons.push('No relevant check runs or commit statuses are reported yet.');
+            if (pendingCheckRuns.length > 0) reasons.push(`${pendingCheckRuns.length} check run(s) are still pending.`);
+            if (failedCheckRuns.length > 0) reasons.push(`${failedCheckRuns.length} check run(s) failed.`);
+            if (status.state === 'pending' && status.statuses.length > 0) reasons.push('One or more commit statuses are pending.');
+            if (status.state === 'failure' || status.state === 'error') reasons.push('One or more commit statuses failed.');
+
+            const eligible = reasons.length === 0;
+            core.setOutput('eligible', eligible ? 'true' : 'false');
+            core.setOutput('number', String(pr.number));
+            core.setOutput('reasons', reasons.join('\n'));
+            core.setOutput('head_sha', pr.head.sha);
+            core.setOutput('head_ref', pr.head.ref);
+            core.setOutput('base_ref', pr.base.ref);
+            core.setOutput('mergeable_state', mergeableState);
+            core.setOutput('check_count', String(relevantCheckRuns.length));
+            core.setOutput('status_count', String(status.statuses.length));
+
+      - name: Submit upgrade gate review comment
+        if: steps.gate.outputs.number != ''
+        uses: actions/github-script@v9
+        env:
+          PR_NUMBER: ${{ steps.gate.outputs.number }}
+          ELIGIBLE: ${{ steps.gate.outputs.eligible }}
+          REASONS: ${{ steps.gate.outputs.reasons }}
+          MERGEABLE_STATE: ${{ steps.gate.outputs.mergeable_state }}
+          CHECK_COUNT: ${{ steps.gate.outputs.check_count }}
+          STATUS_COUNT: ${{ steps.gate.outputs.status_count }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = Number(process.env.PR_NUMBER);
+            const eligible = process.env.ELIGIBLE === 'true';
+            const reasons = (process.env.REASONS || '').trim();
+            const state = process.env.MERGEABLE_STATE || 'unknown';
+            const checks = process.env.CHECK_COUNT || '0';
+            const statuses = process.env.STATUS_COUNT || '0';
+
+            const body = eligible
+              ? `Upgrade gate passed. Auto-merge can be enabled now.\n\n- mergeable_state: ${state}\n- relevant check runs: ${checks}\n- commit statuses: ${statuses}\n- conflicts/issues: none detected\n- branch deletion: disabled`
+              : `Upgrade gate is waiting. Auto-merge was not enabled.\n\n- mergeable_state: ${state}\n- relevant check runs: ${checks}\n- commit statuses: ${statuses}\n\nWaiting on:\n${reasons.split('\n').filter(Boolean).map((line) => `- ${line}`).join('\n')}`;
+
+            await github.rest.pulls.createReview({
+              owner,
+              repo,
+              pull_number,
+              event: 'COMMENT',
+              body,
+            });
+
+      - name: Enable GitHub auto-merge
+        if: steps.gate.outputs.eligible == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.gate.outputs.number }}
+        run: |
+          # Do not pass --delete-branch: upgrade branches stay intact unless a
+          # maintainer deletes them separately.
+          gh pr merge "$PR_NUMBER" --auto --squash

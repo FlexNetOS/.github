@@ -1,0 +1,28 @@
+{
+  "iteration": 1,
+  "run_id": "run-001",
+  "timestamp": "2026-05-28",
+  "pass": true,
+  "score": 100,
+  "evaluator": "make verify",
+  "exit_code": 0,
+  "findings": [
+    {"check": "markdown", "status": "pass", "detail": "64 markdown files checked OK (5 new AGENTS.md files included)"},
+    {"check": "manifest", "status": "pass", "detail": "28 manifest entries parse (repos/MANIFEST.yaml) + 13 (tools/MANIFEST.yaml)"},
+    {"check": "tool-assets", "status": "pass", "detail": "3 pinned tool assets for linux-x64"},
+    {"check": "actionlint", "status": "pass", "detail": "186 advisory warnings (latest-pin, remote-action) — all continue-on-error; exit 0"},
+    {"check": "hermetic-audit", "status": "advisory", "detail": "186 findings — report-only, not blocking"}
+  ],
+  "improvements_this_iteration": [
+    "Created .claude/AGENTS.md (skills, settings, hooks documentation)",
+    "Created .github/AGENTS.md (workflows, templates, CI conventions)",
+    "Created scripts/AGENTS.md (all 17 scripts documented with purpose)",
+    "Created tools/AGENTS.md (pinned tools, MANIFEST format, wrapper conventions)",
+    "Created data/brain-data/research/AGENTS.md (dossier format, 12-section schema)"
+  ],
+  "next_iteration_candidates": [
+    "Create AGENTS.md for docs/, repos/, data/, wiki/",
+    "Pin actionlint workflow SHAs to eliminate latest-pin warnings",
+    "Add hermetic-audit suppressions for known-good remote actions"
+  ]
+}

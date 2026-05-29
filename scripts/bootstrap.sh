@@ -39,7 +39,7 @@ warn(){ printf '  \033[33m!\033[0m %s\n' "$*"; }
 say "Toolchain check"
 # -----------------------------------------------------------------------------
 required=(git bash)
-optional=(mise gh gpg pass direnv age yq actionlint bunx jq)
+optional=(mise gh gpg pass direnv age tools/bin/actionlint tools/bin/gitleaks tools/bin/trivy jq)
 
 missing_required=()
 for t in "${required[@]}"; do
@@ -53,7 +53,9 @@ done
 
 missing_optional=()
 for t in "${optional[@]}"; do
-  if command -v "$t" >/dev/null 2>&1; then
+  if [[ -x "$t" ]]; then
+    ok "$t — repo-local wrapper"
+  elif command -v "$t" >/dev/null 2>&1; then
     ok "$t — $(command -v "$t")"
   else
     missing_optional+=("$t")
@@ -70,10 +72,8 @@ if [[ ${#missing_optional[@]} -gt 0 ]]; then
   warn "Recommended tools missing: ${missing_optional[*]}"
   warn "Install hints:"
   warn "  apt-get install -y git gpg pass direnv age jq"
-  warn "  curl https://mise.run | sh           # mise (node/bun/uv)"
   warn "  gh auth login                        # gh CLI"
-  warn "  wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 && chmod +x /usr/local/bin/yq"
-  warn "  go install github.com/rhysd/actionlint/cmd/actionlint@latest"
+  warn "  python3 scripts/toolchain.py ensure  # pinned repo-local tool binaries"
 fi
 
 # -----------------------------------------------------------------------------
