@@ -5,7 +5,9 @@
       "agent_type": "wrap-up-verifier",
       "started_at": "2026-05-29T11:51:00.400Z",
       "parent_mode": "none",
-      "status": "running"
+      "status": "completed",
+      "completed_at": "2026-05-29T11:52:56.734Z",
+      "duration_ms": 116334
     },
     {
       "agent_id": "a1c04ad361a149f51",
@@ -16,7 +18,7 @@
     }
   ],
   "total_spawned": 2,
-  "total_completed": 0,
+  "total_completed": 1,
   "total_failed": 0,
-  "last_updated": "2026-05-29T11:52:30.554Z"
+  "last_updated": "2026-05-29T11:52:56.835Z"
 }
