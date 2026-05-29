@@ -14,11 +14,13 @@
       "agent_type": "wrap-up-verifier",
       "started_at": "2026-05-29T11:52:30.453Z",
       "parent_mode": "none",
-      "status": "running"
+      "status": "completed",
+      "completed_at": "2026-05-29T11:54:18.254Z",
+      "duration_ms": 107801
     }
   ],
   "total_spawned": 2,
-  "total_completed": 1,
+  "total_completed": 2,
   "total_failed": 0,
-  "last_updated": "2026-05-29T11:52:56.835Z"
+  "last_updated": "2026-05-29T11:54:18.355Z"
 }
