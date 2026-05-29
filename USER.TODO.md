@@ -461,7 +461,7 @@ feature branch but should not be merged to `main` without picking one of the abo
   ```
 - **Long-term fix:** complete Vaultwarden→GitHub secret sync (Phase 6 operational gate in `README.md`). Once the App is live, `GITHUB_TOKEN` is auto-rotated and this never needs manual intervention again.
 - **How to verify done:** `gh api user --jq '.login'` returns `FlexNetOS` (or the renamed account after section 3).
-- **Status:** `open` — token rotated; pass entry stale; Vaultwarden App not yet configured
+- **Status:** `done (SESSION-2026-05-28-007)` — token updated in pass; `gh api user --jq '.login'` returns `drdave-flexnetos`. Note: personal account already renamed to `drdave-flexnetos` (USER.TODO#3 Step 1 complete). Vaultwarden App remains the long-term fix (Phase 6).
 
 ---
 
