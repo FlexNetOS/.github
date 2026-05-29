@@ -64,6 +64,7 @@ roles see [`VISION.md`](VISION.md).
     ├── dependabot.yml              Weekly bumps for GitHub Actions used here
     └── workflows/
         ├── reusable-lint.yml       workflow_call · language-agnostic lint dispatcher
+        ├── reusable-typecheck.yml  workflow_call · TypeScript type checker (tsc --noEmit)
         ├── reusable-test.yml       workflow_call · test dispatcher
         ├── reusable-build.yml      workflow_call · build dispatcher
         ├── reusable-security.yml   workflow_call · CodeQL + Trivy + Gitleaks
@@ -105,8 +106,15 @@ jobs:
       language: bun
     secrets: inherit
 
-  test:
+  typecheck:
     needs: lint
+    uses: FlexNetOS/.github/.github/workflows/reusable-typecheck.yml@main
+    with:
+      language: bun
+    secrets: inherit
+
+  test:
+    needs: typecheck
     uses: FlexNetOS/.github/.github/workflows/reusable-test.yml@main
     with:
       language: bun

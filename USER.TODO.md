@@ -592,4 +592,48 @@ feature branch but should not be merged to `main` without picking one of the abo
   ```
 
 - **How to verify done:** on updated `develop`, `architecture/prd/PRD-0001-architecture-framework.md` links to `../openspec/changes/archive/2026-05-29-architecture-framework/proposal.md` (the `archive/` path), and a link-resolution scan of `architecture/**/*.md` reports 0 broken.
+### UA-2026-05-29-004 — Merge `feat/install-github-app` PR to `main` to activate the promote-develop-to-main workflow
+
+- **Surfaced by:** `SESSION-2026-05-29-006`
+- **Blocks:** `promote-develop-to-main.yml` triggering via `workflow_run` — GitHub only fires `workflow_run` events for workflows that exist on the **default branch**. The workflow is currently only on `feat/install-github-app`.
+- **Why:** The agent committed `promote-develop-to-main.yml` and validated it (actionlint clean, branch protections live, `PROMOTE_TOKEN` set) but cannot trigger a live end-to-end test until the file lands on `main`. All static checks pass; the only remaining gate is this merge.
+- **What to do:**
+
+  ```bash
+  # Option A: create a PR and merge through the normal review flow
+  gh pr create --base main --head feat/install-github-app \
+    --title "ci: SESSION-2026-05-29-006 — branch protections + promote workflow" \
+    --body "Adds promote-develop-to-main.yml + install-github-app skill. See SESSION-2026-05-29-006."
+
+  # Option B: if you have already opened a PR, just approve + merge it
+  gh pr merge <number> --squash --admin
+  ```
+
+- **How to verify done:** `gh api repos/FlexNetOS/.github/contents/.github/workflows/promote-develop-to-main.yml --jq .name` returns `"promote-develop-to-main.yml"`.
+- **Status:** `open`
+
+### UA-2026-05-29-005 — Set `N8N_MCP_TOKEN` in the environment for the n8n-mcp MCP server
+
+- **Surfaced by:** `SESSION-2026-05-29-007`
+- **Blocks:** the `n8n-mcp` MCP server connecting (configured in `.mcp.json` and `~/.claude.json`). Until the var is set, the project `.mcp.json` reference (`Bearer ${N8N_MCP_TOKEN}`, no default) will also fail to parse per Claude Code's rule that a referenced-but-unset env var with no default fails the config parse.
+- **Why:** The agent registered the server using env-var indirection (never a token literal) to honor the repo's no-secrets-in-git rule. Only the human can store the real credential. The JWT was supplied in chat but deliberately not written to any file.
+- **What to do:**
+
+  ```bash
+  # Store the token in pass (paste your real n8n MCP JWT):
+  pass insert n8n/mcp/token
+
+  # PROJECT scope (inside this repo): add to whatever the .envrc dev-env template reads,
+  # mirroring the GITHUB_TOKEN pattern, then reload:
+  #   N8N_MCP_TOKEN  pass:n8n/mcp/token
+  direnv reload
+
+  # GLOBAL scope (every dir — ~/.claude.json is read everywhere): add to shell startup:
+  echo 'export N8N_MCP_TOKEN="$(pass show n8n/mcp/token)"' >> ~/.bashrc
+
+  # Then restart Claude Code and verify (n8n must be running on localhost:5678):
+  claude mcp get n8n-mcp
+  ```
+
+- **How to verify done:** `claude mcp get n8n-mcp` shows the server connected (not "needs auth"/failed), and `printenv N8N_MCP_TOKEN` returns the JWT in a fresh shell.
 - **Status:** `open`
