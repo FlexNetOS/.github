@@ -596,3 +596,29 @@ feature branch but should not be merged to `main` without picking one of the abo
 
 - **How to verify done:** `gh api repos/FlexNetOS/.github/contents/.github/workflows/promote-develop-to-main.yml --jq .name` returns `"promote-develop-to-main.yml"`.
 - **Status:** `open`
+
+### UA-2026-05-29-005 — Set `N8N_MCP_TOKEN` in the environment for the n8n-mcp MCP server
+
+- **Surfaced by:** `SESSION-2026-05-29-007`
+- **Blocks:** the `n8n-mcp` MCP server connecting (configured in `.mcp.json` and `~/.claude.json`). Until the var is set, the project `.mcp.json` reference (`Bearer ${N8N_MCP_TOKEN}`, no default) will also fail to parse per Claude Code's rule that a referenced-but-unset env var with no default fails the config parse.
+- **Why:** The agent registered the server using env-var indirection (never a token literal) to honor the repo's no-secrets-in-git rule. Only the human can store the real credential. The JWT was supplied in chat but deliberately not written to any file.
+- **What to do:**
+
+  ```bash
+  # Store the token in pass (paste your real n8n MCP JWT):
+  pass insert n8n/mcp/token
+
+  # PROJECT scope (inside this repo): add to whatever the .envrc dev-env template reads,
+  # mirroring the GITHUB_TOKEN pattern, then reload:
+  #   N8N_MCP_TOKEN  pass:n8n/mcp/token
+  direnv reload
+
+  # GLOBAL scope (every dir — ~/.claude.json is read everywhere): add to shell startup:
+  echo 'export N8N_MCP_TOKEN="$(pass show n8n/mcp/token)"' >> ~/.bashrc
+
+  # Then restart Claude Code and verify (n8n must be running on localhost:5678):
+  claude mcp get n8n-mcp
+  ```
+
+- **How to verify done:** `claude mcp get n8n-mcp` shows the server connected (not "needs auth"/failed), and `printenv N8N_MCP_TOKEN` returns the JWT in a fresh shell.
+- **Status:** `open`
