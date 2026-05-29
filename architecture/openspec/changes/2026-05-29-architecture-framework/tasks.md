@@ -1,42 +1,49 @@
 # Tasks — Architecture & Planning Artifact Framework
 
-Execution breakdown for change `2026-05-29-architecture-framework`. Checked off
-as implemented. This list is the plan for OpenSpec-driven work (no separate
-`architecture/plan/` entry needed for the bootstrap itself).
+Zero-decision execution for change `2026-05-29-architecture-framework`. Checkbox
+format (OpenSpec parses these). Items map to `design.md` file manifest + PBT.
 
-## 1. Scaffold the `architecture/` tree (additive)
+## 1. Scaffold the openspec engine
 
-- [ ] `architecture/openspec/config.yaml` — `schema: spec-driven` + umbrella `context:` (mirror `lifeos/openspec/config.yaml`)
-- [ ] `architecture/openspec/project.md` — umbrella project context for OPSX
-- [ ] `architecture/openspec/specs/.gitkeep`, `architecture/openspec/changes/archive/.gitkeep`
-- [ ] `architecture/prd/.gitkeep`, `architecture/adr/.gitkeep`, `architecture/plan/.gitkeep`
-- [ ] `architecture/README.md` — lifecycle map, routing table, PRD/ADR registry tables, links to existing design docs
+- [ ] 1.1 Write `architecture/openspec/config.yaml` with umbrella `context:` + `rules:`
+- [ ] 1.2 Write `architecture/openspec/project.md` (umbrella OPSX context)
+- [ ] 1.3 Add `architecture/openspec/specs/.gitkeep` and `architecture/openspec/changes/archive/.gitkeep`
+- [ ] 1.4 Promote current-truth spec `architecture/openspec/specs/architecture-framework/spec.md`
 
-## 2. Seed the dogfood artifacts
+## 2. Scaffold artifact homes
 
-- [ ] `architecture/prd/PRD-0001-architecture-framework.md` — intent / scope / success criteria
-- [ ] `architecture/adr/ADR-0001-architecture-artifact-homes.md` — the homes decision (MADR), Accepted
-- [ ] `architecture/openspec/specs/architecture-framework/spec.md` — capability truth (this change's delta promoted)
-- [x] `architecture/openspec/changes/2026-05-29-architecture-framework/proposal.md` — this design doc
-- [x] `architecture/openspec/changes/2026-05-29-architecture-framework/tasks.md` — this file
-- [ ] `architecture/openspec/changes/2026-05-29-architecture-framework/specs/architecture-framework/spec.md` — change-local spec delta
+- [ ] 2.1 Add `architecture/prd/.gitkeep`, `architecture/adr/.gitkeep`, `architecture/plan/.gitkeep`
+- [ ] 2.2 Write `architecture/README.md` (lifecycle map, routing table, PRD/ADR registry, links to existing docs)
 
-## 3. Wire the skill-routing defaults
+## 3. Seed dogfood artifacts (via existing skills)
 
-- [ ] Add an **"Architecture artifacts"** convention block to `CLAUDE.md` (project, repo-root)
-- [ ] Add the same convention block to `AGENTS.md`
-- [ ] Add one `architecture/` entry to `docs/directory-layout.md`
+- [ ] 3.1 `architecture/prd/PRD-0001-architecture-framework.md` via `ecc:plan-prd`
+- [ ] 3.2 `architecture/adr/ADR-0001-architecture-artifact-homes.md` via `ecc:architecture-decision-records`
+- [ ] 3.3 Cross-link PRD-0001 ↔ ADR-0001 ↔ OpenSpec change (relative links)
 
-## 4. Verify & commit
+## 4. Wire routing defaults
 
-- [ ] `make verify.markdown` green on all new/edited files
-- [ ] `make verify` full pass
-- [ ] Commit incrementally (Conventional Commits) on `feat/architecture-framework`
-- [ ] Update root `CHANGELOG.md` `[Unreleased]`, `SESSIONS.md`, `TODO.md` via `/wrap-up`
+- [ ] 4.1 Add identical "Architecture artifacts" block to `CLAUDE.md` (override `docs/superpowers/plans/`, `.claude/prds/`/`.claude/PRPs/prds/`, `docs/adr/`)
+- [ ] 4.2 Add the same block to `AGENTS.md`
+- [ ] 4.3 Add one `architecture/` entry to `docs/directory-layout.md`
 
-## 5. Deferred (NOT this change)
+## 5. Verify invariants (PBT) & commit
 
-- Cross-repo rollout of the `architecture/` convention to submodules
-- Registry generator / MANIFEST-driven adopted-by index
-- Any `docs/` file relocation / consolidation
-- Promotion to an org-wide inheritable standard
+- [x] 5.1 `no_tracked_local_claude`: `architecture/.claude/` gitignored, `git ls-files architecture/.claude` empty
+- [ ] 5.2 `markdown_lint_clean`: `python3 scripts/verify-markdown.py .` exits zero
+- [ ] 5.3 `routing_consistency`: CLAUDE.md and AGENTS.md list identical canonical paths
+- [ ] 5.4 `additive_scope`: `git diff --name-only` touches only architecture/**, CLAUDE.md, AGENTS.md, docs/directory-layout.md, .gitignore
+- [ ] 5.5 `make verify` full pass
+- [ ] 5.6 Commit incrementally (Conventional Commits) on `feat/architecture-framework`
+
+## 6. Close out
+
+- [ ] 6.1 Archive the change (`openspec archive 2026-05-29-architecture-framework`) → `changes/archive/`
+- [ ] 6.2 Update root `CHANGELOG.md` [Unreleased], `SESSIONS.md`, `TODO.md` via `/wrap-up`
+
+## 7. Deferred (NOT this change)
+
+- [ ] Cross-repo rollout of the `architecture/` convention to submodules
+- [ ] Registry generator / MANIFEST-driven adopted-by index
+- [ ] Any `docs/` file relocation / consolidation
+- [ ] `verify-markdown.py` change to skip git-ignored `.claude` (local-only cosmetics)
