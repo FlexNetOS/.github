@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "permissions": {
     "allow": [
       "mcp__open-pencil",
@@ -58,6 +61,27 @@
             "type": "command",
             "command": "ruvector hooks async-agent --action complete --agent-id \"$TOOL_INPUT_SUBAGENT_TYPE\"",
             "timeout": 2000
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"/home/drdave/.claude/hooks/gitnexus/gitnexus-hook.cjs\"",
+            "timeout": 10,
+            "statusMessage": "Checking GitNexus index freshness..."
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/drdave/.claude/hooks/global/auto-format.sh",
+            "timeout": 30
           }
         ]
       },
@@ -138,6 +162,244 @@
             "command": "node \"/home/drdave/.claude/hooks/gitnexus/gitnexus-hook.cjs\"",
             "timeout": 10,
             "statusMessage": "Enriching with GitNexus graph context..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude --ultra-compact"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /home/drdave/.claude/hooks/ccg/subagent-context.js",
+            "timeout": 15000
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/drdave/.claude/hooks/global/bash-log.sh",
+            "timeout": 2000
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/protect-secrets-store.sh",
+            "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/gitmodules-drift-guard.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruvector hooks session-start",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "matcher": "resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruvector hooks session-start --resume",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /home/drdave/.claude/hooks/ccg/session-start.js",
+            "timeout": 15000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruvector hooks session-end --export-metrics",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/drdave/.claude/hooks/global/stop-notify.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruvector hooks suggest-context",
+            "timeout": 2000
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /home/drdave/.claude/hooks/ccg/workflow-state.js",
+            "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "node /home/drdave/.claude/hooks/ccg/skill-router.js",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": []
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/hud/omc-hud.mjs"
+  },
+  "enabledPlugins": {
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "ecc@ecc": true,
+    "example-mcp@claude-stack-local": true,
+    "github@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true,
+    "oh-my-claudecode@omc": true,
+    "playwright@claude-plugins-official": true,
+    "ralph-loop@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "ui5-typescript-conversion@claude-plugins-official": true,
+    "understand-anything@understand-anything": true,
+    "frontend-design@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-stack-local": {
+      "source": {
+        "source": "directory",
+        "path": "/home/drdave/_work/claude-stack/plugins"
+      }
+    },
+    "ecc": {
+      "source": {
+        "source": "file",
+        "path": "/home/drdave/_work/repos/everything-claude-code/.claude-plugin/marketplace.json"
+      }
+    },
+    "karpathy-skills": {
+      "source": {
+        "source": "file",
+        "path": "/home/drdave/_work/repos/andrej-karpathy-skills/.claude-plugin/marketplace.json"
+      }
+    },
+    "omc": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/Yeachan-Heo/oh-my-claudecode.git",
+        "path": "/home/drdave/repos/oh-my-claudecode/.claude-plugin/marketplace.json"
+      }
+    },
+    "understand-anything": {
+      "source": {
+        "source": "file",
+        "path": "/home/drdave/_work/repos/Understand-Anything/.claude-plugin/marketplace.json"
+      }
+    }
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruvector hooks pre-compact --auto",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruvector hooks pre-compact",
+            "timeout": 3000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruvector hooks pre-edit \"$TOOL_INPUT_FILE_PATH\"",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruvector hooks pre-command \"$TOOL_INPUT_COMMAND\"",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruvector hooks swarm-recommend \"$TOOL_INPUT_SUBAGENT_TYPE\"",
+            "timeout": 2000
+          },
+          {
+            "type": "command",
+            "command": "ruvector hooks async-agent --action spawn --agent-id \"$TOOL_INPUT_SUBAGENT_TYPE\" --task \"$TOOL_INPUT_PROMPT\"",
+            "timeout": 1000
           }
         ]
       },

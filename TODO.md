@@ -4,6 +4,8 @@
 > Applied changes move to `CHANGELOG.md`. Per-session logs land in `SESSIONS.md`.
 > The full deep-research plan that produced this list lives at `data/brain-data/research/my-github-reconciliation.md`.
 
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-001 — clone-setup skill fix + setup philosophy; PR #21)
+**Branch:** `feat/session-2026-05-29-002`
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-012)
 **Branch:** `feat/session-2026-05-29-007`
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-007 — repaired malformed `.claude/settings.json`; added n8n-mcp MCP server) — no new agent TODO items
