@@ -34,7 +34,7 @@ Research artifacts (deep-research outputs, ralplan deliverables, gap analyses) d
 
 Every `SESSIONS.md` entry MUST start with a session ID. The format is:
 
-```
+```text
 SESSION-YYYY-MM-DD-NNN
 ```
 
@@ -233,7 +233,7 @@ edits that would otherwise leak through.
 
 How to invoke (from the main agent context, after step 5):
 
-```
+```text
 Agent(
   description: "Verify wrap-up SESSION-<id>",
   subagent_type: "wrap-up-verifier",

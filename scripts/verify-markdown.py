@@ -10,8 +10,17 @@ import fnmatch
 import sys
 from pathlib import Path
 
-EXCLUDE_PARTS = {".git", ".omc", "lifeos", "node_modules", "repos"}
-EXCLUDE_PREFIXES = ("wiki/raw/", "network/slim/")
+EXCLUDE_PARTS = {".git", ".omc", ".attic", "lifeos", "node_modules", "repos"}
+EXCLUDE_PREFIXES = (
+    "wiki/raw/",
+    "network/slim/",
+    "data/brain-data/obsidian-mind/",           # third-party vault
+    "data/brain-data/research/fork-remediation/",  # copied upstream files
+    "data/brain-data/DeepTutor/",               # third-party content
+    "data/brain-data/deepwiki-rs/",             # third-party content
+    "data/brain-data/my-wiki-knowledge/",       # third-party content
+    ".claude/plugins/",                          # gitignored cache — on disk but not tracked
+)
 ALLOWED_FENCE_PREFIXES = ("```", "~~~")
 
 

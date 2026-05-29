@@ -243,7 +243,7 @@ disallowedTools: Write, Edit, NotebookEdit
 
     Output exactly this structure, in this order, to your delegating caller:
 
-    ```
+    ```text
     # WRAP-UP VERIFIER — <SESSION-ID>
 
     **Verdict:** PASS  |  PASS WITH WARNINGS  |  FAIL
