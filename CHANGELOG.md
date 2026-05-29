@@ -11,6 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added (SESSION-2026-05-29-008)
+- `.github/workflows/ci-failure-tracker.yml` — watches the umbrella's top-level CI workflows (ci, manifest-drift, release, secrets-rotate, wiki-lint, auto-review-merge, promote-develop-to-main, dependency-review, submodule-bump) via `workflow_run`. On a `failure` conclusion it opens (or updates) a tracking issue tagged `ci-failure` + `needs-autofix` whose body **references the run log URL and each failed job's log URL** (branch, commit, event, run id). Dedupes by `ci-failure: <workflow> on <branch>` title so repeat failures append a comment instead of spawning duplicates (the `secrets-rotate.yml` pattern). A companion `resolve` job auto-closes the issue when the same workflow next succeeds on that branch. House conventions: `@v6`/`@v9` action pins, blocked default permissions (`contents: read`, `issues: write`, `actions: read`), `concurrency` guard. actionlint clean; both inline `github-script` bodies pass `node --check` under the async wrapper github-script uses. (commit 4c25173; TODO: ci-failure-autofix)
+- `TODO.md` — new "CI-failure autofix" section: the follow-on loop that consumes `needs-autofix` issues (fetch logs → diagnose → open fix PR), gated behind one green tracker cycle, plus a note to pre-create the `ci-failure`/`needs-autofix` labels. (SESSION-2026-05-29-008)
+
+### Notes (SESSION-2026-05-29-008)
+- `workflow_run` only activates from the workflow file on the **default branch (main)** — a GitHub platform rule, so the tracker will not fire from the feature branch; it goes live after merge. The `ci-failure`/`needs-autofix` labels do not exist yet (`issues.create` mints them on first use). No submodule mutations, no `gh repo fork`, no host installs during the substantive work. The branch also carries unrelated commits from concurrent work (`23751e2` reusable-typecheck, `18eb003` prior SESSION-007 wrap-up) — this session's own substantive commit is `4c25173`.
+
 ### Fixed (SESSION-2026-05-29-007)
 - `.claude/settings.json` — repaired malformed JSON. Two settings objects were spliced together (stray `],` at the `extraKnownMarketplaces` boundary), making the file invalid so `/doctor` flagged it and Claude Code silently dropped all settings. Reconstructed losslessly: kept the richer hooks block + `permissions` + `extraKnownMarketplaces` from block 1, carried over the unique tail keys (`sandbox`, `advisorModel`, `theme`, `teammateMode`, `omcHud`, `skip*` flags) from block 2; verified all 28 hook commands in the dropped duplicate block were already present in the kept block (0 unique commands lost). Now 13 valid top-level keys. (commit b970ac5)
 

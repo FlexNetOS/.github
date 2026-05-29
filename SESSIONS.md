@@ -8,6 +8,55 @@
 
 ---
 
+## SESSION-2026-05-29-008 — ci-failure-tracker workflow + autofix TODO follow-on
+
+- **ID:** `SESSION-2026-05-29-008`
+- **Date:** 2026-05-29
+- **Branch:** `feat/session-2026-05-29-007`
+- **HEAD at end:** `23751e2` *(branch tip; this session's own substantive commit is `4c25173` — see Reservations)*
+- **Mode:** `manual` (workflow authoring) → `/oh-my-claudecode:verify` → `/wrap-up`
+- **Outcome:** `ci-failure-tracker.yml` authored, lint+JS-syntax verified, committed (`4c25173`); autofix follow-on logged in TODO.md. All substantive work committed.
+- **User-action gates surfaced:** none
+- **Cost:** ~$17 (Opus; workflow authoring + verify + wrap-up)
+
+### What the user asked
+> "create a github action workflow for failed workflows | it must that adds tags to refernce logs | create todo task at TODO.md to autofix"
+
+(The "workflow" keyword tripped the multi-agent Workflow-tool heuristic; treated as a false positive — the user meant a GitHub Actions YAML, not orchestration.)
+
+### What the answer is
+- **`.github/workflows/ci-failure-tracker.yml`** — `workflow_run`-triggered. On any watched workflow concluding in `failure`, opens/updates a GitHub issue **tagged `ci-failure` + `needs-autofix`** whose body **references the run + per-job log URLs**. Dedupes by `ci-failure: <workflow> on <branch>` title (comment vs. new issue); a `resolve` job auto-closes on recovery.
+- **`TODO.md` "CI-failure autofix" section** — the follow-on loop that consumes `needs-autofix` issues (fetch logs → diagnose → open fix PR), gated behind one green tracker cycle.
+- Durable artifact: `CHANGELOG.md` `[Unreleased]` (SESSION-2026-05-29-008).
+
+### What was actually done this session
+1. Read existing workflows (`ci.yml`, `manifest-drift.yml`, `secrets-rotate.yml`, `promote-develop-to-main.yml`) to match house conventions before writing.
+2. Authored `ci-failure-tracker.yml` (track + resolve jobs) reusing the `secrets-rotate.yml` dedupe-or-create-issue pattern; blocked default perms; `concurrency` guard; `@v6`/`@v9` pins.
+3. Added the "CI-failure autofix" section to `TODO.md`.
+4. Committed both (`4c25173`).
+5. `/verify`: actionlint clean; YAML parsed + triggers/`if`-guards confirmed; extracted both `github-script` bodies and proved JS syntax under the async wrapper github-script runs (caught + corrected a `node --check` CommonJS false-positive on top-level `await`).
+
+### Reservations / risks
+- **`workflow_run` only activates from `main`** (GitHub platform rule) — the tracker cannot fire from this feature branch; live only after merge.
+- The `ci-failure` / `needs-autofix` labels do not exist yet; `issues.create` mints them on first use (TODO notes pre-creating with colors).
+- **Branch state is muddled by concurrent work:** the branch is `feat/session-2026-05-29-007` and its tip `23751e2` (reusable-typecheck.yml) + `18eb003` (prior SESSION-007 wrap-up) were **not** produced by this session. This session's only substantive commit is `4c25173`. SESSION-007's entry records `HEAD at end: 4c25173` and references commits (`b970ac5`/`787f449`) not in the current linear log — evidence of cross-branch rebase/cherry-pick churn. Left as-is; not rewritten.
+- Negative gates: no submodule mutations, no `gh repo fork`, no host installs. Untracked `repos/*`, `secrets/store/*`, `network/`, `data/brain-data/*` are pre-existing user clones/secrets/research — **not touched, not staged**.
+- `make verify` reports 3 pre-existing markdown errors (`.claude/skills/install-github-app/SKILL.md:156,277`, `data/brain-data/research/n8n-mcp.md:141`) from other sessions — not introduced here, left out of scope.
+
+### What's next
+- Merge the branch so `ci-failure-tracker.yml` lands on `main` and the `workflow_run` trigger activates; pre-create the `ci-failure`/`needs-autofix` labels; then implement the autofix loop (TODO: ci-failure-autofix) once the tracker has one green cycle.
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `.github/workflows/ci-failure-tracker.yml` | New: failure-tracker workflow (committed `4c25173`) |
+| `TODO.md` | Added "CI-failure autofix" section + wrap-up header bump |
+| `CHANGELOG.md` | `[Unreleased]` SESSION-2026-05-29-008 Added/Notes |
+| `SESSIONS.md` | This entry |
+
+---
+
 ## SESSION-2026-05-29-007 — repair malformed `.claude/settings.json` (/doctor) + add n8n-mcp MCP server
 
 - **ID:** `SESSION-2026-05-29-007`
