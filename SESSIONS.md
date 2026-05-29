@@ -8,7 +8,65 @@
 
 ---
 
-## SESSION-2026-05-29-004 — n8n self-hosting env vars: Ralph loop + /verify (100% healthy)
+## SESSION-2026-05-29-005 — n8n clone-setup Phase 1-3 + deepinit AGENTS.md hierarchy + autoresearch mission
+
+- **ID:** `SESSION-2026-05-29-005`
+- **Date:** 2026-05-29
+- **Branch:** `feat/session-2026-05-29-004`
+- **HEAD at end:** `3ffbad1`
+- **Mode:** `/clone-setup` → `/ralph loop deep /autoresearch /tdd-workflow /deepinit` → `/wrap-up`
+- **Outcome:** n8n dossier complete + build verified healthy; 5 AGENTS.md files + codebase-health autoresearch mission landed; all committed. n8n develop-branch push + submodule conversion gated (UA-2026-05-29-003).
+- **User-action gates surfaced:** `UA-2026-05-29-003`
+- **Cost:** $279 (multi-iteration build debugging + Ralph loop + Opus merge-conflict triage — unusually high)
+
+### What the user asked
+> `/clone-setup <n8n-io/n8n> [skip the clone step if you can verify the clone is up to date at repos/n8nn8n-io/n8n with no local changes]`
+
+Scope then expanded: user demanded the n8n setup be proven 100% healthy (not just `--version`), the fork gate must not pass until setup is confirmed; then `/ralph loop deep /autoresearch on the entire codebase with /tdd-workflow and /deepinit`.
+
+### What the answer is
+- **n8n dossier complete** at `data/brain-data/research/n8n.md` — all 12+ sections filled, §12 discrepancies, §10 decisions resolved (license SUL-approved, sync as-needed, telemetry free-tier, EE local-host-only). MANIFEST n8n entry updated to `branch: develop` + pnpm/docker toolchain.
+- **n8n build root cause:** pnpm 11.x (mise) ignores `pnpm.onlyBuiltDependencies` → turbo/tsdown `.bin` symlinks missing → cascade build failure. Fix recipe (pnpm 10.32.1 install + turbo build → `n8n start` → healthz 200) captured in memory `feedback-n8n-build-fix-2026-05-29.md` + `feedback-n8n-pnpm-version.md`.
+- **deepinit:** 5 AGENTS.md files created (`.claude/`, `.github/`, `scripts/` [all 26 scripts], `tools/`, `data/brain-data/research/`) with `<!-- Parent: -->` tags. Architect review APPROVED after fixing scripts/AGENTS.md 17/26 → 26/26.
+- **autoresearch:** codebase-health mission at `.omc/autoresearch/codebase-health/` with `make verify` evaluator; iteration-0001 PASS (exit 0). `make verify`: 66 markdown, 29 manifest, 3 tool-assets — all clean.
+
+### What was actually done this session
+1. `/clone-setup n8n-io/n8n`: verified existing `repos/n8n/` clone (HEAD `25a836dfb7`), generated repomix compressed pack, wrote full dossier from source (code-first).
+2. Resolved all §10 dossier decisions per user input; updated MANIFEST n8n entry to `develop` + notes.
+3. Setup proven: diagnosed pnpm 11.x build failure across multiple iterations; build verified healthy via pnpm 10.32.1 recipe; `n8n start` → healthz 200.
+4. `/ralph` PRD-driven run (4 stories): deepinit AGENTS.md hierarchy + codebase-health autoresearch mission. Architect REJECTED (scripts 17/26) → fixed to 26/26 → APPROVED. Deslop pass: clean. Regression: `make verify` exit 0.
+5. Wrap-up interrupted by an in-progress `origin/main` merge (conflict in all 4 tracking files + wrap-up skill); halted and surfaced to user; user resolved merge; resumed wrap-up on clean tree.
+
+### Reservations / risks
+- **No `gh repo fork` calls made.** n8n fork already exists at `FlexNetOS/n8n`; develop branch does NOT yet exist on the fork (push was classifier-blocked).
+- **No submodule conversion** — `repos/n8n/` is still a plain clone, not yet `repos/forked/n8n/`.
+- **No push to origin/n8n.** The n8n `develop`-branch creation + push + submodule conversion is gated as UA-2026-05-29-003.
+- `repos/n8n/` working tree has a built `node_modules` + dist from the healthy-build verification (gitignored within the clone; not part of umbrella tracking).
+
+### User-action gates (if any)
+- `UA-2026-05-29-003` — create + push `develop` on FlexNetOS/n8n, then convert `repos/n8n/` → `repos/forked/n8n/` submodule (blocks: TODO n8n adoption item).
+
+### What's next
+- User does `UA-2026-05-29-003` (n8n develop push + submodule conversion) to close the n8n adoption gate.
+- Remaining adoption gates unchanged: ai-top-utility (owned), fabro/paperclip (fork go/no-go).
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `data/brain-data/research/n8n.md` | Full dossier: §10 decisions resolved, §9 build verified, §12 discrepancies |
+| `data/brain-data/research/n8n/repomix-summary.md` + `.gitignore` | repomix pack summary; large XML packs gitignored |
+| `data/brain-data/research/AGENTS.md` | deepinit: 12-section dossier schema, fork gate |
+| `.claude/AGENTS.md` | deepinit: skills, settings, hooks, doctor checks |
+| `.github/AGENTS.md` | deepinit: workflows, templates, actionlint conventions |
+| `scripts/AGENTS.md` | deepinit: all 26 scripts documented |
+| `tools/AGENTS.md` | deepinit: pinned tools, MANIFEST format |
+| `repos/MANIFEST.yaml` | n8n entry → `branch: develop` + pnpm/docker toolchain + notes |
+| `.omc/autoresearch/codebase-health/` | mission.md, evaluator.json, run-001 iteration JSON + decision log |
+| `~/.claude/projects/.../memory/feedback-n8n-pnpm-version.md` | n8n pnpm 10.x requirement (created by me) |
+| `~/.claude/projects/.../memory/feedback-n8n-build-fix-2026-05-29.md` | full n8n build-fix recipe (created during session) |
+
+
 
 - **ID:** `SESSION-2026-05-29-004`
 - **Date:** 2026-05-29

@@ -548,3 +548,27 @@ feature branch but should not be merged to `main` without picking one of the abo
 
 - **How to verify done:** `slim login` completes and prints "Logged in as \<name\> (\<email\>)".
 - **Status:** `open`
+
+### UA-2026-05-29-003 — Create + push `develop` branch on FlexNetOS/n8n, then convert to submodule
+
+- **Surfaced by:** `SESSION-2026-05-29-005` (n8n clone-setup Phase 1-3)
+- **Blocks:** `TODO.md` → "Per `n8n.md` §6 — convert to `repos/forked/n8n/` submodule". The n8n fork-adoption gate cannot close until `develop` exists on the fork and the plain clone at `repos/n8n/` is replaced by a submodule.
+- **Why:** Creating `develop` requires `git push` to `https://github.com/FlexNetOS/n8n.git`. The agent attempted it and the push was blocked by the auto-mode permission classifier (external-remote push needs explicit human authorization). Build is verified healthy and all §10 dossier decisions are resolved — this push is the only remaining gate before submodule conversion.
+- **What to do:**
+
+  ```bash
+  cd /home/drdave/workspace/my-github/repos/n8n
+  git fetch upstream master --depth=1
+  git checkout master && git merge --ff-only upstream/master
+  git push origin master                       # mirror upstream
+  git checkout -b develop origin/master 2>/dev/null || git checkout develop
+  git push -u origin develop
+  # Then convert plain clone → submodule (from umbrella root):
+  cd /home/drdave/workspace/my-github
+  rm -rf repos/n8n && mkdir -p repos/forked
+  git submodule add --depth=1 -b develop https://github.com/FlexNetOS/n8n.git repos/forked/n8n
+  cd repos/forked/n8n && git remote add upstream https://github.com/n8n-io/n8n.git
+  ```
+
+- **How to verify done:** `git ls-remote https://github.com/FlexNetOS/n8n.git develop` returns a sha AND `git -C /home/drdave/workspace/my-github submodule status repos/forked/n8n` lists the submodule.
+- **Status:** `open`
