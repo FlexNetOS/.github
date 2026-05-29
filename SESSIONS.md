@@ -8,6 +8,126 @@
 
 ---
 
+## SESSION-2026-05-29-005 — n8n clone-setup Phase 1-3 + deepinit AGENTS.md hierarchy + autoresearch mission
+
+- **ID:** `SESSION-2026-05-29-005`
+- **Date:** 2026-05-29
+- **Branch:** `feat/session-2026-05-29-004`
+- **HEAD at end:** `3ffbad1`
+- **Mode:** `/clone-setup` → `/ralph loop deep /autoresearch /tdd-workflow /deepinit` → `/wrap-up`
+- **Outcome:** n8n dossier complete + build verified healthy; 5 AGENTS.md files + codebase-health autoresearch mission landed; all committed. n8n develop-branch push + submodule conversion gated (UA-2026-05-29-003).
+- **User-action gates surfaced:** `UA-2026-05-29-003`
+- **Cost:** $279 (multi-iteration build debugging + Ralph loop + Opus merge-conflict triage — unusually high)
+
+### What the user asked
+> `/clone-setup <n8n-io/n8n> [skip the clone step if you can verify the clone is up to date at repos/n8nn8n-io/n8n with no local changes]`
+
+Scope then expanded: user demanded the n8n setup be proven 100% healthy (not just `--version`), the fork gate must not pass until setup is confirmed; then `/ralph loop deep /autoresearch on the entire codebase with /tdd-workflow and /deepinit`.
+
+### What the answer is
+- **n8n dossier complete** at `data/brain-data/research/n8n.md` — all 12+ sections filled, §12 discrepancies, §10 decisions resolved (license SUL-approved, sync as-needed, telemetry free-tier, EE local-host-only). MANIFEST n8n entry updated to `branch: develop` + pnpm/docker toolchain.
+- **n8n build root cause:** pnpm 11.x (mise) ignores `pnpm.onlyBuiltDependencies` → turbo/tsdown `.bin` symlinks missing → cascade build failure. Fix recipe (pnpm 10.32.1 install + turbo build → `n8n start` → healthz 200) captured in memory `feedback-n8n-build-fix-2026-05-29.md` + `feedback-n8n-pnpm-version.md`.
+- **deepinit:** 5 AGENTS.md files created (`.claude/`, `.github/`, `scripts/` [all 26 scripts], `tools/`, `data/brain-data/research/`) with `<!-- Parent: -->` tags. Architect review APPROVED after fixing scripts/AGENTS.md 17/26 → 26/26.
+- **autoresearch:** codebase-health mission at `.omc/autoresearch/codebase-health/` with `make verify` evaluator; iteration-0001 PASS (exit 0). `make verify`: 66 markdown, 29 manifest, 3 tool-assets — all clean.
+
+### What was actually done this session
+1. `/clone-setup n8n-io/n8n`: verified existing `repos/n8n/` clone (HEAD `25a836dfb7`), generated repomix compressed pack, wrote full dossier from source (code-first).
+2. Resolved all §10 dossier decisions per user input; updated MANIFEST n8n entry to `develop` + notes.
+3. Setup proven: diagnosed pnpm 11.x build failure across multiple iterations; build verified healthy via pnpm 10.32.1 recipe; `n8n start` → healthz 200.
+4. `/ralph` PRD-driven run (4 stories): deepinit AGENTS.md hierarchy + codebase-health autoresearch mission. Architect REJECTED (scripts 17/26) → fixed to 26/26 → APPROVED. Deslop pass: clean. Regression: `make verify` exit 0.
+5. Wrap-up interrupted by an in-progress `origin/main` merge (conflict in all 4 tracking files + wrap-up skill); halted and surfaced to user; user resolved merge; resumed wrap-up on clean tree.
+
+### Reservations / risks
+- **No `gh repo fork` calls made.** n8n fork already exists at `FlexNetOS/n8n`; develop branch does NOT yet exist on the fork (push was classifier-blocked).
+- **No submodule conversion** — `repos/n8n/` is still a plain clone, not yet `repos/forked/n8n/`.
+- **No push to origin/n8n.** The n8n `develop`-branch creation + push + submodule conversion is gated as UA-2026-05-29-003.
+- `repos/n8n/` working tree has a built `node_modules` + dist from the healthy-build verification (gitignored within the clone; not part of umbrella tracking).
+
+### User-action gates (if any)
+- `UA-2026-05-29-003` — create + push `develop` on FlexNetOS/n8n, then convert `repos/n8n/` → `repos/forked/n8n/` submodule (blocks: TODO n8n adoption item).
+
+### What's next
+- User does `UA-2026-05-29-003` (n8n develop push + submodule conversion) to close the n8n adoption gate.
+- Remaining adoption gates unchanged: ai-top-utility (owned), fabro/paperclip (fork go/no-go).
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `data/brain-data/research/n8n.md` | Full dossier: §10 decisions resolved, §9 build verified, §12 discrepancies |
+| `data/brain-data/research/n8n/repomix-summary.md` + `.gitignore` | repomix pack summary; large XML packs gitignored |
+| `data/brain-data/research/AGENTS.md` | deepinit: 12-section dossier schema, fork gate |
+| `.claude/AGENTS.md` | deepinit: skills, settings, hooks, doctor checks |
+| `.github/AGENTS.md` | deepinit: workflows, templates, actionlint conventions |
+| `scripts/AGENTS.md` | deepinit: all 26 scripts documented |
+| `tools/AGENTS.md` | deepinit: pinned tools, MANIFEST format |
+| `repos/MANIFEST.yaml` | n8n entry → `branch: develop` + pnpm/docker toolchain + notes |
+| `.omc/autoresearch/codebase-health/` | mission.md, evaluator.json, run-001 iteration JSON + decision log |
+| `~/.claude/projects/.../memory/feedback-n8n-pnpm-version.md` | n8n pnpm 10.x requirement (created by me) |
+| `~/.claude/projects/.../memory/feedback-n8n-build-fix-2026-05-29.md` | full n8n build-fix recipe (created during session) |
+
+
+
+- **ID:** `SESSION-2026-05-29-004`
+- **Date:** 2026-05-29
+- **Branch:** `feat/session-2026-05-29-002`
+- **HEAD at end:** `766a948`
+- **Mode:** `/ralph loop` → `/oh-my-claudecode:verify` → `/wrap-up`
+- **Outcome:** `repos/n8n/.env.local` created (585 lines, 23 KB, 23 sections); n8n build fixed; `/healthz` → HTTP 200; `data/brain-data/research/n8n.md` updated (§13 + §14)
+- **User-action gates surfaced:** none
+- **Cost:** ~$27 (Ralph loop + multi-phase build fix + verification)
+
+### What the user asked
+> "/ralph loop /autoresearch on n8n to indetify, create, setup the proper enviroment veriables for n8n self-hosting (ALL-FREE-Features) | then apply to /home/drdave/workspace/my-github/repos/n8n and /verify 100% healthy"
+
+Post-compaction: user ran `/oh-my-claudecode:verify` to reconfirm health, then `/wrap-up`.
+
+### What the answer is
+- All free-tier n8n environment variables catalogued from 44+ `@Env()` decorator files across `packages/@n8n/config/src/configs/` + binary-data config + CLI module configs.
+- **`repos/n8n/.env.local`** — 585 lines, 23 KB, 23 sections. Key free features enabled: AI nodes (`N8N_AI_ENABLED=true`), community packages, Python code node, MFA, Prometheus metrics, public API, task runners (internal mode). All EE vars (SAML, source-control, external-secrets) commented out in a reference block only.
+- n8n build fixed from pnpm 11.x poisoned state: tsc-alias, pnpm@10.32.1 install, turbo sh shim. 59/59 tasks passed.
+- Verified 100% healthy: `/healthz` → `{"status":"ok"}`, `/rest/settings` → valid JSON with `communityNodesEnabled: true`, 0 ERROR/FATAL in startup log.
+
+### What was actually done this session
+1. Scanned all 44 config files in `packages/@n8n/config/src/configs/*.ts`, `packages/core/src/binary-data/binary-data.config.ts`, and CLI module configs for `@Env()` decorators
+2. Identified EE-only modules: `source-control.ee`, `external-secrets.ee`, `dynamic-credentials.ee` — all excluded from `.env.local`
+3. Created `repos/n8n/.env.local` (585 lines, 23 KB) with 22 named sections + 1 EE reference block
+4. Diagnosed and fixed n8n build failures: `tsc-alias` on `packages/core` (35 occurrences, 20 files), `@n8n/ai-workflow-builder.ee`, `@n8n/task-runner`; `bunx pnpm@10.32.1 install --frozen-lockfile`; turbo via sh shim (not `node turbo`)
+5. Started n8n with dotenvx, verified `/healthz` → HTTP 200 `{"status":"ok"}`
+6. Updated `data/brain-data/research/n8n.md` §13 (build fix recipe) + §14 (env var reference table, 23 categories) — commits `56a2b18` + `876210a`
+7. Saved memories: `feedback-n8n-pnpm-version.md`, `feedback-n8n-build-fix-2026-05-29.md`, updated `MEMORY.md` index
+8. Post-compaction: state confirmed clean (no active OMC modes); re-ran `/verify` — same HTTP 200 + `communityNodesEnabled: true` confirmed
+
+### Reservations / risks
+- `repos/n8n/.env.local` is gitignored inside `repos/n8n/` — not version-controlled; lives only on this host
+- Python task runner venv missing on this host — Python code nodes fail at runtime until a venv exists at `$HOME/.n8n/task-runners/python/venv`; all other features healthy without it
+- Architect approval was given with two findings (both fixed before sign-off): curl evidence captured to log, section count nit corrected
+- Pre-session OMC state files (`.omc/state/hud-stdin-cache.json`, `last-tool-error.json`, `mission-state.json`, `subagent-tracking.json`, deleted `sessions/94dfaace-.../session-started.json`) modified by session infrastructure — not session work
+
+### User-action gates (if any)
+None.
+
+### What's next
+- Push `feat/session-2026-05-29-002` to origin when ready (contains n8n research commits + all session wrap-ups)
+- Create Python venv for n8n Python task runner if Python code nodes are needed
+- Review `data/brain-data/research/n8n.md` section 9 to decide sync cadence and local-changes policy (TODO: n8n.md section 9 review)
+
+### Files created/modified this session
+
+| Path | What |
+|---|---|
+| `repos/n8n/.env.local` | 585-line comprehensive free-tier self-hosting config (gitignored in repos/n8n) |
+| `data/brain-data/research/n8n.md` | Added §13 (build fix recipe) + §14 (env var reference, 23 categories) |
+| `~/.claude/projects/-home-drdave-workspace-my-github/memory/feedback-n8n-pnpm-version.md` | pnpm version requirement + correct turbo invocation |
+| `~/.claude/projects/-home-drdave-workspace-my-github/memory/feedback-n8n-build-fix-2026-05-29.md` | Step-by-step build fix recipe |
+| `~/.claude/projects/-home-drdave-workspace-my-github/memory/MEMORY.md` | Updated index with n8n memory entries |
+| `.omc/state/sessions/f90a462b-e3be-415a-9464-743696bd283a/prd.json` | Ralph PRD (3 stories, all `passes: true`) |
+| `CHANGELOG.md` | Added n8n env var + build fix entries under `[Unreleased]` |
+| `TODO.md` | Bumped Last updated |
+| `SESSIONS.md` | This entry |
+
+---
+
 ## SESSION-2026-05-29-003 — slim clone-setup complete; local HTTPS proxy live for all services
 
 - **ID:** `SESSION-2026-05-29-003`
