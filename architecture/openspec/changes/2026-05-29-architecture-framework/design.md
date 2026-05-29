@@ -35,7 +35,7 @@ is a zero-decision plan: every step is mechanical, every ambiguity resolved.
 | `markdown_lint_clean` | `python3 scripts/verify-markdown.py .` exits zero after adding tracked docs. | Verifier reports untagged/unclosed fences or multiple H1s in changed files. |
 | `openspec_literal_directory` | Spec engine lives at `architecture/openspec/`; no physical `architecture/spec/` is created. | `test -d architecture/spec` succeeds, or docs instruct a physical `architecture/spec/` path. |
 | `routing_consistency` | The routing block in `CLAUDE.md` and `AGENTS.md` lists the same canonical paths for all four artifact classes. | The two files disagree on any path or omit a class. |
-| `additive_scope` | Framework delivery changes only `architecture/**`, `CLAUDE.md`, `AGENTS.md`, `docs/directory-layout.md`, `.gitignore`. | `git diff --name-only` includes `repos/**`, `lifeos/**`, or unrelated docs. |
+| `additive_scope` | Framework delivery changes only `architecture/**`, `CLAUDE.md`, `AGENTS.md`, `docs/directory-layout.md`, `.gitignore`, `scripts/verify-markdown.py` (the gitignored-`.claude` exclude). Measured against the branch base `origin/develop` (NOT `main`, which lags develop). | `git diff --name-only origin/develop` includes `repos/**`, `lifeos/**`, or unrelated docs. |
 | `cross_link_graph` | PRD-0001 ↔ ADR-0001 ↔ OpenSpec change are mutually linked; README links both registries. | Any required relative link missing or pointing to a non-existent tracked path. |
 | `numbering_format` | PRDs match `PRD-[0-9]{4}-<slug>.md`, ADRs `ADR-[0-9]{4}-<slug>.md`, plans `YYYY-MM-DD-<slug>-plan.md`. | Any seeded artifact violates its filename convention. |
 
@@ -73,5 +73,11 @@ architecture/openspec/changes/2026-05-29-architecture-framework/specs/architectu
 CLAUDE.md
 AGENTS.md
 docs/directory-layout.md
+scripts/verify-markdown.py
 .gitignore
 ```
+
+> Note: `architecture/prd/.gitkeep` and `architecture/adr/.gitkeep` are not created
+> because those directories hold seeded artifacts (PRD-0001 / ADR-0001).
+> The current-truth `architecture/openspec/specs/architecture-framework/spec.md`
+> is produced by `openspec archive` promoting the change delta.
