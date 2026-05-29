@@ -9,6 +9,9 @@
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-002 — wrap-up skill updated: commit all + push + PR)
 **Branch:** `feat/todo-session-2026-05-28-006`
 **Status:** Vision sequence enforced in CLAUDE.md+AGENTS.md; fork-remediation dirty diffs captured; `make verify` clean; adoption/forks gated pending `gh auth login` (UA-005).
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-006 — `architecture/` artifact framework landed via OPSX multi-model flow; on `feat/architecture-framework`)
+**Branch:** `feat/architecture-framework`
+**Status:** `architecture/` framework complete (PRD-0001/ADR-0001/OpenSpec change archived; routing block in CLAUDE.md+AGENTS.md; `make verify` EXIT=0). DONE: framework scaffolding. DEFERRED: cross-repo rollout to submodules, registry generator, org-wide promotion. GATE: branch not yet pushed / no PR (awaiting user; branch tracks origin/develop).
 
 ---
 
