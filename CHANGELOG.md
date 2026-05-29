@@ -74,6 +74,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Notes (SESSION-2026-05-29-008)
 - `workflow_run` only activates from the workflow file on the **default branch (main)** — a GitHub platform rule, so the tracker will not fire from the feature branch; it goes live after merge. The `ci-failure`/`needs-autofix` labels do not exist yet (`issues.create` mints them on first use). No submodule mutations, no `gh repo fork`, no host installs during the substantive work. The branch also carries unrelated commits from concurrent work (`23751e2` reusable-typecheck, `18eb003` prior SESSION-007 wrap-up) — this session's own substantive commit is `4c25173`.
 
+### Added (SESSION-2026-05-29-006)
+- `architecture/` — single common root for the umbrella's design-time artifacts: `prd/`, `adr/`, `plan/`, and `openspec/` (OpenSpec OPSX engine), plus `README.md` (lifecycle map + routing table + PRD/ADR registry). Built via the OPSX multi-model flow (Claude + codex/gpt-5.5): spec-research → spec-plan → spec-impl → adversarial review → archive.
+- `architecture/prd/PRD-0001-architecture-framework.md` (via `ecc:plan-prd`), `architecture/adr/ADR-0001-architecture-artifact-homes.md` (via `ecc:architecture-decision-records`), and the archived OpenSpec change `2026-05-29-architecture-framework` promoting capability spec `openspec/specs/architecture-framework/spec.md` (6 requirements).
+- `architecture/openspec/config.yaml` (umbrella context + rules) and `project.md`.
+
+### Changed (SESSION-2026-05-29-006)
+- `CLAUDE.md` + `AGENTS.md` — added an identical **Architecture artifacts** routing block directing `ecc:plan-prd`/`prp-prd`, `ecc:architecture-decision-records`, `ccg:spec-*`, and `writing-plans`/`plan` outputs into `architecture/` (overriding their built-in defaults).
+- `docs/directory-layout.md` — documented the `architecture/` top-level entry.
+- `scripts/verify-markdown.py` — exclude gitignored `architecture/.claude/` (OpenSpec init tooling) from markdown lint, mirroring the `.claude/plugins/` precedent.
+- `.gitignore` — ignore `architecture/.claude/` (OpenSpec init AI-tooling, local only).
+
+### Fixed (SESSION-2026-05-29-006)
+- `architecture/` cross-links repointed to the archived change path (`changes/archive/...`). PR #27 squash-merged before the post-archive link fix, shipping 5 broken relative links to develop; caught by `/wrap-up` verification, fixed forward in PR #29. (unblocks: UA-2026-05-29-004)
+
+### Notes (SESSION-2026-05-29-006)
+- Framework merged to develop via PR #27 (`9b6ef51`); cross-link fix follows in PR #29. Built via full multi-model OPSX (Claude + codex); antigravity backend unavailable. `architecture/.claude/` gitignored (OpenSpec init tooling). No submodule/`docs`-relocation/`lifeos` changes.
 ### Fixed (SESSION-2026-05-29-007)
 - `.claude/settings.json` — repaired malformed JSON. Two settings objects were spliced together (stray `],` at the `extraKnownMarketplaces` boundary), making the file invalid so `/doctor` flagged it and Claude Code silently dropped all settings. Reconstructed losslessly: kept the richer hooks block + `permissions` + `extraKnownMarketplaces` from block 1, carried over the unique tail keys (`sandbox`, `advisorModel`, `theme`, `teammateMode`, `omcHud`, `skip*` flags) from block 2; verified all 28 hook commands in the dropped duplicate block were already present in the kept block (0 unique commands lost). Now 13 valid top-level keys. (commit b970ac5)
 

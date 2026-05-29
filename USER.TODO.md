@@ -577,6 +577,21 @@ feature branch but should not be merged to `main` without picking one of the abo
 - **How to verify done:** `git ls-remote https://github.com/FlexNetOS/n8n.git develop` returns a sha AND `git -C /home/drdave/workspace/my-github submodule status repos/forked/n8n` lists the submodule.
 - **Status:** `open`
 
+---
+
+### UA-2026-05-29-004 — Review + merge PR #29 (architecture cross-link fix) into develop
+
+- **Surfaced by:** `SESSION-2026-05-29-006` (architecture/ framework)
+- **Blocks:** Correct relative cross-links in `architecture/` on `develop`. PR #27 (the framework) is already merged, but it squash-merged at the pre-archive commit, so `develop` currently has 5 broken links (PRD-0001 / ADR-0001 / archived proposal point at the pre-archive `changes/<id>/` path).
+- **Why:** PR #29 (`fix/architecture-crosslinks`) repoints them to `changes/archive/...` and is verified (all 11 `architecture/**/*.md` links resolve). Merging is a human gate (review + merge to develop).
+- **What to do:**
+
+  ```bash
+  gh pr view 29 --web         # review
+  gh pr merge 29 --squash     # or via the GitHub UI, targeting develop
+  ```
+
+- **How to verify done:** on updated `develop`, `architecture/prd/PRD-0001-architecture-framework.md` links to `../openspec/changes/archive/2026-05-29-architecture-framework/proposal.md` (the `archive/` path), and a link-resolution scan of `architecture/**/*.md` reports 0 broken.
 ### UA-2026-05-29-004 — Merge `feat/install-github-app` PR to `main` to activate the promote-develop-to-main workflow
 
 - **Surfaced by:** `SESSION-2026-05-29-006`

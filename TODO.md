@@ -6,6 +6,12 @@
 
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-012)
 **Branch:** `feat/session-2026-05-29-007`
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-007 — repaired malformed `.claude/settings.json`; added n8n-mcp MCP server) — no new agent TODO items
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-006 — main/develop branch protections + promote-develop-to-main workflow)
+**Branch:** `feat/install-github-app`
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-001 — clone-setup skill fix + setup philosophy; PR #21)
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-002 — wrap-up skill updated: commit all + push + PR)
+**Branch:** `feat/todo-session-2026-05-28-006`
 **Status:** Vision sequence enforced in CLAUDE.md+AGENTS.md; fork-remediation dirty diffs captured; `make verify` clean; adoption/forks gated pending `gh auth login` (UA-005).
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-006 — `architecture/` artifact framework landed via OPSX multi-model flow; on `feat/architecture-framework`)
 **Branch:** `feat/architecture-framework`
@@ -13,6 +19,14 @@
 
 ---
 
+
+## CI-failure autofix (follow-on to `ci-failure-tracker.yml`)
+
+> `ci-failure-tracker.yml` watches the umbrella's workflows and opens an issue tagged `ci-failure` + `needs-autofix` that references the failed run + per-job logs whenever CI fails. The autofix loop below consumes those issues.
+
+- [ ] **Autofix failed workflows from `needs-autofix` issues.** Build the loop that picks up an open `ci-failure` issue, fetches the referenced run/job logs, diagnoses the root cause, and opens a fix PR against the failing branch (or comments a diagnosis when the fix needs human judgement). Candidate trigger: `issues` (labeled `needs-autofix`) → dispatch a Claude autofix job; or a scheduled sweep over open `ci-failure` issues. On success the tracker's `resolve` job auto-closes the issue when the workflow next goes green.
+  - Gate: do not enable write-mode autofix on `main` until the tracker has run green for ≥1 cycle and the issue-noise/dedupe behaviour is confirmed sane on a feature branch.
+  - First create the `ci-failure` + `needs-autofix` repo labels (the tracker assumes they can be applied; `github.rest.issues.create` will create missing labels on first use, but pre-creating them with colors/descriptions is cleaner).
 
 ## CI-failure autofix (follow-on to `ci-failure-tracker.yml`)
 
