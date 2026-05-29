@@ -9,40 +9,116 @@
 
 | Field | Value |
 | --- | --- |
+| Upstream slug | `n8n-io/n8n` |
 | Origin (our fork) | `https://github.com/FlexNetOS/n8n.git` |
 | Upstream | `https://github.com/n8n-io/n8n.git` |
 | Upstream remote | already wired locally as `upstream` |
-| License | Sustainable Use License + Apache 2.0 (n8n fair-code dual license — verify implications) |
+| Manifest name | `n8n-monorepo` |
+| Version | `2.23.0` |
+| License | Sustainable Use License + Apache 2.0 (EE files under `LICENSE_EE.md`) |
 | Upstream default branch | `master` |
+| Runtime requirements | Node `>=22.22` (`engines` field); CONTRIBUTING says "Node 24+" (see §12); pnpm `>=10.22.0` |
 | Current local branch | `master` |
-| Local state | clean; in sync with origin/master |
+| Local state (repos/n8n/) | clean; in sync with origin/master |
 | Latest commit | `25a836dfb7 feat(editor): Show data redaction scope dropdown to unlicensed users (#30966)` (2026-05-28) |
-| Visible branches | `master` + ~3596 remote branches (PR branches mostly) |
+| Tracked files | 19,378 |
+| Primary language | TypeScript (13,161 files), Vue (1,029), JSON (3,099) |
 
-## 2. Purpose (per README)
+## 2. Purpose
 
 > *"n8n - Secure Workflow Automation for Technical Teams. n8n is a workflow automation platform that gives technical teams the flexibility of code with the speed of no-code. With 400+ integrations, native AI capabilities, and a fair-code license, n8n lets you build powerful automations while maintaining full control over your data and deployments."*
 
-Monorepo packaged as `n8n-monorepo` (version 2.23.0 at time of research).
-400+ integrations, native AI nodes, fair-code license.
+Monorepo packaged as `n8n-monorepo` (version 2.23.0). 400+ integrations, native AI nodes (LangChain-based), fair-code license. Editor at http://localhost:5678.
+
+**Code vs README verdict:** Code matches the README's claims. The `npx n8n` quick-start in README is for **end users installing from npm**, not for contributors building from source — see §12 for the nuance. AI/LangChain nodes confirmed in `packages/@n8n/nodes-langchain/`. PostHog + RudderStack telemetry is wired into startup (not disclosed in README quick-start).
 
 ## 3. Stack inventory
 
-- Node monorepo. Root `package.json`: `"name": "n8n-monorepo"`,
-  `"version": "2.23.0"`, `"private": true`.
-- Directories: `apps/`, `bin/`, `docker/`, `docs/`, `evals/`, `installer/`,
-  `lib/`, `packages/`, `target/`, `test/`. Polyglot signals (`target/`,
-  `.cargo/`) — verify Rust components on adoption.
-- `.github/` directory in upstream — our caller `ci.yml` must use a
-  different filename and not edit upstream's.
+### Package manager / build
+- **Package manager:** `pnpm` (enforced — `preinstall` script `block-npm-install.js` blocks `npm install`)
+- **Lock file:** `pnpm-lock.yaml` (1.4 MB)
+- **Build orchestration:** Turbo (`turbo run build` / `turbo run dev --parallel`)
+- **Monorepo structure:** pnpm workspaces under `packages/`
+
+### Runtime requirements (from code)
+| Tool | `engines` field | CONTRIBUTING says |
+| --- | --- | --- |
+| Node.js | `>=22.22` | "version 24 or newer" |
+| pnpm | `>=10.22.0` | `pnpm@10.22.0` via corepack |
+
+### Key scripts (from package.json)
+| Command | What it does |
+| --- | --- |
+| `pnpm install` | Install all workspace deps (blocks npm) |
+| `pnpm build` | `turbo run build` — full monorepo build |
+| `pnpm dev` | `turbo run dev --parallel` — full-stack hot reload |
+| `pnpm dev:be` | Backend only (excludes design-system, chat, task-runner, editor-ui) |
+| `pnpm dev:fe` | Frontend only (editor-ui + design-system) |
+| `pnpm dev:ai` | AI nodes only (langchain + n8n + n8n-core) |
+| `pnpm start` | `node scripts/os-normalize.mjs --dir packages/cli/bin n8n` |
+| `pnpm test` | `turbo run test` (Jest for backend, Vitest for frontend, Playwright for E2E) |
+| `pnpm lint` | `turbo run lint` (Biome + ESLint) |
+| `pnpm typecheck` | `turbo run typecheck` |
+
+### Key packages
+| Package | Role |
+| --- | --- |
+| `packages/cli` | Express server, REST API, CLI commands |
+| `packages/core` | Workflow execution engine |
+| `packages/workflow` | Core workflow interfaces/types |
+| `packages/editor-ui` | Vue 3 frontend (Pinia state, Vite build) |
+| `packages/nodes-base` | 400+ built-in integration nodes |
+| `packages/@n8n/nodes-langchain` | AI/LangChain nodes |
+| `packages/@n8n/instance-ai` | AI assistant backend |
+| `packages/@n8n/design-system` | Vue component library |
+| `packages/@n8n/config` | Centralized config management (`@Env()` decorators) |
+| `packages/@n8n/api-types` | Shared TS interfaces (FE ↔ BE) |
+
+### Technology stack
+- **Frontend:** Vue 3 + TypeScript + Vite + Pinia + Storybook
+- **Backend:** Node.js + TypeScript + Express + TypeORM
+- **Database:** TypeORM — SQLite (default) or PostgreSQL
+- **Testing:** Jest (unit/backend), Vitest (frontend), Playwright (E2E)
+- **Code quality:** Biome (formatting) + ESLint + lefthook git hooks
+- **DI container:** `@n8n/di` (IoC)
+- **Feature flags:** PostHog
+- **Telemetry:** PostHog + RudderStack (wired into base-command startup; can be disabled)
+
+### Env vars (from `.env.local.example` + code scan)
+| Var | Required? | Notes |
+| --- | --- | --- |
+| `N8N_USER_FOLDER` | optional | Local data folder |
+| `N8N_LICENSE_TENANT_ID` | optional | For Enterprise license SDK |
+| `N8N_LICENSE_ACTIVATION_KEY` | optional | Enterprise activation key |
+| `N8N_LICENSE_CERT` | optional | Ephemeral Enterprise cert |
+| `N8N_AI_ENABLED` | optional | Enables AI features globally |
+| `N8N_AI_ASSISTANT_BASE_URL` | optional | AI assistant service URL |
+| `N8N_AI_ANTHROPIC_KEY` | optional | Claude API key for AI workflow builder |
+| `LANGSMITH_ENDPOINT` / `LANGSMITH_PROJECT` / `LANGSMITH_TRACING` | optional | LangSmith tracing (LangChain SDK) |
+
+Env file name is **`.env.local.example`** (not `.env.example`) — copy to `.env.local`, load with `pnpm exec dotenvx run -f .env.local -- <cmd>`.
+
+### Required services / ports
+- Port **5678** — n8n editor UI
+- Database: SQLite by default (file-based); PostgreSQL optional
+- Redis: needed for queue mode and multi-main only
+- Mailpit: E2E tests only
+
+### Security flags
+- **Telemetry ON by default:** PostHog (`packages/cli/src/commands/base-command.ts`) + RudderStack proxy wired at startup. Can be disabled via config.
+- **`.ee.` files Enterprise-only:** source under EE license, not SUL.
+- No hardcoded credentials found in scan.
+- n8n ships Claude (`N8N_AI_ANTHROPIC_KEY`) and LangSmith integrations — those keys come from env, not hardcoded.
 
 ## 4. License caveat (READ BEFORE ADOPTING)
 
-n8n is **not pure MIT**. Sustainable Use License restricts some commercial
-uses. Forking permitted under license; any FlexNetOS distribution / hosted
-offering using n8n must respect SUL terms. Read `LICENSE.md` before
-deciding what FlexNetOS does with the fork. Hosted/SaaS-like intent →
-loop in counsel. Internal automation only → SUL is permissive enough.
+**Dual license:**
+- Files containing `.ee.` in filename or `.ee` in dirname → **n8n Enterprise License** (`LICENSE_EE.md`). These are NOT licensed under SUL and require a paid Enterprise key to use.
+- Everything else → **Sustainable Use License (SUL)** — permits self-hosting and internal use; **restricts SaaS/hosted offerings** that compete with n8n's cloud product.
+- Third-party components retain their own licenses.
+- **Branches other than `master` are explicitly unlicensed** (stated verbatim in `LICENSE.md` first paragraph).
+
+**For FlexNetOS intent (internal automation only):** SUL is permissive enough. Hosted/SaaS use requires legal review.
 
 ## 5. FlexNetOS-side intent
 
@@ -55,21 +131,21 @@ Fits the umbrella's "workflow automation" role:
 
 ## 6. Pre-adoption audit
 
-- Fork already at `FlexNetOS/n8n`. **No `gh repo fork` needed.**
-- `upstream` remote wired locally.
-- No `develop` branch yet. Must create from `origin/master` before
-  adoption.
-- Upstream uses `master`, not `main`. `docs/fork-workflow.md` treats
-  "main" generically as "upstream default" — set up `master`<->upstream.
-- License is fair-code (SUL). Section 4 caveat applies.
-- Very active upstream (thousands of branches, frequent commits).
-  Sync cadence **weekly at most**, likely monthly, to avoid churn.
+- [x] Fork already at `FlexNetOS/n8n`. **No `gh repo fork` needed.**
+- [x] `upstream` remote wired locally in `repos/n8n/`.
+- [x] License reviewed — SUL for internal use is acceptable; EE files need Enterprise key.
+- [x] Active upstream — very active (thousands of branches, frequent commits, 2.23.0 current).
+- [ ] No `develop` branch yet. Must create from `origin/master` before adoption.
+- [ ] Build not verified locally (monorepo requires pnpm + Node 24 + build tools; skipped due to size).
+- [x] Upstream uses `master`, not `main`. Fork workflow adapts accordingly.
+- [x] Telemetry present and ON by default — expected for this project; can be disabled.
+- [ ] Sync cadence not agreed — see §10.
 
 ## 7. Adoption plan
 
 Case: **already forked — just normalize**.
 
-1. Push current `master` to fork, then create `develop`:
+1. Create `develop` branch and push to fork:
    ```bash
    cd repos/n8n
    git fetch upstream master
@@ -95,7 +171,7 @@ Case: **already forked — just normalize**.
      url: https://github.com/FlexNetOS/n8n
      upstream: https://github.com/n8n-io/n8n
      branch: develop
-     toolchain: [node, docker]
+     toolchain: [node, pnpm, docker]
      groups: [forked, automation, workflow]
      notes: |
        Workflow automation platform (fair-code SUL license — see
@@ -104,44 +180,61 @@ Case: **already forked — just normalize**.
    ```
 4. Phase B (org-only rename) on `develop`:
    - `.github/CODEOWNERS`: add `* @FlexNetOS/maintainers`
-   - Branch protection on `master` (mirror): linear history, block direct
-     pushes
+   - Branch protection on `master` (mirror): linear history, block direct pushes
    - Branch protection on `develop`: PR + 1 review
    - `.github/FUNDING.yml`: copy from umbrella
    - `.github/FLEXNETOS-ENV.md`: env-scaffold pointer
    - `.github/workflows/ci.yml`: thin caller using umbrella reusables
-5. Skip Phase D for upstream's `.env.example` — leave alone.
+5. Skip Phase D for upstream's `.env.local.example` — leave alone.
 
 ## 8. Sync risk
 
 **Medium.** Upstream very active:
-- `package.json` changes most weeks (versions, deps). We never edit it →
-  fast-forward.
-- Upstream `.github/workflows/` may change. Our caller has different
-  filename (`ci.yml`) → no conflict.
+- `package.json` changes most weeks (versions, deps). We never edit it → fast-forward.
+- Upstream `.github/workflows/` may change. Our caller has different filename (`ci.yml`) → no conflict.
 - Big refactors in upstream's `packages/` could create textual conflicts
   on our `develop` if we have commits in same files. Mitigate: keep
-  FlexNetOS commits scoped to **new files**.
+  FlexNetOS commits scoped to **new files** or clearly-owned dirs.
+- Node/pnpm engine bumps happen regularly — track them.
 
 ## 9. Verification
 
+Phase 3 setup **not run** — the existing `repos/n8n/` clone is a full working clone; running `pnpm install` on this 19k-file monorepo would take 15+ minutes and 1+ GB of disk. Deferred to actual development setup.
+
+When ready:
 ```bash
+# From repos/n8n/ (or repos/forked/n8n/ after submodule migration):
+corepack enable && corepack prepare pnpm@10.22.0 --activate
+pnpm install
+pnpm build > build.log 2>&1
+tail -20 build.log   # check for errors
+
+# Umbrella verification:
 cd /home/drdave/workspace/my-github
 make verify.manifest
-make submodules.sync-upstream NAME=n8n          # "no upstream changes"
-git -C repos/forked/n8n diff upstream/master..develop -- \
-    package.json Dockerfile README.md           # must be empty
 ```
 
-## 10. Open decisions for user **DO NOT USE FORK UNTIL SOURCE CLONE IS PROPERLY SET UP**
+## 10. Open decisions for user **DO NOT FORK UNTIL SOURCE CLONE IS PROPERLY SET UP**
 
-- [ ] License: confirm SUL terms compatible with intended FlexNetOS use
-      case before adoption or any hosted deployment.
-- [ ] Sync cadence — weekly, monthly, or "as-needed"? Tunes
-      `submodule-bump.yml` schedule.
-- [ ] Are there local FlexNetOS-side changes in current `repos/n8n/` tree
-      that need to land on `develop` before cut-over?
+- [ ] **License:** confirm SUL terms compatible with intended FlexNetOS use case before any hosted deployment.
+- [ ] **Sync cadence** — weekly, monthly, or "as-needed"? Tunes `submodule-bump.yml` schedule. Upstream is very active so "as-needed" is recommended.
+- [ ] **Local changes check:** are there any FlexNetOS-side changes in current `repos/n8n/` tree that need to land on `develop` before cut-over? (`git diff upstream/master..HEAD` in that dir.)
+- [ ] **Telemetry:** decide whether to disable PostHog/RudderStack in FlexNetOS deployment (can be done via env config).
+- [ ] **EE files:** does FlexNetOS need any `.ee.` functionality? If so, need Enterprise license key.
 
 ## 11. Decision log
 
 (empty — fill on adoption)
+
+## 12. Discrepancies — README vs code
+
+| README / CONTRIBUTING / QUICKSTART claims | Code reality | Severity |
+| --- | --- | --- |
+| README quick-start: `npx n8n` (implies npm works) | `preinstall` script blocks `npm install` in the dev repo. `npx n8n` is for **end-user** install from npm registry — a different path. Dev setup must use `pnpm install`. | info (different audience; not a dev-path discrepancy) |
+| CONTRIBUTING: "Node.js version 24 or newer is required" | `engines.node` in `package.json` says `>=22.22` | warn (CONTRIBUTING more restrictive; use Node 24 to be safe) |
+| `.env.example` (common convention) | Actual file is **`.env.local.example`**, loaded via `dotenvx` (`pnpm exec dotenvx run -f .env.local -- <cmd>`), NOT a plain `cp .env.example .env` pattern | block (wrong filename breaks setup) |
+| README: port 5678 (Docker example) | ✓ Confirmed — code binds 5678 | none |
+| README: "400+ integrations" | `packages/nodes-base/nodes/` confirms many integration nodes | none |
+| LICENSE.md: branches other than `master` not licensed | Not disclosed in README | warn (relevant for fork — all FlexNetOS work must stay on `develop`, never browse unlicensed branches for code) |
+| No mention of telemetry in quick-start | PostHog + RudderStack wired into `base-command.ts` startup by default | info (can disable; not deceptive, but worth knowing) |
+| CONTRIBUTING: `corepack prepare pnpm@10.22.0 --activate` | `engines.pnpm >= 10.22.0` — consistent | none |
