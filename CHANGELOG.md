@@ -11,6 +11,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed (SESSION-2026-05-29-010)
+- `.github/workflows/manifest-drift.yml` — promoted three jobs to STRICT (removed `continue-on-error: true`): `claude-settings-doctor` (unblocked by G8 trim), `claude-dir-check` and `open-questions-lint` (were already recorded as promoted in `promote-strict.md` since 2026-05-28 but the flag was never removed — gap fixed). `check-user-todo-step5` (informational) and `submodules-materialize-noop` (deferred G4/G5) remain REPORT_ONLY. Renamed `claude-settings-doctor` job from "(report-only)" name variant. (TODO: CI invariant promotion — CLOSED)
+- `repos/MANIFEST.yaml` — set `branch: develop` for `everything-claude-code`, `oh-my-claudecode`, `oh-my-pi` (was `branch: main`). Vision: `develop` carries FlexNetOS changes; `main`/`master` mirrors upstream. (TODO: USER.TODO#5 MANIFEST branch targets — CLOSED)
+- `~/.claude/settings.json` (user-global, not in repo) — migrated 4 hook entries previously hardcoded in `.claude/settings.json`: `ccg/subagent-context.js` (PreToolUse Bash|Agent), `ccg/session-start.js` (SessionStart startup|clear|compact), `ccg/workflow-state.js` + `ccg/skill-router.js` (UserPromptSubmit). Now use portable `${CLAUDE_CONFIG_DIR:-$HOME/.claude}` paths. (TODO: G8 — CLOSED)
+
+### Fixed (SESSION-2026-05-29-010)
+- `.claude/skills/install-github-app/SKILL.md` (lines 156, 277) — added `text` language tag to two bare fenced code blocks that caused `make verify.markdown` failures.
+- `data/brain-data/research/n8n-mcp.md` (line 141) — same fix: `text` tag on bare verification output block.
+
+### Decisions recorded (2026-05-29)
+- G8 trim was already committed in `4f16178 refactor(settings)` on this branch before this session started; `make claude.doctor` confirmed 0 violations. This session confirmed the state and migrated the 4 previously-missing hook entries to `~/.claude/settings.json`.
+- `check-user-todo-step5` CI job: no promotion planned per `promote-strict.md` (intentionally informational).
+- `submodules-materialize-noop` CI job: deferred until `scripts/materialize-gitmodules.sh` lands (G4/G5).
+
 ### Added (SESSION-2026-05-29-008)
 - `.github/workflows/ci-failure-tracker.yml` — watches the umbrella's top-level CI workflows (ci, manifest-drift, release, secrets-rotate, wiki-lint, auto-review-merge, promote-develop-to-main, dependency-review, submodule-bump) via `workflow_run`. On a `failure` conclusion it opens (or updates) a tracking issue tagged `ci-failure` + `needs-autofix` whose body **references the run log URL and each failed job's log URL** (branch, commit, event, run id). Dedupes by `ci-failure: <workflow> on <branch>` title so repeat failures append a comment instead of spawning duplicates (the `secrets-rotate.yml` pattern). A companion `resolve` job auto-closes the issue when the same workflow next succeeds on that branch. House conventions: `@v6`/`@v9` action pins, blocked default permissions (`contents: read`, `issues: write`, `actions: read`), `concurrency` guard. actionlint clean; both inline `github-script` bodies pass `node --check` under the async wrapper github-script uses. (commit 4c25173; TODO: ci-failure-autofix)
 - `TODO.md` — new "CI-failure autofix" section: the follow-on loop that consumes `needs-autofix` issues (fetch logs → diagnose → open fix PR), gated behind one green tracker cycle, plus a note to pre-create the `ci-failure`/`needs-autofix` labels. (SESSION-2026-05-29-008)

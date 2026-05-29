@@ -4,17 +4,12 @@
 > Applied changes move to `CHANGELOG.md`. Per-session logs land in `SESSIONS.md`.
 > The full deep-research plan that produced this list lives at `data/brain-data/research/my-github-reconciliation.md`.
 
-**Last updated:** 2026-05-29 (SESSION-2026-05-29-008 — ci-failure-tracker workflow + autofix follow-on item)
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-010)
 **Branch:** `feat/session-2026-05-29-007`
 **Status:** Vision sequence enforced in CLAUDE.md+AGENTS.md; fork-remediation dirty diffs captured; `make verify` clean; adoption/forks gated pending `gh auth login` (UA-005).
 
 ---
 
-## Next steps (immediate — post SESSION-005)
-
-- [x] **Review + merge PR #20** (additive reconciliation tooling: doctors, reversibility chain, report-only CI, docs). ✓ Merged 2026-05-28.
-- [x] After `manifest-drift.yml` runs green once on a PR, **promote its jobs REPORT_ONLY → STRICT** (remove `continue-on-error: true`) and create `.github/workflows/promote-strict.md` tracking which jobs are still report-only. ✓ Promoted `claude-dir-check` + `open-questions-lint` 2026-05-28; 3 jobs still REPORT_ONLY per `.github/workflows/promote-strict.md`.
-- [x] Resolve **`UA-2026-05-28-001`** (hand-maintained `CHANGELOG.md` vs release-please). ✓ Resolved 2026-05-28: hand-maintained until `v1.0.0`; at tag-cut the operator renames `[Unreleased]` → `[0.x.0-bootstrap]` and activates release-please. Bootstrap history is preserved. Note added to CHANGELOG.md header.
 
 ## CI-failure autofix (follow-on to `ci-failure-tracker.yml`)
 
@@ -42,6 +37,10 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
   - blocked by: UA-2026-05-29-003 (develop-branch push + submodule conversion; needs human `git push`).
 - [ ] Per `fabro.md` §6 (gated by §9 + explicit user OK) — fork, set up develop, convert to `repos/forked/fabro/` + MANIFEST entry.
 - [ ] Per `paperclip.md` §6 (gated by §9 + explicit user OK) — fork, set up develop, convert to `repos/forked/paperclip/` + MANIFEST entry.
+  - ✓ Full dossier complete (Phases 1–3 verified; SESSION-2026-05-29-009).
+  - ✓ Local setup: `repos/paperclip feat/local-setup` — pnpm install, build, dev server, AGENTS.md hierarchy.
+  - Fork explicitly **deferred** by user (§10: "No go" as of 2026-05-29). Revisit when priority resolved vs. fabro.
+  - blocked by: user go/no-go decision.
 
 ## Per-fork org-only setup (Phase B/C/D — once each fork exists, on `develop`)
 
@@ -54,17 +53,6 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 
 **Out of scope (would break upstream sync):** internal package renames, Docker image refs, README badges, upstream-authored docs.
 
-## Umbrella state fixes (deferred from 4-clone session)
-
-- [x] **Rewrite `docs/directory-layout.md` to Model B.** ✓ Done 2026-05-28.
-- [x] Append 5-line "Adopting a new upstream" pointer to `docs/fork-workflow.md` (owned vs already-forked vs needs-fork). ✓ Done 2026-05-28.
-- [x] Verify `docs/submodule-vision.md` still consistent with Model B. ✓ Consistent — no changes needed.
-
-## `.claude/settings.json` trim (G8 — DONE)
-
-- [x] Remove hardcoded `/home/drdave/.claude/hooks/...` hook paths from `.claude/settings.json`; relocated to `~/.claude/settings.json`. ✓ Done SESSION-2026-05-29-007 (`make claude.doctor` 0 violations).
-- [x] Remove the 5 hardcoded plugin marketplace paths. ✓ Done SESSION-2026-05-29-007.
-- [x] Remove `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. ✓ Done SESSION-2026-05-29-007.
 
 ## MANIFEST ↔ `.gitmodules` reconciliation (P4 closure, Option B lockfile) — DEFERRED
 
@@ -77,18 +65,10 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 - [ ] Add `make submodules.materialize-resolve` (S5) and `make submodules.init GROUP=<name>` (G17).
 - [ ] Flip the `submodules-materialize-noop` job in `manifest-drift.yml` from placeholder to a real check once the pattern lands.
 
-## USER.TODO#5 sequencing (detector DONE; tags + 404-resilience remain)
+## USER.TODO#5 sequencing (detector DONE; branch targets set)
 
-- [x] Add `# depends-on: USER.TODO#5` comments to the 4 pending-fork MANIFEST entries (Archon, everything-claude-code, oh-my-claudecode, oh-my-pi). ✓ Done 2026-05-28 — `check-user-todo-step5.sh --list-tagged` surfaces all 4.
-- [x] Refactor `scripts/submodule-add-all.sh` to be 404-resilient: tagged 404 → WARN exit 0; untagged 404 → ERROR exit 1. ✓ Done 2026-05-28.
 - [ ] **CRITICAL:** No `gh repo fork ... --org FlexNetOS` until the original-side cleanup is verified per-fork. See memory `feedback-fork-after-original-setup`.
   - Dirty diffs captured at `data/brain-data/research/fork-remediation/` (SESSION-2026-05-28-006). Next step per `/clone-setup`: `make research.pack URL=<upstream>` for each repo — gated on UA-2026-05-28-005 (`gh auth login`). (SESSION-2026-05-28-007)
-- [x] Update `branch: main` → `branch: develop` in `repos/MANIFEST.yaml` for everything-claude-code, oh-my-claudecode, oh-my-pi. ✓ Done SESSION-2026-05-29-008.
-
-## CI invariant promotion (workflow DONE; promotion remains)
-
-- [x] Create `.github/workflows/promote-strict.md` (tracks which `manifest-drift.yml` jobs are still REPORT_ONLY). ✓ Done 2026-05-28.
-- [x] Promote `claude-settings-doctor`, `claude-dir-check`, `open-questions-lint` to STRICT. ✓ Done SESSION-2026-05-29-008. Remaining REPORT_ONLY: `check-user-todo-step5` (intentionally informational), `submodules-materialize-noop` (deferred G4/G5).
 
 ## Reservations (carry-forward)
 
