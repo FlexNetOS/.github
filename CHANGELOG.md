@@ -99,6 +99,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `main` branch protection — added 6 required CI status checks in strict mode: `lint / Lint (mixed)`, `actionlint .github/workflows`, `markdownlint`, `Validate manifests`, `Hermetic dependency audit`, `security / Gitleaks secret scan`. Existing 1-approval + linear-history + no-force-push rules preserved. (SESSION-2026-05-29-006)
 - `develop` branch protection — created: same 6 CI gates, 1 approval, no force-push, `strict=false` (feature branches don't need to rebase on main before merging to develop). (SESSION-2026-05-29-006)
 - Repo `allow_auto_merge` — enabled (required for `gh pr merge --auto` to work). (SESSION-2026-05-29-006)
+### Added (SESSION-2026-05-29-006)
+- `architecture/` — single common root for the umbrella's design-time artifacts: `prd/`, `adr/`, `plan/`, and `openspec/` (OpenSpec OPSX engine), plus `README.md` (lifecycle map + routing table + PRD/ADR registry). Built via the OPSX multi-model flow (Claude + codex/gpt-5.5): spec-research → spec-plan → spec-impl → adversarial review → archive.
+- `architecture/prd/PRD-0001-architecture-framework.md` (via `ecc:plan-prd`), `architecture/adr/ADR-0001-architecture-artifact-homes.md` (via `ecc:architecture-decision-records`), and the archived OpenSpec change `2026-05-29-architecture-framework` promoting capability spec `openspec/specs/architecture-framework/spec.md` (6 requirements).
+- `architecture/openspec/config.yaml` (umbrella context + rules) and `project.md`.
+
+### Changed (SESSION-2026-05-29-006)
+- `CLAUDE.md` + `AGENTS.md` — added an identical **Architecture artifacts** routing block directing `ecc:plan-prd`/`prp-prd`, `ecc:architecture-decision-records`, `ccg:spec-*`, and `writing-plans`/`plan` outputs into `architecture/` (overriding their built-in defaults).
+- `docs/directory-layout.md` — documented the `architecture/` top-level entry.
+- `scripts/verify-markdown.py` — exclude gitignored `architecture/.claude/` (OpenSpec init tooling) from markdown lint, mirroring the `.claude/plugins/` precedent.
+- `.gitignore` — ignore `architecture/.claude/` (OpenSpec init AI-tooling, local only).
+
+### Fixed (SESSION-2026-05-29-006)
+- `architecture/` cross-links repointed to the archived change path (`changes/archive/...`). PR #27 squash-merged before the post-archive link fix, shipping 5 broken relative links to develop; caught by `/wrap-up` verification, fixed forward in PR #29. (unblocks: UA-2026-05-29-004)
+
+### Notes (SESSION-2026-05-29-006)
+- Framework merged to develop via PR #27 (`9b6ef51`); cross-link fix follows in PR #29. Built via full multi-model OPSX (Claude + codex); antigravity backend unavailable. `architecture/.claude/` gitignored (OpenSpec init tooling). No submodule/`docs`-relocation/`lifeos` changes.
 
 ### Added (SESSION-2026-05-29-005)
 - `.claude/AGENTS.md`, `.github/AGENTS.md`, `scripts/AGENTS.md`, `tools/AGENTS.md`, `data/brain-data/research/AGENTS.md` — deepinit AGENTS.md hierarchy with `<!-- Parent: -->` tags + per-directory AI-agent guidance; `scripts/AGENTS.md` documents all 26 scripts. Architect-approved (26/26 after fix). (commits 1ca3663 + efba627)

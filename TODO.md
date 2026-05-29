@@ -7,6 +7,9 @@
 **Last updated:** 2026-05-29 (SESSION-2026-05-29-012)
 **Branch:** `feat/session-2026-05-29-007`
 **Status:** Vision sequence enforced in CLAUDE.md+AGENTS.md; fork-remediation dirty diffs captured; `make verify` clean; adoption/forks gated pending `gh auth login` (UA-005).
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-006 — `architecture/` artifact framework landed via OPSX multi-model flow; on `feat/architecture-framework`)
+**Branch:** `feat/architecture-framework`
+**Status:** `architecture/` framework MERGED to develop via PR #27 (`9b6ef51`). Cross-link fix (broken by archive, caught in /wrap-up verify) pending merge in PR #29 → `UA-2026-05-29-004`. DEFERRED: cross-repo rollout to submodules, registry generator, org-wide promotion.
 
 ---
 
