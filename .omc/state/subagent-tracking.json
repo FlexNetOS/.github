@@ -6,10 +6,17 @@
       "started_at": "2026-05-29T11:51:00.400Z",
       "parent_mode": "none",
       "status": "running"
+    },
+    {
+      "agent_id": "a1c04ad361a149f51",
+      "agent_type": "wrap-up-verifier",
+      "started_at": "2026-05-29T11:52:30.453Z",
+      "parent_mode": "none",
+      "status": "running"
     }
   ],
-  "total_spawned": 1,
+  "total_spawned": 2,
   "total_completed": 0,
   "total_failed": 0,
-  "last_updated": "2026-05-29T11:51:00.500Z"
+  "last_updated": "2026-05-29T11:52:30.554Z"
 }

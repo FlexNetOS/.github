@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"rtk make claude.doctor 2>&1\",\"description\":\"Run claude.doctor to see all 39 violations\"}",
-  "error": "Exit code 2\nmake: *** [Makefile:169: claude.doctor] Error 1\nnode scripts/claude-settings-doctor.js --check --allowlist .claude/.doctor-allowlist\nclaude-settings-doctor: 15 violation(s) in .claude/settings.json\n  - hooks.PostToolUse[4].hooks[0].command: hardcoded user-home path (/home/ absolute path) -> node \"/home/drdave/.claude/hooks/gitnexus/gitnexus-hook.cjs\"\n  - hooks.PostToolUse[5].hooks[0].command: hardcoded user-home path (/home/ absolute path) -> bash /home/drdave/.claude/hooks/global/au...",
-  "timestamp": "2026-05-29T11:40:23.356Z",
+  "tool_input_preview": "{\"command\":\"rtk git add TODO.md && rtk git commit -m \\\"$(cat <<'EOF'\\ndocs: collapse duplicate TODO.md header lines\\n\\nPrior wrap-ups prepended instead of replacing the Last updated/Branch\\nlines, lea...",
+  "error": "Exit code 1\nok (nothing to add)\nwarning: could not open directory 'data/brain-data/memory/memory-mesh/state/postgres/': Permission denied\nOn branch feat/session-2026-05-29-007\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   .claude/settings.json\n\tmodified:   .omc/state/agent-replay-ace23ed1-4fa3-4ba6-aafb-3524110de2a1.jsonl\n\tmodified:   .omc/state/hud-stdin-cache.json\n...",
+  "timestamp": "2026-05-29T11:52:46.577Z",
   "retry_count": 1
 }
