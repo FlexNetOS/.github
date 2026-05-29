@@ -20,6 +20,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed (SESSION-2026-05-29-015)
+- **PR pipeline driven to finish line.** Repaired `develop` CI and resolved all open PRs: (PR #71) fixed `reusable-typecheck.yml` duplicate `run:` key + losslessly repaired the spliced `.claude/settings.json` (valid JSON; kept the complete copy — 8 hook events / 16 plugins / 5 marketplaces / 28 commands; discarded 335-line duplicate had 0 unique commands); (PR #74) salvaged the unique `network/` slim control-plane scaffolding (8 files absent from develop); (PR #67) squash-promoted develop→main. `main` and `develop` are now content-identical. (SESSION-2026-05-29-015)
+- `TODO.md` — de-duplicated the triplicated "CI-failure autofix" section and collapsed the 8-deep stacked `**Last updated:**`/`**Branch:**` header to a single current line (merge-accumulation cruft from concurrent-session merges). (SESSION-2026-05-29-015)
+
+### Added (SESSION-2026-05-29-015)
+- `network/` slim control-plane scaffolding — `service-map.yaml`, `scripts/slim-doctor.sh`, `scripts/slim-status.sh`, `README.md`, `MANIFEST.yaml`, `docs/{local-domains,slim-review,tailscale-vs-slim}.md` — salvaged from the superseded #66/#51 branches before they were closed (PR #74). (SESSION-2026-05-29-015)
+
+### Removed (SESSION-2026-05-29-015)
+- Closed **PR #66** (`feat/github-app-automation`) and **PR #51** (`infra/network-slim-control-plane`) as **superseded** — old umbrella branches whose merge would have deleted ~2.58M lines / 258 files of newer develop content; all deliverables already on develop, unique `network/` part salvaged via #74. Deleted ~16 merged + 7 cruft + 2 post-merge remote branches; remote pruned to `main` + `develop`. (SESSION-2026-05-29-015)
+
+### Notes (SESSION-2026-05-29-015)
+- `ci-failure-tracker.yml` is now live on `main` (workflow_run activates only from the default branch). Non-required CI checks `.claude/settings.json hygiene` + `Trivy filesystem + IaC` remain red on the gated G8 violations (hardcoded marketplace paths + `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`) — tracked in TODO, not addressed (user-environment change). Admin merges + the settings.json repair were explicitly user-authorized. All-refs backup bundle retained at `~/my-github-allrefs-backup-20260529T102823.bundle`. No `gh repo fork`, no submodule mutations. (SESSION-2026-05-29-015)
+
 ### Added (SESSION-2026-05-29-012)
 - `data/brain-data/research/n8n-mcp.md` — complete 12-section dossier for `czlonkowski/n8n-mcp` v2.56.0 (Phases 1-3 verified). MIT license, npm+tsc stack, SQLite self-contained DB, 1851 n8n node docs, 17 management tools when `N8N_API_KEY` configured. (research: n8n-mcp)
 - `data/brain-data/research/n8n-mcp/` — repomix full + compressed packs + summary (764 files, HEAD `0f3d3f5`).

@@ -4,50 +4,25 @@
 > Applied changes move to `CHANGELOG.md`. Per-session logs land in `SESSIONS.md`.
 > The full deep-research plan that produced this list lives at `data/brain-data/research/my-github-reconciliation.md`.
 
-**Last updated:** 2026-05-29 (SESSION-2026-05-29-004 — n8n self-hosting env vars: Ralph loop + /verify)
-**Branch:** `feat/session-2026-05-29-002`
-**Last updated:** 2026-05-29 (SESSION-2026-05-29-001 — clone-setup skill fix + setup philosophy; PR #21)
-**Branch:** `feat/session-2026-05-29-002`
-**Last updated:** 2026-05-29 (SESSION-2026-05-29-012)
-**Branch:** `feat/session-2026-05-29-007`
-**Last updated:** 2026-05-29 (SESSION-2026-05-29-007 — repaired malformed `.claude/settings.json`; added n8n-mcp MCP server) — no new agent TODO items
-**Last updated:** 2026-05-29 (SESSION-2026-05-29-006 — main/develop branch protections + promote-develop-to-main workflow)
-**Branch:** `feat/install-github-app`
-**Last updated:** 2026-05-29 (SESSION-2026-05-29-001 — clone-setup skill fix + setup philosophy; PR #21)
-**Last updated:** 2026-05-29 (SESSION-2026-05-29-002 — wrap-up skill updated: commit all + push + PR)
-**Branch:** `feat/todo-session-2026-05-28-006`
-**Status:** Vision sequence enforced in CLAUDE.md+AGENTS.md; fork-remediation dirty diffs captured; `make verify` clean; adoption/forks gated pending `gh auth login` (UA-005).
-**Last updated:** 2026-05-29 (SESSION-2026-05-29-006 — `architecture/` artifact framework landed via OPSX multi-model flow; on `feat/architecture-framework`)
-**Branch:** `feat/architecture-framework`
-**Status:** `architecture/` framework complete (PRD-0001/ADR-0001/OpenSpec change archived; routing block in CLAUDE.md+AGENTS.md; `make verify` EXIT=0). DONE: framework scaffolding. DEFERRED: cross-repo rollout to submodules, registry generator, org-wide promotion. GATE: branch not yet pushed / no PR (awaiting user; branch tracks origin/develop).
-**Status:** `architecture/` framework MERGED to develop via PR #27 (`9b6ef51`). Cross-link fix (broken by archive, caught in /wrap-up verify) pending merge in PR #29 → `UA-2026-05-29-004`. DEFERRED: cross-repo rollout to submodules, registry generator, org-wide promotion.
+**Last updated:** 2026-05-29 (SESSION-2026-05-29-015 — PR pipeline driven to finish line: develop CI repaired, network scaffolding salvaged, #66/#51 closed as superseded, develop→main promoted)
+**Branch:** `develop` (all PRs target develop)
+**Status:** All open PRs resolved; `main`↔`develop` content-in-sync; remote pruned to `main`+`develop`; `ci-failure-tracker` live on `main`. Adoption/forks still gated pending `gh auth login` (UA-005).
 
 ---
 
-
 ## CI-failure autofix (follow-on to `ci-failure-tracker.yml`)
 
-> `ci-failure-tracker.yml` watches the umbrella's workflows and opens an issue tagged `ci-failure` + `needs-autofix` that references the failed run + per-job logs whenever CI fails. The autofix loop below consumes those issues.
+> `ci-failure-tracker.yml` is now **LIVE on `main`** (promoted via PR #67): it watches the umbrella's workflows and opens an issue tagged `ci-failure` + `needs-autofix` referencing the failed run + per-job logs whenever CI fails. The autofix loop below consumes those issues.
 
 - [ ] **Autofix failed workflows from `needs-autofix` issues.** Build the loop that picks up an open `ci-failure` issue, fetches the referenced run/job logs, diagnoses the root cause, and opens a fix PR against the failing branch (or comments a diagnosis when the fix needs human judgement). Candidate trigger: `issues` (labeled `needs-autofix`) → dispatch a Claude autofix job; or a scheduled sweep over open `ci-failure` issues. On success the tracker's `resolve` job auto-closes the issue when the workflow next goes green.
   - Gate: do not enable write-mode autofix on `main` until the tracker has run green for ≥1 cycle and the issue-noise/dedupe behaviour is confirmed sane on a feature branch.
   - First create the `ci-failure` + `needs-autofix` repo labels (the tracker assumes they can be applied; `github.rest.issues.create` will create missing labels on first use, but pre-creating them with colors/descriptions is cleaner).
 
-## CI-failure autofix (follow-on to `ci-failure-tracker.yml`)
+## `.claude/settings.json` hygiene (gated G8 trim — non-required CI red)
 
-> `ci-failure-tracker.yml` watches the umbrella's workflows and opens an issue tagged `ci-failure` + `needs-autofix` that references the failed run + per-job logs whenever CI fails. The autofix loop below consumes those issues.
+> Surfaced SESSION-2026-05-29-015. After the splice repair (#71) settings.json is valid JSON, but the `.claude/settings.json hygiene` doctor + `Trivy filesystem + IaC` (both **non-required**, non-blocking) stay red on pre-existing violations.
 
-- [ ] **Autofix failed workflows from `needs-autofix` issues.** Build the loop that picks up an open `ci-failure` issue, fetches the referenced run/job logs, diagnoses the root cause, and opens a fix PR against the failing branch (or comments a diagnosis when the fix needs human judgement). Candidate trigger: `issues` (labeled `needs-autofix`) → dispatch a Claude autofix job; or a scheduled sweep over open `ci-failure` issues. On success the tracker's `resolve` job auto-closes the issue when the workflow next goes green.
-  - Gate: do not enable write-mode autofix on `main` until the tracker has run green for ≥1 cycle and the issue-noise/dedupe behaviour is confirmed sane on a feature branch.
-  - First create the `ci-failure` + `needs-autofix` repo labels (the tracker assumes they can be applied; `github.rest.issues.create` will create missing labels on first use, but pre-creating them with colors/descriptions is cleaner).
-
-## CI-failure autofix (follow-on to `ci-failure-tracker.yml`)
-
-> `ci-failure-tracker.yml` watches the umbrella's workflows and opens an issue tagged `ci-failure` + `needs-autofix` that references the failed run + per-job logs whenever CI fails. The autofix loop below consumes those issues.
-
-- [ ] **Autofix failed workflows from `needs-autofix` issues.** Build the loop that picks up an open `ci-failure` issue, fetches the referenced run/job logs, diagnoses the root cause, and opens a fix PR against the failing branch (or comments a diagnosis when the fix needs human judgement). Candidate trigger: `issues` (labeled `needs-autofix`) → dispatch a Claude autofix job; or a scheduled sweep over open `ci-failure` issues. On success the tracker's `resolve` job auto-closes the issue when the workflow next goes green.
-  - Gate: do not enable write-mode autofix on `main` until the tracker has run green for ≥1 cycle and the issue-noise/dedupe behaviour is confirmed sane on a feature branch.
-  - First create the `ci-failure` + `needs-autofix` repo labels (the tracker assumes they can be applied; `github.rest.issues.create` will create missing labels on first use, but pre-creating them with colors/descriptions is cleaner).
+- [ ] Remove the 4 hardcoded `/home/` marketplace paths (`ecc`, `karpathy-skills`, `omc`, `understand-anything`) and the forbidden `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` key from tracked `.claude/settings.json`; relocate marketplace defs to user-global `~/.claude/settings.json`. **Gated:** user-environment change — could disable plugin marketplaces for this project. (overlaps the G8 trim item below)
 
 ## Pre-adoption dossier review gate (Phase 0 — GATED, human decision)
 
@@ -83,7 +58,6 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 
 **Out of scope (would break upstream sync):** internal package renames, Docker image refs, README badges, upstream-authored docs.
 
-
 ## MANIFEST ↔ `.gitmodules` reconciliation (P4 closure, Option B lockfile) — DEFERRED
 
 > Deferred from the additive pass: this refactors the **working** `submodules.*` machinery, so it is not additive. Tracked as **G4/G5 in `.omc/plans/open-questions.md`**. Decide the open question before starting.
@@ -109,6 +83,7 @@ Companion plan: `~/.claude/plans/sprightly-shimmying-charm.md`. Cross-references
 
 1. ✅ **6+ scripts now built** (SESSION-005): `claude-settings-doctor.js`, `g3a/g3b/g3c-*.sh`, `reconcile-stray-clones.sh`, `check-user-todo-step5.sh`, `open-questions-lint.js`, extended `runner-doctor.sh`. (Materialize/lockfile script remains deferred — see open-questions.)
 2. **2 of 4 stray clones halt at G3a UNSAFE-MISMATCH** — `fabro` (`fabro-sh/fabro`), `paperclip` (`paperclipai/paperclip`). `ai-top-utility` is FlexNetOS-owned (exits 0). Each halting clone needs manual operator triage; cannot be automated without violating P5.
+3. **6 local-only unmerged branches retained** (SESSION-2026-05-29-015) — real in-flight work with no PRs, kept during branch cleanup: `feat/ci-autofix-claude` (github-agentic-os runner), `feat/github-agentic-os-runner`, `feat/github-automation-doctor`, `docs/root-claude-md`, `fix/pr24-settings-json`, `fix/architecture-crosslinks`. Open PRs when ready; recoverable from the all-refs backup bundle either way.
 
 ## Out of scope (deferred per ralplan)
 
