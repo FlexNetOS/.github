@@ -5,10 +5,6 @@
 
 **Cross-reference:** Corrects [my-github-reconciliation.md](my-github-reconciliation.md) Reservation 2 — its claim that ai-top-utility is "likely UNSAFE-MISMATCH" is incorrect. Verified origin is `FlexNetOS/ai-top-utility` (FlexNetOS-owned, no upstream). Expected G3a exit: 0 (SAFE) or 11 (unpushed branches), not 13.
 
-
-### *(drdave_input)* (Vision-Target): A full Rust and mojo implementation that can train all models, and covert any data to training data. Think "AI Model Gym" to train small models <1B parameter with perfect memory on their assigned role. 
-- leverages all available harware in unity
-
 ## 1. Identity
 
 
@@ -43,18 +39,18 @@ High-signal sub-directories:
 - Top-level docs: `CHANGELOG.md`, `CLAUDE.md`, `HANDOFF.md`, `SESSIONS.md`,  
 `STAGE1.md`, `STAGE2.md`, `STATUS.md`,  
 `please_first_update_bios_for_AI_TOP_motherboard.txt`
+- 
 
-- (drdave_input):I moved removed the sub-directories from the mnt patitions at `/mnt/aitop-train`, to `my-github/repos/ai-top-utility/training`, and `mnt/aitop-data` to `my-github/repos/ai-top-utility/data`
-- (drdave_input): `/mnt/aitop-train` must remain empty and replaces:[gabyte.com/SSD/AI-TOP-Capable?fid=3049&page=1]
+### 2.1 Critical features!!! *(drdave_input)*
 
-### 2.1 *(drdave_input)* Critical features!!!
-
-### - Design leverages all hardware at the same to train. (Core Benifit: you can train a 500B on hardware designed to only train a 36B parameter model by using GPU, CPU, Ram, and SSD at the same time. That mean the SSD is mounted and blank. 
+### - Design leverages all hardware at the same to train. (Core Benifit: you can train a 500B on hardware designed to only train a 36B parameter model by using GPU, CPU, Ram, and SSD at the same time. That mean the SSD is mounted and blank.
 
 - Auto detects and loads hardware
 - Monitores harwardware
 
-### 2.2 *(drdave_input)* Referances
+### 2.2 (Vision-Target): A full Rust and mojo implementation that can train all models, and covert any data to training data.  *(drdave_input)*
+
+### 2.4 Referances
 
 - gigabyte.com/Motherboard/TRX50-AI-TOP
 - gigabyte.com/Motherboard/TRX50-AI-TOP/sp
@@ -144,20 +140,20 @@ ls repos/owned/ai-top-utility/README.md    # checkout present
 
 - Is `fix/phase4-security-hardening` still active work, or can `main`  
 be the tracked branch immediately? 
-*(drdave_response)*:
+- *(drdave_response)*:
   - First verify any work that is not commited then committ and creat PR
   - Switch to main branch, fix all conflicts and errors.
   - Create development branch were anywork is done
-  - main canbe the tracked branched right away 
+  - main canbe the tracked branched right away
 - PDF reference manuals: stay in-repo (current state) or move to LFS /
 a separate asset repo?
-*(drdave_response)*:
+- *(drdave_response)*:
   - PDF references must be updated
   - create a submodule of ai-top-utility for archive
   - move old version to ai-top-utility-achive
 - Any `.claude/` or `.devcontainer/` content here that needs to align
 with the umbrella's `.claude/` setup, or intentionally independent?
-*(drdave_response)*:
+- *(drdave_response)*:
   - must align with with umbrella
 
 ## 10. Decision log
