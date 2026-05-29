@@ -215,9 +215,10 @@ For future setup from scratch:
 # From repos/n8n/ (or repos/forked/n8n/ after submodule migration):
 corepack enable
 pnpm install          # corepack enforces pnpm 10.32.1 from packageManager field
-pnpm build > build.log 2>&1
+bunx turbo run build > build.log 2>&1   # NOTE: use bunx, not pnpm build (pnpm 11.x drops turbo .bin symlink)
 tail -20 build.log    # check for errors
-node packages/cli/bin/n8n --version   # smoke test
+node packages/cli/bin/n8n start &      # launch
+curl -s http://localhost:5678/healthz  # verify HTTP 200
 ```
 
 ## 10. Open decisions for user ~~DO NOT FORK UNTIL SOURCE CLONE IS PROPERLY SET UP~~ **ALL DECISIONS RESOLVED ✓ — adoption cleared**
