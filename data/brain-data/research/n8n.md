@@ -220,17 +220,22 @@ tail -20 build.log    # check for errors
 node packages/cli/bin/n8n --version   # smoke test
 ```
 
-## 10. Open decisions for user ~~DO NOT FORK UNTIL SOURCE CLONE IS PROPERLY SET UP~~ **SETUP CONFIRMED ✓ — resolve items below before submodule migration**
+## 10. Open decisions for user ~~DO NOT FORK UNTIL SOURCE CLONE IS PROPERLY SET UP~~ **ALL DECISIONS RESOLVED ✓ — adoption cleared**
 
-- [ ] **License:** confirm SUL terms compatible with intended FlexNetOS use case before any hosted deployment.
-- [ ] **Sync cadence** — weekly, monthly, or "as-needed"? Tunes `submodule-bump.yml` schedule. Upstream is very active so "as-needed" is recommended.
-- [ ] **Local changes check:** are there any FlexNetOS-side changes in current `repos/n8n/` tree that need to land on `develop` before cut-over? (`git diff upstream/master..HEAD` in that dir.)
-- [ ] **Telemetry:** decide whether to disable PostHog/RudderStack in FlexNetOS deployment (can be done via env config).
-- [ ] **EE files:** does FlexNetOS need any `.ee.` functionality? If so, need Enterprise license key.
+- [x] **License:** SUL approved for FlexNetOS internal-automation use case.
+- [x] **Sync cadence:** as-needed (not scheduled). Manual bumps via `make submodules.bump`.
+- [x] **Local changes:** none in repos/n8n/ (clean HEAD, no FlexNetOS-side commits).
+- [x] **Telemetry:** free tier only — PostHog/RudderStack remain on but no paid features.
+- [x] **EE files:** local-host-only, all-free community setup. No Enterprise license needed; `.ee.` code paths stay dormant.
 
 ## 11. Decision log
 
-(empty — fill on adoption)
+| Date | Decision | Notes |
+| --- | --- | --- |
+| 2026-05-28 | License: SUL approved | Internal automation use only |
+| 2026-05-28 | Sync cadence: as-needed | `make submodules.bump GROUP=forked NAME=n8n` when needed |
+| 2026-05-28 | Telemetry: free tier | PostHog/RudderStack enabled, no paid plan |
+| 2026-05-28 | EE files: not activated | Community free tier; no Enterprise license |
 
 ## 12. Discrepancies — README vs code
 
